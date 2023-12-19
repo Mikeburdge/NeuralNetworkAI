@@ -470,11 +470,13 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 	ImGui::SliderInt("Activation Function", &elem, 0, Activation_Count - 1, elem_name);
 
 	constexpr double defaultBias = 1;
+	constexpr double defaultWeights = 1;
 
 	// Reset button action
 	if (ImGui::Button("Create NeuralNetwork")) {
 		//auto test = ActivationType[elem];
 
+		// Input Layer
 		std::vector<double> inputBiases;
 		inputBiases.reserve(inputLayerSize);
 		for (int i = 0; i < inputLayerSize; i++)
@@ -486,13 +488,66 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 		inputWeights.reserve(inputLayerSize);
 		for (int i = 0; i < inputLayerSize; i++)
 		{
-			for (int j = 0; j < inputLayerSize; j++)
+			std::vector<double> weights;
+			for (int ii = 0; ii < inputLayerSize; ii++)
 			{
-				inputBiases.push_back(defaultBias);
+				weights.push_back(defaultWeights);
 			}
+			inputWeights.push_back(weights);
 		}
 
-		//NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(sigmoid, inputLayerSize,inputBiases, );
+		// Hidden Layers
+		std::vector<std::vector<double>> hiddenLayerBiases;
+		std::vector<std::vector<std::vector<double>>> hiddenLayerWeights;
+
+		for (int i = 0; i < numHiddenLayers; i++)
+		{
+			std::vector<double> hiddenLayerInnerBiases;
+			hiddenLayerInnerBiases.reserve(hiddenLayerSize);
+			for (int i = 0; i < hiddenLayerSize; i++)
+			{
+				hiddenLayerInnerBiases.push_back(defaultBias);
+			}
+			hiddenLayerBiases.push_back(hiddenLayerInnerBiases);
+
+			std::vector<std::vector<double>> hiddenLayerInnerWeights;
+			hiddenLayerInnerWeights.reserve(hiddenLayerSize);
+			for (int i = 0; i < hiddenLayerSize; i++)
+			{
+				std::vector<double> weights;
+				for (int ii = 0; ii < hiddenLayerSize; ii++)
+				{
+					weights.push_back(defaultWeights);
+				}
+				hiddenLayerInnerWeights.push_back(weights);
+			}
+			hiddenLayerWeights.push_back(hiddenLayerInnerWeights);
+		}
+		
+		// Output Layer
+		std::vector<double> outputBiases;
+		outputBiases.reserve(outputLayerSize);
+		for (int i = 0; i < outputLayerSize; i++)
+		{
+			outputBiases.push_back(defaultBias);
+		}
+
+		std::vector<std::vector<double>> outputWeights;
+		outputWeights.reserve(outputLayerSize);
+		for (int i = 0; i < outputLayerSize; i++)
+		{
+			std::vector<double> weights;
+			for (int ii = 0; ii < outputLayerSize; ii++)
+			{
+				weights.push_back(defaultWeights);
+			}
+			outputWeights.push_back(weights);
+		}
+
+		NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(sigmoid, inputLayerSize, inputBiases, inputWeights,
+		                                                        numHiddenLayers, hiddenLayerSize, hiddenLayerBiases,
+		                                                        hiddenLayerWeights, outputLayerSize, outputBiases,
+		                                                        outputWeights);
 
 		showNeuralNetworkWindow = true;
 	}
@@ -549,41 +604,74 @@ void HyperParameterWindow(bool* p_open) {
 	ImGui::End();
 }
 
+float circleSizeValue = 15.0f;
+float circleThicknessValue = 1.0f;
+
 void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network)
 {
 	ImGui::Begin("Neural Network Visualization", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
-	// Iterate through each layer in the network
-	for (const Layer& layer : network.layers) {
-		ImGui::Text("Layer %d", &layer - &network.layers[0]); // Display layer index
+	const ImVec2 windowSize = ImGui::GetWindowSize(); // Size of the current window
 
-		// Display neurons in columns
+	const float spacingX = windowSize.x / (2 * network.layers.size() + 1);
+	const float spacingY = windowSize.y / (network.layers.size() + 1);
+
+	for (int layerIndex = 0; layerIndex < network.layers.size(); ++layerIndex) {
+		const Layer& layer = network.layers[layerIndex];
+		const float layerPosX = (layerIndex + 1) * spacingX;
+
 		for (int neuronIndex = 0; neuronIndex < layer.numNeurons; ++neuronIndex) {
+			const float posX = layerPosX;
+			const float posY = (neuronIndex + 1) * spacingY;
+
+			ImGui::SetCursorPos(ImVec2(posX - circleSizeValue, posY - circleSizeValue));
 			ImGui::BeginGroup();
+			ImGui::PushID(layerIndex * 1000 + neuronIndex);
 
-			// Display each neuron
-			ImGui::Text("Neuron %d", neuronIndex);
+			ImGui::GetWindowDrawList()->AddCircle(
+				ImVec2(circleSizeValue + ImGui::GetCursorScreenPos().x, circleSizeValue + ImGui::GetCursorScreenPos().y),
+				circleSizeValue,
+				ImColor(255, 255, 255),
+				12,
+				circleThicknessValue
+			);
 
-			// Optionally, display weights and biases
-			ImGui::Text("Biases: %f", layer.biases[neuronIndex]);
+			ImGui::SetCursorPos(ImVec2(posX - circleSizeValue / 2.0f, posY - circleSizeValue / 2.0f));
+			ImGui::Text("%.1f", layer.biases[neuronIndex]);
 
-			// Display weights for each input (from previous layer)
-			if (!layer.weights.empty()) {
-				ImGui::Text("Weights:");
-				for (int weightIndex = 0; weightIndex < layer.weights[neuronIndex].size(); ++weightIndex) {
-					ImGui::Text("   Input %d: %f", weightIndex, layer.weights[neuronIndex][weightIndex]);
+			ImGui::PopID();
+			ImGui::EndGroup();
+
+			if (layerIndex > 0) {
+				const float prevLayerPosX = layerIndex * spacingX - spacingX / 2.0f;
+				const int numNeuronsPrevLayer = network.layers[layerIndex - 1].numNeurons;
+				const float prevSpacingY = windowSize.y / (numNeuronsPrevLayer + 1);
+
+				for (int prevNeuronIndex = 0; prevNeuronIndex < numNeuronsPrevLayer; ++prevNeuronIndex) {
+					const float prevPosY = (prevNeuronIndex + 1) * prevSpacingY;
+
+					ImGui::GetWindowDrawList()->AddLine(
+						ImVec2(prevLayerPosX + spacingX, prevPosY),
+						ImVec2(layerPosX, posY),
+						ImColor(255, 255, 255),
+						circleThicknessValue
+					);
 				}
 			}
-
-			ImGui::EndGroup();
-			ImGui::SameLine();
 		}
-
-		ImGui::Separator(); // Separate layers visually
 	}
 
 	ImGui::End();
+
+	ImGui::Begin("Visual Customization");
+
+	ImGui::SliderFloat("Circle Size", &circleSizeValue, 10.0f, 50.0f);
+	ImGui::SliderFloat("Circle Thickness", &circleThicknessValue, 1.0f, 5.0f);
+
+	ImGui::End();
 }
+
+
 
 void DefaultWindows()
 {
