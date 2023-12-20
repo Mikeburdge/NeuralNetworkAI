@@ -1,10 +1,20 @@
 #pragma once
 #include <vector>
 
+enum CostType
+{
+	meanSquaredError,
+	crossEntropy,
+	cost_Count
+};
+
 class Cost {
 public:
 
 	Cost() = default;
+
+	// TODO: Finish implementing this. Must make functionality for including a target variable
+	static double CalculateCost(CostType inCost, double x);
 
 	/// <summary>
 	/// Cost calculation function: Mean Squared Error

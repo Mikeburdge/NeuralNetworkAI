@@ -1,5 +1,22 @@
 #include "Cost.h"
 
+double Cost::CalculateCost(const CostType inCost, const double x)
+{
+	switch (inCost)
+	{
+	case CostType::meanSquaredError:
+
+		break;
+	case CostType::crossEntropy:
+		break;
+	case cost_Count:
+		break;
+	default: ;
+	}
+
+	return x;
+}
+
 double Cost::meanSquaredError(std::vector<double> predicted, std::vector<double> actual)
 {
 	if (predicted.size() != actual.size()) {

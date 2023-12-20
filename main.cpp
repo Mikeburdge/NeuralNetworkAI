@@ -5,6 +5,7 @@
 #include "imgui_impl_vulkan.h"
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
+#include "Cost.h"
 #include "HyperParameters.h"
 #include "NeuralNetwork.h"
 #include "NeuralNetworkSubsystem.h"
@@ -46,6 +47,7 @@ bool showNeuralNetworkCustomisationWindow = true;
 bool showHyperParameterWindow = true;
 bool showWeightsAndBiasesWindow = true;
 bool showNeuralNetworkWindow = false;
+bool showNeuralNetworkStartWindow  = false;
 
 // Neural Network Customisation Window
 int inputLayerSize = HyperParameters::defaultInputLayerSize;
@@ -476,10 +478,15 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 		outputLayerSize = 1;
 	}
 
-	static int elem = sigmoid;
-	const char* elems_names[] = { "Sigmoid", "Sigmoid Derivative", "ReLU" };
-	const char* elem_name = (elem >= 0 && elem < Activation_Count) ? elems_names[elem] : "Unknown";
-	ImGui::SliderInt("Activation Function", &elem, 0, Activation_Count - 1, elem_name);
+	static int activationElem = sigmoid;
+	const char* activationElemsNames[] = { "Sigmoid", "Sigmoid Derivative", "ReLU" };
+	const char* activationElemName = (activationElem >= 0 && activationElem < Activation_Count) ? activationElemsNames[activationElem] : "Unknown";
+	ImGui::SliderInt("Activation Function", &activationElem, 0, Activation_Count - 1, activationElemName);
+
+	static int costElem = meanSquaredError;
+	const char* costElemsNames[] = { "Mean Squared Error", "Cross Entropy"};
+	const char* costElemName = (costElem >= 0 && costElem < cost_Count) ? costElemsNames[costElem] : "Unknown";
+	ImGui::SliderInt("Cost Function", &costElem, 0, cost_Count - 1, costElemName);
 
 	constexpr double defaultBias = 0.1;
 	constexpr double defaultWeights = 0;
@@ -488,7 +495,7 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 	if (ImGui::Button("Create NeuralNetwork")) {
 
 		ActivationType activation;
-		switch (elem)
+		switch (activationElem)
 		{
 		case 1:
 
@@ -510,80 +517,29 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 			break;
 		}
 
-		// Input Layer
-		std::vector<double> inputBiases;
-		inputBiases.reserve(inputLayerSize);
-		for (int i = 0; i < inputLayerSize; i++)
+		CostType cost;
+		switch (costElem)
 		{
-			inputBiases.push_back(defaultBias);
+		case 1:
+
+			cost = meanSquaredError;
+			break;
+
+		case 2:
+
+			cost = crossEntropy;
+			break;
+
+		default:
+			cost = meanSquaredError;
+			break;
 		}
 
-		std::vector<std::vector<double>> inputWeights;
-		for (int i = 0; i < inputLayerSize; i++)
-		{
-			std::vector<double> weights;
-			weights.reserve(inputLayerSize);
-			for (int ii = 0; ii < inputLayerSize; ii++)
-			{
-				weights.push_back(defaultWeights);
-			}
-			inputWeights.push_back(weights);
-		}
-
-		// Hidden Layers
-		std::vector<std::vector<double>> hiddenLayerBiases;
-		std::vector<std::vector<std::vector<double>>> hiddenLayerWeights;
-
-		for (int i = 0; i < numHiddenLayers; i++)
-		{
-			std::vector<double> hiddenLayerInnerBiases;
-			hiddenLayerInnerBiases.reserve(hiddenLayerSize);
-			for (int i = 0; i < hiddenLayerSize; i++)
-			{
-				hiddenLayerInnerBiases.push_back(defaultBias);
-			}
-			hiddenLayerBiases.push_back(hiddenLayerInnerBiases);
-
-			std::vector<std::vector<double>> hiddenLayerInnerWeights;
-			for (int i = 0; i < hiddenLayerSize; i++)
-			{
-				std::vector<double> weights;
-				weights.reserve(hiddenLayerSize);
-				for (int ii = 0; ii < hiddenLayerSize; ii++)
-				{
-					weights.push_back(defaultWeights);
-				}
-				hiddenLayerInnerWeights.push_back(weights);
-			}
-			hiddenLayerWeights.push_back(hiddenLayerInnerWeights);
-		}
-
-		// Output Layer
-		std::vector<double> outputBiases;
-		outputBiases.reserve(outputLayerSize);
-		for (int i = 0; i < outputLayerSize; i++)
-		{
-			outputBiases.push_back(defaultBias);
-		}
-
-		std::vector<std::vector<double>> outputWeights;
-		for (int i = 0; i < outputLayerSize; i++)
-		{
-			std::vector<double> weights;
-			weights.reserve(outputLayerSize);
-			for (int ii = 0; ii < outputLayerSize; ii++)
-			{
-				weights.push_back(defaultWeights);
-			}
-			outputWeights.push_back(weights);
-		}
-
-		NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(activation, inputLayerSize, inputBiases, inputWeights,
-			numHiddenLayers, hiddenLayerSize, hiddenLayerBiases,
-			hiddenLayerWeights, outputLayerSize, outputBiases,
-			outputWeights);
+		NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(activation, cost, inputLayerSize, numHiddenLayers,
+		                                                        hiddenLayerSize, outputLayerSize);
 
 		showNeuralNetworkWindow = true;
+		showNeuralNetworkStartWindow = true;
 	}
 
 	// Reset button action
@@ -625,16 +581,31 @@ void HyperParameterWindow(bool* p_open) {
 		HyperParameters::ResetHyperParameters();
 	}
 
+	if (HyperParameters::learningRate < 0)
+	{
+		HyperParameters::learningRate = 0;
+	}
+
 	if (HyperParameters::batchSize < 0)
 	{
 		HyperParameters::batchSize = 0;
 	}
 
-	if (HyperParameters::learningRate < 0)
+	if (HyperParameters::epochs < 0)
 	{
-		HyperParameters::learningRate = 0;
+		HyperParameters::epochs = 0;
 	}
-	
+
+	if (HyperParameters::momentum < 0)
+	{
+		HyperParameters::momentum = 0;
+	}
+
+	if (HyperParameters::weightDecay < 0)
+	{
+		HyperParameters::weightDecay = 0;
+	}
+
 	if (HyperParameters::dropoutRate < 0)
 	{
 		HyperParameters::dropoutRate = 0;
@@ -740,6 +711,33 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 	ImGui::End();
 }
 
+void NeuralNetworkStartWindow(bool* p_open, NeuralNetwork& network)
+{
+	if (!ImGui::Begin("Neural Network Begin Test", p_open)) {
+		ImGui::End();
+		return;
+	}
+
+	for (int i = 0; i < network.layers[0].numNeurons; i++)
+	{
+		ImGui::InputDouble(("Input Data for Neuron:##" + std::to_string(i) + "_" + std::to_string(i)).c_str(), &network.layers[0].neurons[i].ActivationValue, 0.01, 0.1, "%.2f");
+	}
+
+	if (ImGui::Button("Start Learning"))
+	{
+		
+		std::vector<double> input(network.layers[0].numNeurons);
+
+		for (int i = 0; i < network.layers[0].numNeurons; i++)
+		{
+			input[i] = network.layers[0].neurons[i].ActivationValue;
+		}
+		NeuralNetworkSubsystem::GetInstance().StartNeuralNetwork(input);
+	}
+
+
+	ImGui::End();
+}
 
 void DefaultWindows()
 {
@@ -756,6 +754,11 @@ void DefaultWindows()
 	if (showNeuralNetworkWindow)
 	{
 		NeuralNetworkWindow(&showNeuralNetworkWindow, NeuralNetworkSubsystem::GetInstance().GetNeuralNetwork());
+	}
+
+	if (showNeuralNetworkStartWindow)
+	{
+		NeuralNetworkStartWindow(&showNeuralNetworkStartWindow, NeuralNetworkSubsystem::GetInstance().GetNeuralNetwork());
 	}
 
 	if (showWeightsAndBiasesWindow)

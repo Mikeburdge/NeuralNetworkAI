@@ -1,4 +1,5 @@
 #pragma once
+#include "Cost.h"
 #include "NeuralNetwork.h"
 #include "SingletonBase.h"
 
@@ -24,12 +25,12 @@ private:
 
 public:
 
-	void InitNeuralNetwork(ActivationType inActivation, int inputLayerSize, const std::vector<double>& inputLayerBiases,
-	                       const std::vector<std::vector<double>>& inputLayerWeights, int hiddenLayers, int hiddenLayersSizes,
-	                       std::vector<std::vector<double>> hiddenLayerBiases,
-	                       std::vector<std::vector<std::vector<double>>> hiddenLayerWeights, int outputLayerSize,
-	                       const std::vector<double>& outputLayerBiases, const std::vector<std::vector<double>>&
-	                       outputLayerWeights);
+	void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost, const int inputLayerSize,
+	                       int
+	                       hiddenLayers,
+	                       int hiddenLayersSizes,
+	                       int outputLayerSize);
 
 	NeuralNetwork& GetNeuralNetwork();
+	void StartNeuralNetwork(const std::vector<double>& inputData);
 };
