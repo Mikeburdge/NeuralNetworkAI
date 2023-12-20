@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Activation.h"
+#include "Neuron.h"
 
 
 class Layer {
@@ -11,6 +12,8 @@ public:
 	ActivationType activation; // Activation type we are using.
 
 	int numNeurons; // Number of neurons in the layer.
+	std::vector<Neuron> neurons; // Neurons.
+
 	std::vector<std::vector<double>> weights; // Weights matrix.
 	std::vector<double> biases; // Biases vector.
 
@@ -22,7 +25,9 @@ public:
 		  numNeurons(inNum_neurons),
 		  weights(inWeights),
 		  biases(inBiases)
-	{}
+	{
+		neurons.reserve(numNeurons);
+	}
 
 	/// <summary>
 	/// Function to calculate the output of the layer given input.

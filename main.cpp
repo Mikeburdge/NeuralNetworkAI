@@ -383,7 +383,12 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
 
 void WeightsAndBiasesWindow(bool* p_open, NeuralNetwork& network)
 {
-	ImGui::Begin("Edit Neural Network", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+	
+	// ImGui window setup
+	if (!ImGui::Begin("Edit Neural Network", p_open)) {
+		ImGui::End();
+		return;
+	}
 
 	// Iterate through each layer in the network
 	for (size_t layerIndex = 0; layerIndex < network.layers.size(); ++layerIndex) {
@@ -474,7 +479,29 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 
 	// Reset button action
 	if (ImGui::Button("Create NeuralNetwork")) {
-		//auto test = ActivationType[elem];
+
+		ActivationType activation;
+		switch (elem)
+		{
+		case 1:
+
+			activation = sigmoid;
+			break;
+
+		case 2:
+
+			activation = sigmoidDerivative;
+			break;
+
+		case 3:
+
+			activation = ReLU;
+			break;
+
+		default:
+			activation = sigmoid;
+			break;
+		}
 
 		// Input Layer
 		std::vector<double> inputBiases;
@@ -485,10 +512,10 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 		}
 
 		std::vector<std::vector<double>> inputWeights;
-		inputWeights.reserve(inputLayerSize);
 		for (int i = 0; i < inputLayerSize; i++)
 		{
 			std::vector<double> weights;
+			weights.reserve(inputLayerSize);
 			for (int ii = 0; ii < inputLayerSize; ii++)
 			{
 				weights.push_back(defaultWeights);
@@ -511,10 +538,10 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 			hiddenLayerBiases.push_back(hiddenLayerInnerBiases);
 
 			std::vector<std::vector<double>> hiddenLayerInnerWeights;
-			hiddenLayerInnerWeights.reserve(hiddenLayerSize);
 			for (int i = 0; i < hiddenLayerSize; i++)
 			{
 				std::vector<double> weights;
+				weights.reserve(hiddenLayerSize);
 				for (int ii = 0; ii < hiddenLayerSize; ii++)
 				{
 					weights.push_back(defaultWeights);
@@ -523,7 +550,7 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 			}
 			hiddenLayerWeights.push_back(hiddenLayerInnerWeights);
 		}
-		
+
 		// Output Layer
 		std::vector<double> outputBiases;
 		outputBiases.reserve(outputLayerSize);
@@ -533,10 +560,10 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 		}
 
 		std::vector<std::vector<double>> outputWeights;
-		outputWeights.reserve(outputLayerSize);
 		for (int i = 0; i < outputLayerSize; i++)
 		{
 			std::vector<double> weights;
+			weights.reserve(outputLayerSize);
 			for (int ii = 0; ii < outputLayerSize; ii++)
 			{
 				weights.push_back(defaultWeights);
@@ -544,14 +571,20 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 			outputWeights.push_back(weights);
 		}
 
-		NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(sigmoid, inputLayerSize, inputBiases, inputWeights,
-		                                                        numHiddenLayers, hiddenLayerSize, hiddenLayerBiases,
-		                                                        hiddenLayerWeights, outputLayerSize, outputBiases,
-		                                                        outputWeights);
+		NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(activation, inputLayerSize, inputBiases, inputWeights,
+			numHiddenLayers, hiddenLayerSize, hiddenLayerBiases,
+			hiddenLayerWeights, outputLayerSize, outputBiases,
+			outputWeights);
 
 		showNeuralNetworkWindow = true;
 	}
 
+	// Reset button action
+	if (ImGui::Button("Delete NeuralNetwork"))
+	{
+		NeuralNetworkSubsystem::GetInstance().GetNeuralNetwork() = NeuralNetwork();
+		showNeuralNetworkWindow = false;
+	}
 	ImGui::End();
 
 }
@@ -568,32 +601,16 @@ void HyperParameterWindow(bool* p_open) {
 
 	// Training settings
 	ImGui::Text("Training");
-	ImGui::InputInt("Batch Size", &HyperParameters::batchSize);
-
-	if (HyperParameters::batchSize < 0)
-	{
-		HyperParameters::batchSize = 0;
-	}
-
 	ImGui::InputFloat("Learning Rate", &HyperParameters::learningRate, 0.001f);
-
-	if (HyperParameters::learningRate < 0)
-	{
-		HyperParameters::learningRate = 0;
-	}
-
-	ImGui::Spacing();
-
-	// Dropout settings
+	ImGui::InputInt("Batch Size", &HyperParameters::batchSize);
+	ImGui::InputInt("Epochs", &HyperParameters::epochs);
+	ImGui::InputDouble("Momentum", &HyperParameters::momentum, 0.1, 0.2, "%.1f");
+	ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay,0.001, 0.002, "%.3f");
 	ImGui::Text("Dropout");
 	ImGui::Checkbox("Use Dropout", &HyperParameters::useDropoutRate);
-	if (HyperParameters::useDropoutRate) {
+	if (HyperParameters::useDropoutRate)
+	{
 		ImGui::SliderFloat("Dropout Rate", &HyperParameters::dropoutRate, 0.0f, 1.0f);
-
-		if (HyperParameters::dropoutRate < 0)
-		{
-			HyperParameters::dropoutRate = 0;
-		}
 	}
 
 	// Reset button action
@@ -601,60 +618,103 @@ void HyperParameterWindow(bool* p_open) {
 		HyperParameters::ResetHyperParameters();
 	}
 
+	if (HyperParameters::batchSize < 0)
+	{
+		HyperParameters::batchSize = 0;
+	}
+
+	if (HyperParameters::learningRate < 0)
+	{
+		HyperParameters::learningRate = 0;
+	}
+	
+	if (HyperParameters::dropoutRate < 0)
+	{
+		HyperParameters::dropoutRate = 0;
+	}
+
 	ImGui::End();
 }
 
-float circleSizeValue = 15.0f;
+
+float minCircleSizeValue = 5.0f;
+float maxCircleSizeValue = 50.0f;
 float circleThicknessValue = 1.0f;
 
-void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network)
-{
-	ImGui::Begin("Neural Network Visualization", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
+	if (!ImGui::Begin("Neural Network Visualization", p_open)) {
+		ImGui::End();
+		return;
+	}
 
-	const ImVec2 windowSize = ImGui::GetWindowSize(); // Size of the current window
+	const ImVec2 windowSize = ImGui::GetWindowSize();
+	const ImVec2 windowPos = ImGui::GetWindowPos();
+	const float windowScrollY = ImGui::GetScrollY();
 
-	const float spacingX = windowSize.x / (2 * network.layers.size() + 1);
-	const float spacingY = windowSize.y / (network.layers.size() + 1);
+	// Calculate maximum allowable circle size based on the window and network size
+	const float maxCircleSize = std::min(std::min(windowSize.x, windowSize.y) / (network.layers.size() * 2.0f), maxCircleSizeValue);
 
+	// Calculate spacing between layers to fit them within the window
+	const float layerSpacing = windowSize.x / (network.layers.size() + 1);
+
+	// Loop through layers
 	for (int layerIndex = 0; layerIndex < network.layers.size(); ++layerIndex) {
 		const Layer& layer = network.layers[layerIndex];
-		const float layerPosX = (layerIndex + 1) * spacingX;
+		const float layerPosX = (layerIndex + 1) * layerSpacing;
 
-		for (int neuronIndex = 0; neuronIndex < layer.numNeurons; ++neuronIndex) {
+		const int numNeurons = layer.numNeurons > 0 ? layer.numNeurons : 1; // Ensure at least one neuron is displayed
+
+		// Calculate spacing between neurons within a layer
+		const float neuronSpacing = windowSize.y / (numNeurons + 1);
+
+		// Loop through neurons in the layer
+		for (int neuronIndex = 0; neuronIndex < numNeurons; ++neuronIndex) {
+			const float circleSize = std::min(maxCircleSize, neuronSpacing * 0.5f);
+
+			// Calculate position for each neuron
 			const float posX = layerPosX;
-			const float posY = (neuronIndex + 1) * spacingY;
+			const float posY = (neuronIndex + 1) * neuronSpacing;
 
-			ImGui::SetCursorPos(ImVec2(posX - circleSizeValue, posY - circleSizeValue));
+			ImGui::SetCursorPos(ImVec2(posX - circleSize, posY - circleSize));
 			ImGui::BeginGroup();
 			ImGui::PushID(layerIndex * 1000 + neuronIndex);
 
 			ImGui::GetWindowDrawList()->AddCircle(
-				ImVec2(circleSizeValue + ImGui::GetCursorScreenPos().x, circleSizeValue + ImGui::GetCursorScreenPos().y),
-				circleSizeValue,
+				ImVec2(ImGui::GetCursorScreenPos().x + circleSize, ImGui::GetCursorScreenPos().y + circleSize),
+				circleSize,
 				ImColor(255, 255, 255),
 				12,
-				circleThicknessValue
+				1.0f // Circle thickness
 			);
 
-			ImGui::SetCursorPos(ImVec2(posX - circleSizeValue / 2.0f, posY - circleSizeValue / 2.0f));
-			ImGui::Text("%.1f", layer.biases[neuronIndex]);
+			char buffer[32];
+			std::snprintf(buffer, sizeof(buffer), "%.1f", neuronIndex < layer.numNeurons ? layer.biases[neuronIndex] : 0.0f);
+			const ImVec2 textSize = ImGui::CalcTextSize(buffer);
+			const ImVec2 textPos = ImVec2(posX - textSize.x * 0.5f, posY - textSize.y * 0.5f);
+			ImGui::SetCursorPos(textPos);
+			ImGui::Text("%s", buffer);
 
 			ImGui::PopID();
 			ImGui::EndGroup();
 
 			if (layerIndex > 0) {
-				const float prevLayerPosX = layerIndex * spacingX - spacingX / 2.0f;
-				const int numNeuronsPrevLayer = network.layers[layerIndex - 1].numNeurons;
-				const float prevSpacingY = windowSize.y / (numNeuronsPrevLayer + 1);
+				const float prevLayerPosX = layerPosX - layerSpacing;
+				const int numNeuronsPrevLayer = network.layers[layerIndex - 1].numNeurons > 0 ? network.layers[layerIndex - 1].numNeurons : 1;
+
+				const float neuronSpacingPrevLayer = windowSize.y / (numNeuronsPrevLayer + 1);
+				const float prevCircleSize = std::min(maxCircleSize, neuronSpacingPrevLayer * 0.5f);
 
 				for (int prevNeuronIndex = 0; prevNeuronIndex < numNeuronsPrevLayer; ++prevNeuronIndex) {
-					const float prevPosY = (prevNeuronIndex + 1) * prevSpacingY;
+					const float prevPosY = (prevNeuronIndex + 1) * neuronSpacingPrevLayer;
+
+					ImVec2 lineStart = ImVec2(prevLayerPosX + prevCircleSize + windowPos.x, prevPosY + windowPos.y - windowScrollY);
+					ImVec2 lineEnd = ImVec2(posX - circleSize + windowPos.x, posY + windowPos.y - windowScrollY);
 
 					ImGui::GetWindowDrawList()->AddLine(
-						ImVec2(prevLayerPosX + spacingX, prevPosY),
-						ImVec2(layerPosX, posY),
+						lineStart,
+						lineEnd,
 						ImColor(255, 255, 255),
-						circleThicknessValue
+						1.0f // Line thickness
 					);
 				}
 			}
@@ -665,12 +725,13 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network)
 
 	ImGui::Begin("Visual Customization");
 
-	ImGui::SliderFloat("Circle Size", &circleSizeValue, 10.0f, 50.0f);
+	ImGui::SliderFloat("Min Circle Size", &minCircleSizeValue, 1.0f, 10.0f);
+	ImGui::SliderFloat("Max Circle Size", &maxCircleSizeValue, 10.0f, 100.0f);
 	ImGui::SliderFloat("Circle Thickness", &circleThicknessValue, 1.0f, 5.0f);
+
 
 	ImGui::End();
 }
-
 
 
 void DefaultWindows()
@@ -705,7 +766,7 @@ int main(int, char**)
 
 	// Create window with Vulkan context
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+Vulkan example", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1280, 720, "Mike's Neural Network Thing", nullptr, nullptr);
 	if (!glfwVulkanSupported())
 	{
 		printf("GLFW: Vulkan Not Supported\n");

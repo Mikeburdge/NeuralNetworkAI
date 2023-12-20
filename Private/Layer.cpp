@@ -17,7 +17,8 @@ std::vector<double> Layer:: computeOutput(const std::vector<double>& input) cons
 		output[i] += biases[i];
 
 		
-		output[i] = Activation::CalculateActivation(activation, output[i]); // Using sigmoid activation here, you can switch to other functions.
+		 output[i] = Activation::CalculateActivation(activation, output[i]);
+		
 	}
 	return output;
 }
