@@ -24,11 +24,12 @@ private:
 
 public:
 
-	void InitNeuralNetwork(ActivationType inActivation, int inputLayerSize, std::vector<double> inputLayerBiases,
-	                       std::vector<std::vector<double>> inputLayerWeights, int hiddenLayers, int hiddenLayersSizes,
+	void InitNeuralNetwork(ActivationType inActivation, int inputLayerSize, const std::vector<double>& inputLayerBiases,
+	                       const std::vector<std::vector<double>>& inputLayerWeights, int hiddenLayers, int hiddenLayersSizes,
 	                       std::vector<std::vector<double>> hiddenLayerBiases,
 	                       std::vector<std::vector<std::vector<double>>> hiddenLayerWeights, int outputLayerSize,
-	                       std::vector<double> outputLayerBiases, std::vector<std::vector<double>> outputLayerWeights);
+	                       const std::vector<double>& outputLayerBiases, const std::vector<std::vector<double>>&
+	                       outputLayerWeights);
 
 	NeuralNetwork& GetNeuralNetwork();
 };

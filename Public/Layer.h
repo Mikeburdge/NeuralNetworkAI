@@ -17,9 +17,6 @@ public:
 	std::vector<std::vector<double>> weights; // Weights matrix.
 	std::vector<double> biases; // Biases vector.
 
-
-	Layer() = default;
-
 	Layer(const ActivationType inActivation, const int inNum_neurons, const std::vector<std::vector<double>>& inWeights, const std::vector<double>& inBiases)
 		: activation(inActivation),
 		  numNeurons(inNum_neurons),
@@ -27,6 +24,10 @@ public:
 		  biases(inBiases)
 	{
 		neurons.reserve(numNeurons);
+		for (int i = 0; i < numNeurons; i++)
+		{
+			neurons.emplace_back(1.0);
+		}
 	}
 
 	/// <summary>
@@ -34,7 +35,7 @@ public:
 	/// </summary>
 	/// <param name="input">Input data to the layer.</param>
 	/// <returns>Output data from the layer.</returns>
-	std::vector<double> computeOutput(const std::vector<double>& input) const;
+	std::vector<double> computeOutput(const std::vector<double>& input);
 
 	/// <summary>
 	/// Function to update weights during backpropagation.

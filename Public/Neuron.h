@@ -3,7 +3,7 @@ class Neuron
 {
 public:
 
-	Neuron() = default;
+	explicit Neuron(double inActivationValue): ActivationValue(inActivationValue){}
 
 	double ActivationValue;
 

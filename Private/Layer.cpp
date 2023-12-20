@@ -5,7 +5,7 @@
 #include "vector"
 
 
-std::vector<double> Layer:: computeOutput(const std::vector<double>& input) const
+std::vector<double> Layer:: computeOutput(const std::vector<double>& input)
 {
 	// Perform matrix multiplication of weights with the input
 	std::vector<double> output(numNeurons, 0.0);
@@ -17,7 +17,7 @@ std::vector<double> Layer:: computeOutput(const std::vector<double>& input) cons
 		output[i] += biases[i];
 
 		
-		 output[i] = Activation::CalculateActivation(activation, output[i]);
+		neurons[i].ActivationValue = output[i] = Activation::CalculateActivation(activation, output[i]); // Using sigmoid activation here, you can switch to other functions.
 		
 	}
 	return output;

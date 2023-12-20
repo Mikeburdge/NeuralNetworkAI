@@ -398,10 +398,13 @@ void WeightsAndBiasesWindow(bool* p_open, NeuralNetwork& network)
 		// Display biases for the current layer
 		ImGui::Text("Biases:");
 		for (size_t neuronIndex = 0; neuronIndex < layer.biases.size(); ++neuronIndex) {
-			ImGui::InputDouble(
+
+			float biasAsFloat = static_cast<float>(network.layers[layerIndex].biases[neuronIndex]);
+			ImGui::SliderFloat(
 				("Bias##" + std::to_string(layerIndex) + "_" + std::to_string(neuronIndex)).c_str(),
-				&network.layers[layerIndex].biases[neuronIndex]
+				&biasAsFloat,-2.0f, 2.0f,"%.1f"
 			);
+			network.layers[layerIndex].biases[neuronIndex] = static_cast<double>(biasAsFloat);
 		}
 
 		// Display weights for the current layer
@@ -409,10 +412,14 @@ void WeightsAndBiasesWindow(bool* p_open, NeuralNetwork& network)
 		if (!layer.weights.empty()) {
 			for (size_t neuronIndex = 0; neuronIndex < layer.weights.size(); ++neuronIndex) {
 				for (size_t weightIndex = 0; weightIndex < layer.weights[neuronIndex].size(); ++weightIndex) {
-					ImGui::InputDouble(
+					
+					float weightAsFloat = static_cast<float>(network.layers[layerIndex].weights[neuronIndex][weightIndex]);
+
+					ImGui::SliderFloat(
 						("Weight##" + std::to_string(layerIndex) + "_" + std::to_string(neuronIndex) + "_" + std::to_string(weightIndex)).c_str(),
-						&network.layers[layerIndex].weights[neuronIndex][weightIndex]
+						&weightAsFloat,-0.01f, 0.01f,"%.3f"
 					);
+					network.layers[layerIndex].weights[neuronIndex][weightIndex] = static_cast<double>(weightAsFloat);
 				}
 			}
 		}
@@ -474,8 +481,8 @@ void NeuralNetworkCustomisationWindow(bool* p_open)
 	const char* elem_name = (elem >= 0 && elem < Activation_Count) ? elems_names[elem] : "Unknown";
 	ImGui::SliderInt("Activation Function", &elem, 0, Activation_Count - 1, elem_name);
 
-	constexpr double defaultBias = 1;
-	constexpr double defaultWeights = 1;
+	constexpr double defaultBias = 0.1;
+	constexpr double defaultWeights = 0;
 
 	// Reset button action
 	if (ImGui::Button("Create NeuralNetwork")) {
@@ -688,7 +695,7 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 			);
 
 			char buffer[32];
-			std::snprintf(buffer, sizeof(buffer), "%.1f", neuronIndex < layer.numNeurons ? layer.biases[neuronIndex] : 0.0f);
+			std::snprintf(buffer, sizeof(buffer), "%.1f", layer.neurons[neuronIndex].ActivationValue);
 			const ImVec2 textSize = ImGui::CalcTextSize(buffer);
 			const ImVec2 textPos = ImVec2(posX - textSize.x * 0.5f, posY - textSize.y * 0.5f);
 			ImGui::SetCursorPos(textPos);

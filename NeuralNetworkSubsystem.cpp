@@ -1,45 +1,31 @@
 #include "NeuralNetworkSubsystem.h"
 
-#include "utility"
-
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType inActivation,
-												const int inputLayerSize, std::vector<double> inputLayerBiases,
-												std::vector<std::vector<double>> inputLayerWeights,
-												int hiddenLayers, int hiddenLayersSizes,
-												std::vector<std::vector<double>> hiddenLayerBiases,
-												std::vector<std::vector<std::vector<double>>> hiddenLayerWeights,
-												int outputLayerSize, std::vector<double> outputLayerBiases,
-												std::vector<std::vector<double>> outputLayerWeights)
+                                               const int inputLayerSize, const std::vector<double>& inputLayerBiases,
+                                               const std::vector<std::vector<double>>& inputLayerWeights,
+                                               int hiddenLayers, int hiddenLayersSizes,
+                                               std::vector<std::vector<double>> hiddenLayerBiases,
+                                               std::vector<std::vector<std::vector<double>>> hiddenLayerWeights,
+                                               int outputLayerSize, const std::vector<double>& outputLayerBiases,
+                                               const std::vector<std::vector<double>>& outputLayerWeights)
 {
 	CurrentNeuralNetwork = NeuralNetwork();
 
 	// Reserve the input, output and hidden layers
 	CurrentNeuralNetwork.layers.reserve(hiddenLayers + 2);
 
-	Layer inputLayer;
-	inputLayer.activation = inActivation;
-	inputLayer.numNeurons = inputLayerSize;
-	inputLayer.biases = std::move(inputLayerBiases);
-	inputLayer.weights = std::move(inputLayerWeights);
+	Layer inputLayer(inActivation, inputLayerSize, inputLayerWeights, inputLayerBiases);
 
 	CurrentNeuralNetwork.AddLayer(inputLayer);
 
 	for (int i = 0; i < hiddenLayers; i++)
 	{
-		Layer hiddenLayer;
-		hiddenLayer.activation = inActivation;
-		hiddenLayer.numNeurons = hiddenLayersSizes;
-		hiddenLayer.biases = hiddenLayerBiases[i];
-		hiddenLayer.weights = hiddenLayerWeights[i];
+		Layer hiddenLayer(inActivation, hiddenLayersSizes, hiddenLayerWeights[i], hiddenLayerBiases[i]);
 
 		CurrentNeuralNetwork.AddLayer(hiddenLayer);
 	}
 
-	Layer outputLayer;
-	outputLayer.activation = inActivation;
-	outputLayer.numNeurons = outputLayerSize;
-	outputLayer.biases = std::move(outputLayerBiases);
-	outputLayer.weights = std::move(outputLayerWeights);
+	Layer outputLayer(inActivation, outputLayerSize, outputLayerWeights, outputLayerBiases);
 	
 	CurrentNeuralNetwork.AddLayer(outputLayer);
 }
