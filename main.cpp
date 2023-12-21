@@ -776,7 +776,7 @@ int main(int, char**)
 
 	// Create window with Vulkan context
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Mike's Neural Network Thing", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "Mike's Neural Network Thing", nullptr, nullptr);
 	if (!glfwVulkanSupported())
 	{
 		printf("GLFW: Vulkan Not Supported\n");
