@@ -54,6 +54,8 @@ int inputLayerSize = HyperParameters::defaultInputLayerSize;
 int numHiddenLayers = HyperParameters::defaultNumHiddenLayers;
 int hiddenLayerSize = HyperParameters::defaultHiddenLayerSize;
 int outputLayerSize = HyperParameters::defaultOutputLayerSize;
+int neuronDisplayLimit = 10;
+bool shouldDrawLines = true;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -640,7 +642,7 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 		const Layer& layer = network.layers[layerIndex];
 		const float layerPosX = (layerIndex + 1) * layerSpacing;
 
-		const int numNeurons = layer.numNeurons > 0 ? layer.numNeurons : 1; // Ensure at least one neuron is displayed
+		const int numNeurons = layer.numNeurons > neuronDisplayLimit ? layer.numNeurons : 1; // Ensure that we only display a certain number of neurons
 
 		// Calculate spacing between neurons within a layer
 		const float neuronSpacing = windowSize.y / (numNeurons + 1);
@@ -675,7 +677,7 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 			ImGui::PopID();
 			ImGui::EndGroup();
 
-			if (layerIndex > 0) {
+			if (layerIndex > 0 && shouldDrawLines) {
 				const float prevLayerPosX = layerPosX - layerSpacing;
 				const int numNeuronsPrevLayer = network.layers[layerIndex - 1].numNeurons > 0 ? network.layers[layerIndex - 1].numNeurons : 1;
 
@@ -706,6 +708,8 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 	ImGui::SliderFloat("Min Circle Size", &minCircleSizeValue, 1.0f, 10.0f);
 	ImGui::SliderFloat("Max Circle Size", &maxCircleSizeValue, 10.0f, 100.0f);
 	ImGui::SliderFloat("Circle Thickness", &circleThicknessValue, 1.0f, 5.0f);
+	ImGui::SliderInt("Neuron Display Limit", &neuronDisplayLimit, 1.0f, 20);
+	ImGui::Checkbox("Should Draw Lines", &shouldDrawLines);
 
 
 	ImGui::End();
