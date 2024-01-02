@@ -618,6 +618,7 @@ void HyperParameterWindow(bool* p_open) {
 float minCircleSizeValue = 5.0f;
 float maxCircleSizeValue = 50.0f;
 float circleThicknessValue = 1.0f;
+bool drawLineConnections = true;
 
 void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 	if (!ImGui::Begin("Neural Network Visualization", p_open)) {
@@ -675,7 +676,7 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 			ImGui::PopID();
 			ImGui::EndGroup();
 
-			if (layerIndex > 0) {
+			if (layerIndex > 0 && drawLineConnections) {
 				const float prevLayerPosX = layerPosX - layerSpacing;
 				const int numNeuronsPrevLayer = network.layers[layerIndex - 1].numNeurons > 0 ? network.layers[layerIndex - 1].numNeurons : 1;
 
@@ -706,6 +707,7 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 	ImGui::SliderFloat("Min Circle Size", &minCircleSizeValue, 1.0f, 10.0f);
 	ImGui::SliderFloat("Max Circle Size", &maxCircleSizeValue, 10.0f, 100.0f);
 	ImGui::SliderFloat("Circle Thickness", &circleThicknessValue, 1.0f, 5.0f);
+	ImGui::Checkbox("Draw Lines", &drawLineConnections);
 
 
 	ImGui::End();
