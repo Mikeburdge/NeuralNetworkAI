@@ -6,8 +6,8 @@
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
-                                               int hiddenLayers, int hiddenLayersSizes,
-                                               int outputLayerSize)
+                                               const int hiddenLayers, const int hiddenLayersSizes,
+                                               const int outputLayerSize)
 {
 	CurrentNeuralNetwork = NeuralNetwork();
 
@@ -51,9 +51,16 @@ void NeuralNetworkSubsystem::StartNeuralNetwork(const std::vector<double>& input
 
 
 	// Perform forward propagation
-	std::vector<double> output = CurrentNeuralNetwork.ForwardPropagation(inputData);
+	std::vector<double> forwardPropagationData = CurrentNeuralNetwork.ForwardPropagation(inputData);
 
-	// Optionally, perform actions with the output here
+	// Perform back propagation
+
+	const int outputLayerIndex = CurrentNeuralNetwork.layers.size() - 1;
+
+	Layer outputLayer = CurrentNeuralNetwork.layers[outputLayerIndex];
+
+	//Cost::CalculateCost HERE LAST
+
 	// Example: Print or process the output
 
 	// Further actions after the propagation can be added here

@@ -3,7 +3,7 @@ class Neuron
 {
 public:
 
-	explicit Neuron(double inActivationValue): ActivationValue(inActivationValue){}
+	explicit Neuron(const double inActivationValue): ActivationValue(inActivationValue){}
 
 	double ActivationValue;
 

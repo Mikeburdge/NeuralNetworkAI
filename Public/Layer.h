@@ -27,15 +27,15 @@ public:
 		: activation(inActivation), cost(inCost),
 		  numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut)
 	{
-
-
 		// Initialize weights with defaultWeights and biases with defaultBias
-		weights = std::vector<std::vector<double>>(numNeurons, std::vector<double>(inNumNeuronsOut));
-		biases = std::vector<double>(inNumNeurons);
+		weights = std::vector<std::vector<double>>(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer));
+		// this will skip the allocation of biases for the first layer as its an input layer
+		biases = std::vector<double>(numNeuronsOutOfPreviousLayer == 0 ? numNeuronsOutOfPreviousLayer : numNeurons);
 
 		std::random_device rd;
 		std::mt19937 rng(rd());
 
+		InitializeRandomBiases(rng);
 		InitializeRandomWeights(rng);
 
 		neurons.reserve(numNeurons);
@@ -58,6 +58,7 @@ public:
 	/// <param name="errorGradient">The gradient of the error with respect to the output.</param>
 	void adjustWeights(const std::vector<double>& errorGradient);
 
+	void InitializeRandomBiases(std::mt19937& rng);
 	void InitializeRandomWeights(std::mt19937& rng);
 };
 

@@ -33,13 +33,24 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient)
 	for (int i = 0; i < numNeurons; ++i) {
 		for (int j = 0; j < weights[i].size(); ++j)
 		{
-			weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]); // Update weights using the sigmoid derivative
+			weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
 		}
 		biases[i] -= learningRate * errorGradient[i]; // Update biases
 	}
 }
 
-void Layer::InitializeRandomWeights(std::mt19937& rng) {
+void Layer::InitializeRandomBiases(std::mt19937& rng)
+{	std::normal_distribution<double> distribution(0.0, 1.0);
+
+	for (double& bias : biases)
+	{
+		const double randValue = distribution(rng) / sqrt(biases.size());
+		bias = randValue;
+	}
+}
+
+void Layer::InitializeRandomWeights(std::mt19937& rng)
+{
 	std::normal_distribution<double> distribution(0.0, 1.0);
 
 	for (int i = 0; i < numNeurons; ++i) {

@@ -14,7 +14,8 @@ public:
 	Cost() = default;
 
 	// TODO: Finish implementing this. Must make functionality for including a target variable
-	static double CalculateCost(CostType inCost, double x);
+	static double CalculateCost(const CostType inCostType, const std::vector<double>& predicted,
+	                            const std::vector<double>& actual);
 
 	/// <summary>
 	/// Cost calculation function: Mean Squared Error
@@ -22,7 +23,7 @@ public:
 	/// <param name="predicted">Predicted output.</param>
 	/// <param name="actual">Actual output.</param>
 	/// <returns>Calculated mean squared error.</returns>
-	static double meanSquaredError(std::vector<double> predicted, std::vector<double> actual);
+	static double meanSquaredError(const std::vector<double>& predicted, const std::vector<double>& actual);
 
 	/// <summary>
 	/// Cost calculation function: Cross Entropy
@@ -30,6 +31,6 @@ public:
 	/// <param name="predicted">Predicted output.</param>
 	/// <param name="actual">Actual output.</param>
 	/// <returns>Calculated cross entropy.</returns>
-	static double crossEntropy(std::vector<double> predicted, std::vector<double> actual);
+	static double crossEntropy(const std::vector<double>& predicted, const std::vector<double>& actual);
 
 };
