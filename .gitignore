@@ -35,7 +35,8 @@
 *.out
 *.app
 
-.vs/
+# Exclude everything within the .vs directory
+.vs/*
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -61,7 +62,10 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
+
+# Exclude everything within the x64 directory
+x64/*
+
 x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/

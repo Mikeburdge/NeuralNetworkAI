@@ -1,23 +1,23 @@
 #include "Cost.h"
 
-double Cost::CalculateCost(const CostType inCost, const double x)
+double Cost::CalculateCost(const CostType inCostType, const std::vector<double>& predicted,
+                           const std::vector<double>& actual)
 {
-	switch (inCost)
+	switch (inCostType)
 	{
 	case CostType::meanSquaredError:
-
-		break;
+		return meanSquaredError(predicted, actual);
 	case CostType::crossEntropy:
-		break;
+		return crossEntropy(predicted, actual);
 	case cost_Count:
+	default:
 		break;
-	default: ;
 	}
 
-	return x;
+	return 0.0;
 }
 
-double Cost::meanSquaredError(std::vector<double> predicted, std::vector<double> actual)
+double Cost::meanSquaredError(const std::vector<double>& predicted, const std::vector<double>& actual)
 {
 	if (predicted.size() != actual.size()) {
 		// Handle error - Input sizes should match
@@ -31,7 +31,7 @@ double Cost::meanSquaredError(std::vector<double> predicted, std::vector<double>
 }
 
 
-double Cost::crossEntropy(std::vector<double> predicted, std::vector<double> actual)
+double Cost::crossEntropy(const std::vector<double>& predicted, const std::vector<double>& actual)
 {
 	if (predicted.size() != actual.size()) {
 		// Handle error - Input sizes should match

@@ -27,6 +27,7 @@
     <ClInclude Include="Public\NeuralNetwork.h" />
     <ClInclude Include="Public\Neuron.h" />
     <ClInclude Include="SingletonBase.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="backends\imgui_impl_glfw.cpp" />
