@@ -28,6 +28,7 @@
     <ClInclude Include="Public\Neuron.h" />
     <ClInclude Include="SingletonBase.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="VectorMaths.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="backends\imgui_impl_glfw.cpp" />
@@ -37,6 +38,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="libs\ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NeuralNetworkSubsystem.cpp" />
     <ClCompile Include="Private\Activation.cpp" />
@@ -45,6 +47,7 @@
     <ClCompile Include="Private\Layer.cpp" />
     <ClCompile Include="Private\NeuralNetwork.cpp" />
     <ClCompile Include="SingletonBase.cpp" />
+    <ClCompile Include="VectorMaths.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

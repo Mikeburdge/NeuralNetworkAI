@@ -13,6 +13,7 @@
 #include "stb_image.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan.h"
+#include "libs/ImGuiFileDialog/ImGuiFileDialog.h"
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -104,6 +105,30 @@ uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties)
 			return i;
 
 	return 0xFFFFFFFF; // Unable to find memoryType
+}
+
+
+// Function to load a texture from a file and add it to ImFontAtlas
+ImTextureID LoadTextureFromFile(const char* filename, ImGuiIO& io) {
+	int width, height, channels;
+	unsigned char* data = stbi_load(filename, &width, &height, &channels, 0);
+	if (data == nullptr) {
+		// Error handling, return nullptr or handle error accordingly
+		return nullptr;
+	}
+
+	io = ImGui::GetIO();
+	const ImFontAtlas* fontAtlas = io.Fonts;
+	unsigned char* pixels;
+	int texWidth, texHeight;
+	io.Fonts->GetTexDataAsRGBA32(&pixels, &texWidth, &texHeight);
+
+	// Copy loaded image data to the font texture
+	memcpy(pixels, data, width * height * channels);
+
+	const ImTextureID textureID = fontAtlas->TexID;
+	stbi_image_free(data);
+	return textureID;
 }
 
 // Helper function to load an image with common settings and return a MyTextureData with a VkDescriptorSet as a sort of Vulkan pointer
@@ -951,17 +976,43 @@ void NeuralNetworkWindow(bool* p_open, const NeuralNetwork& network) {
 	ImGui::End();
 }
 
+std::string filePathName;
+std::string filePath;
+MyTextureData loadedInputImage;
+
 void NeuralNetworkStartWindow(bool* p_open, NeuralNetwork& network)
 {
 	if (!ImGui::Begin("Neural Network Begin Test", p_open)) {
 		ImGui::End();
 		return;
 	}
-
-	if (ImGui::Button("Upload Image"))
+	if (ImGui::Button("Open File Dialog"))
 	{
-
+		IGFD::FileDialogConfig config;
+		config.path = ".";
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.jpeg", config);
 	}
+
+	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) 
+	{
+		if (ImGuiFileDialog::Instance()->IsOk())
+		{
+			filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+			filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	if (ImGui::Button("Upload Image") && !filePathName.empty())
+	{
+		bool ret = LoadTextureFromFile(filePathName.c_str(), &loadedInputImage);
+		IM_ASSERT(ret);
+	}
+
+	
+
+	//ImGui::Image(loadedInputImage.DS,ImVec2(loadedInputImage.Width, loadedInputImage.Height));
 
 
 
