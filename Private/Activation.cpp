@@ -13,9 +13,9 @@ double Activation::CalculateActivation(const ActivationType inActivation, const 
 		return sigmoidDerivative(x);
 	case ActivationType::ReLU:
 		return ReLU(x);
+	default:
+		return 1.0; // Default return identity for no activation
 	}
-
-	return x;
 }
 
 double Activation::sigmoid(const double x) {

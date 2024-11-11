@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+
 #include "Cost.h"
 #include "NeuralNetwork.h"
 #include "SingletonBase.h"
@@ -7,30 +9,33 @@
 class NeuralNetworkSubsystem : public SingletonBase
 {
 public:
+    static NeuralNetworkSubsystem& GetInstance()
+    {
+        static NeuralNetworkSubsystem instance;
+        return instance;
+    }
 
-	static NeuralNetworkSubsystem& GetInstance() {
-		static NeuralNetworkSubsystem instance;
-		return instance;
-	}
+    NeuralNetworkSubsystem() = default;
 
-	NeuralNetworkSubsystem() = default;
-
-	// Prevent copying and assignment
-	//NeuralNetworkSubsystem(const NeuralNetworkSubsystem&) = delete;
-	void operator=(const NeuralNetworkSubsystem&) = delete;
+    // Prevent copying and assignment
+    //NeuralNetworkSubsystem(const NeuralNetworkSubsystem&) = delete;
+    void operator=(const NeuralNetworkSubsystem&) = delete;
 
 private:
-
-	NeuralNetwork CurrentNeuralNetwork;
+    NeuralNetwork CurrentNeuralNetwork;
 
 public:
+    void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost, const int inputLayerSize,
+                           int hiddenLayers,
+                           int hiddenLayersSizes,
+                           int outputLayerSize);
 
-	void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost, const int inputLayerSize,
-	                       int
-	                       hiddenLayers,
-	                       int hiddenLayersSizes,
-	                       int outputLayerSize);
+    NeuralNetwork& GetNeuralNetwork();
+    void StartNeuralNetwork(const std::vector<double>& inputData, const std::vector<double>& targetOutput);
 
-	NeuralNetwork& GetNeuralNetwork();
-	void StartNeuralNetwork(const std::vector<double>& inputData);
+    void SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback);
+    
+private:
+
+    std::function<void(const NeuralNetwork&)> visualizationCallback;
 };

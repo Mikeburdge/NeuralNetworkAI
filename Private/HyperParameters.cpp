@@ -2,6 +2,8 @@
 
 #include "HyperParameters.h"
 
+#include "Activation.h"
+
 int HyperParameters::defaultInputLayerSize = 2;
 int HyperParameters::defaultNumHiddenLayers = 2;
 
@@ -25,6 +27,11 @@ double HyperParameters::momentum = defaultMomentum;
 double HyperParameters::weightDecay = defaultWeightDecay;
 bool HyperParameters::useDropoutRate = defaultUseDropoutRate;
 float HyperParameters::dropoutRate = defaultDropoutRate;
+
+CostType HyperParameters::cost = cost_Count;
+ActivationType HyperParameters::activationType = Activation_Count;
+
+int HyperParameters::visualizationUpdateInterval = 5;
 
 void HyperParameters::ResetHyperParameters()
 {

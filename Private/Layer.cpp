@@ -5,11 +5,16 @@
 #include "Activation.h"
 #include "HyperParameters.h"
 #include "vector"
+#include "../Logging/Logger.h"
+
 #pragma optimize("", off)
 
-std::vector<double> Layer::computeOutput(const std::vector<double>& input)
+using namespace std;
+
+vector<double> Layer::computeOutput(const vector<double>& input)
 {
-	std::vector<double> output(numNeurons, 0.0);
+    PROFILE_LOG;
+	vector<double> output(numNeurons, 0.0);
 
 	for (int neuronsIn = 0; neuronsIn < numNeurons; ++neuronsIn) {
 		double neuronOutput = biases[neuronsIn]; // Start with the bias
@@ -25,8 +30,15 @@ std::vector<double> Layer::computeOutput(const std::vector<double>& input)
 	return output;
 }
 
-void Layer::adjustWeights(const std::vector<double>& errorGradient)
+void Layer::adjustWeights(const vector<double>& errorGradient)
 {
+    PROFILE_LOG;
+
+    if (isInputLayer)
+    {
+	    return;
+    }
+	
 	const double learningRate = HyperParameters::learningRate;
 
 	// Update weights based on the error gradient
@@ -35,12 +47,19 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient)
 		{
 			weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
 		}
+		
+		string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";
+		LOG(LogLevel::DEBUG, logMessage);
+
 		biases[i] -= learningRate * errorGradient[i]; // Update biases
 	}
 }
 
-void Layer::InitializeRandomBiases(std::mt19937& rng)
-{	std::normal_distribution<double> distribution(0.0, 1.0);
+void Layer::InitializeRandomBiases(mt19937& rng)
+{	
+    PROFILE_LOG;
+	
+	normal_distribution<double> distribution(0.0, 1.0);
 
 	for (double& bias : biases)
 	{
@@ -49,9 +68,10 @@ void Layer::InitializeRandomBiases(std::mt19937& rng)
 	}
 }
 
-void Layer::InitializeRandomWeights(std::mt19937& rng)
+void Layer::InitializeRandomWeights(mt19937& rng)
 {
-	std::normal_distribution<double> distribution(0.0, 1.0);
+    PROFILE_LOG;
+	normal_distribution<double> distribution(0.0, 1.0);
 
 	for (int i = 0; i < numNeurons; ++i) {
 		for (int j = 0; j < numNeuronsOutOfPreviousLayer; ++j) {
@@ -61,6 +81,25 @@ void Layer::InitializeRandomWeights(std::mt19937& rng)
 	}
 }
 
+vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentLayersErrorGradient, const vector<Neuron>& previousLayerNeurons) const
+{
+    PROFILE_LOG;
+	vector<double> previousLayerErrorGradient(numNeuronsOutOfPreviousLayer, 0.0);
+
+	for (int prevNeuronIdx = 0; prevNeuronIdx < numNeuronsOutOfPreviousLayer; ++prevNeuronIdx)
+	{
+		double error = 0.0f;
+
+		for (int neuronIdx = 0; neuronIdx < numNeurons; ++neuronIdx)
+		{
+			error += weights[neuronIdx][prevNeuronIdx] * currentLayersErrorGradient[neuronIdx];
+		}
+
+		previousLayerErrorGradient[prevNeuronIdx] = error * Activation::CalculateActivation(activation, previousLayerNeurons[prevNeuronIdx].ActivationValue);
+	}
+
+	return previousLayerErrorGradient;
+}
 
 
 #pragma optimize("", on)

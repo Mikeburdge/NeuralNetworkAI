@@ -30,7 +30,7 @@ public:
 	/// Function to adjust weights based on errors during training.
 	/// </summary>
 	/// <param name="expectedOutput">The expected output from the network.</param>
-	void BackwardPropagation(std::vector<double> expectedOutput);
+	void BackwardPropagation(const std::vector<double>& costGradient);
 
 };
 

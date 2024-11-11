@@ -1,0 +1,60 @@
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomBiases
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomWeights
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering NeuralNetwork::AddLayer
+[2024-11-10 20:33:09] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomBiases
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomWeights
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering NeuralNetwork::AddLayer
+[2024-11-10 20:33:09] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomBiases
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomWeights
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering NeuralNetwork::AddLayer
+[2024-11-10 20:33:09] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomBiases
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering Layer::InitializeRandomWeights
+[2024-11-10 20:33:09] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2024-11-10 20:33:09] [DEBUG] Entering NeuralNetwork::AddLayer
+[2024-11-10 20:33:09] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:919 - NeuralNetworkWindow] Rendering layer: 0
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:924 - NeuralNetworkWindow] Number of neurons in layer 0: 2
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:930 - NeuralNetworkWindow] Neuron spacing for layer 0: 220.666672
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:935 - NeuralNetworkWindow] Rendering neuron: 0 in layer: 0
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:941 - NeuralNetworkWindow] Neuron position - X: 298.200012, Y: 220.666672
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:948 - NeuralNetworkWindow] Neuron activation value: 1.000000
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:935 - NeuralNetworkWindow] Rendering neuron: 1 in layer: 0
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:941 - NeuralNetworkWindow] Neuron position - X: 298.200012, Y: 441.333344
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:948 - NeuralNetworkWindow] Neuron activation value: 1.000000
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:919 - NeuralNetworkWindow] Rendering layer: 1
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:924 - NeuralNetworkWindow] Number of neurons in layer 1: 5
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:930 - NeuralNetworkWindow] Neuron spacing for layer 1: 110.333336
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:935 - NeuralNetworkWindow] Rendering neuron: 0 in layer: 1
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:941 - NeuralNetworkWindow] Neuron position - X: 596.400024, Y: 110.333336
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:948 - NeuralNetworkWindow] Neuron activation value: 1.000000
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:972 - NeuralNetworkWindow] Rendering connections from previous layer to current neuron
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:978 - NeuralNetworkWindow] Number of neurons in previous layer: 2
+
+[2024-11-10 20:33:09] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\main.cpp:984 - NeuralNetworkWindow] Rendering connection from previous neuron: 0 to current neuron: 0
+

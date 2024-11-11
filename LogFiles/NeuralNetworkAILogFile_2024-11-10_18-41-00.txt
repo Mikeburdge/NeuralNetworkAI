@@ -1,0 +1,1068 @@
+[2024-11-10 19:07:48] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:07:48] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:07:52] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:07:52] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:07:52] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:07:52] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:07:52] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:07:52] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:07:52] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:08:56] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:08:56] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:08:56] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:08:56] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:08:56] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:08:56] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:08:56] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:09:59] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:09:59] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:00] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:00] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:01] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:01] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:02] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:02] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:03] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:03] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:04] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:04] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:05] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:05] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (2 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (3 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (5 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:06] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:06] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:07] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:07] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:08] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (1 ms)
+[2024-11-10 19:10:08] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (2 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering NeuralNetworkSubsystem::StartNeuralNetwork
+[2024-11-10 19:10:13] [DEBUG] Entering NeuralNetwork::ForwardPropagation
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::computeOutput
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::computeOutput (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Exiting NeuralNetwork::ForwardPropagation (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering NeuralNetwork::BackwardPropagation
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:13] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 2 through neurons
+
+[2024-11-10 19:10:13] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 1 of 2 through neurons
+
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:13] [DEBUG] [Z:\Tower Repos\NeuralNetworkAI\Private\Layer.cpp:52 - adjustWeights] Iteration 0 of 1 through neurons
+
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::CalculatePreviousLayerError
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::CalculatePreviousLayerError (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Entering Layer::adjustWeights
+[2024-11-10 19:10:13] [DEBUG] Exiting Layer::adjustWeights (0 ms)
+[2024-11-10 19:10:13] [DEBUG] Exiting NeuralNetwork::BackwardPropagation (2 ms)
+[2024-11-10 19:10:13] [DEBUG] Exiting NeuralNetworkSubsystem::StartNeuralNetwork (3 ms)

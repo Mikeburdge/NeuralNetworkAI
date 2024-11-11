@@ -33,4 +33,5 @@ public:
 	/// <returns>Calculated cross entropy.</returns>
 	static double crossEntropy(const std::vector<double>& predicted, const std::vector<double>& actual);
 
+	static std::vector<double> CalculateCostDerivative(CostType inCostType, const std::vector<double>& predicted, const std::vector<double>& actual);
 };

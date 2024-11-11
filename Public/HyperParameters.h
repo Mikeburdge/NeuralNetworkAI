@@ -1,4 +1,6 @@
 #pragma once
+#include "Activation.h"
+#include "Cost.h"
 
 class HyperParameters {
 public:
@@ -25,6 +27,10 @@ public:
 	static double weightDecay; // Strength of weight decay (if using L2 regularization).
 	static bool useDropoutRate;
 	static float dropoutRate; // Dropout rate (if implementing dropout regularization).
+
+	static CostType cost;
+	static ActivationType activationType;
+	static int visualizationUpdateInterval;
 
 	static void ResetHyperParameters();
 

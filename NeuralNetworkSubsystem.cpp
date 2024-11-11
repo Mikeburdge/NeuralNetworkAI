@@ -1,67 +1,100 @@
 #include "NeuralNetworkSubsystem.h"
 
+#include <iostream>
 #include <utility>
+#include <vulkan/vulkan_core.h>
 
 #include "Cost.h"
+#include "HyperParameters.h"
+#include "Logging/Logger.h"
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
                                                const int hiddenLayers, const int hiddenLayersSizes,
                                                const int outputLayerSize)
 {
-	CurrentNeuralNetwork = NeuralNetwork();
+    CurrentNeuralNetwork = NeuralNetwork();
 
-	// Reserve the input, output and hidden layers
-	CurrentNeuralNetwork.layers.reserve(hiddenLayers + 2);
+    HyperParameters::cost = inCost;
+    HyperParameters::activationType = inActivation;
 
-
-	// For now as every hidden layer has the same number of neurons we can just pass the hiddenLayersSizes in as the out neurons
-	const Layer inputLayer(inActivation, inCost, inputLayerSize, 0);
-
-	CurrentNeuralNetwork.AddLayer(inputLayer);
+    // Reserve the input, output and hidden layers
+    CurrentNeuralNetwork.layers.reserve(hiddenLayers + 2);
 
 
-	for (int i = 0; i < hiddenLayers; i++)
-	{
-		int neuronsOut;
-		if (i == 0)
-		{
-			neuronsOut = inputLayerSize; // Nodes coming out of the last layer
-		}
-		else
-		{
-			neuronsOut = hiddenLayersSizes;
-		}
-		const Layer hiddenLayer(inActivation, inCost, hiddenLayersSizes, neuronsOut);
-		
-		CurrentNeuralNetwork.AddLayer(hiddenLayer);
-	}
+    // For now as every hidden layer has the same number of neurons we can just pass the hiddenLayersSizes in as the out neurons
+    const Layer inputLayer(inActivation, inCost, inputLayerSize, 0);
 
-	const Layer outputLayer(inActivation, inCost, outputLayerSize, hiddenLayersSizes);
-	
-	CurrentNeuralNetwork.AddLayer(outputLayer);
+    CurrentNeuralNetwork.AddLayer(inputLayer);
+
+
+    for (int i = 0; i < hiddenLayers; i++)
+    {
+        int neuronsOut;
+        if (i == 0)
+        {
+            neuronsOut = inputLayerSize; // Nodes coming out of the last layer
+        }
+        else
+        {
+            neuronsOut = hiddenLayersSizes;
+        }
+        const Layer hiddenLayer(inActivation, inCost, hiddenLayersSizes, neuronsOut);
+
+        CurrentNeuralNetwork.AddLayer(hiddenLayer);
+    }
+
+    const Layer outputLayer(inActivation, inCost, outputLayerSize, hiddenLayersSizes);
+
+    CurrentNeuralNetwork.AddLayer(outputLayer);
 }
 
 NeuralNetwork& NeuralNetworkSubsystem::GetNeuralNetwork()
 {
-	return CurrentNeuralNetwork;
+    return CurrentNeuralNetwork;
 }
 
-void NeuralNetworkSubsystem::StartNeuralNetwork(const std::vector<double>& inputData) {
+void NeuralNetworkSubsystem::StartNeuralNetwork(const std::vector<double>& inputData,
+                                                const std::vector<double>& targetOutput)
+{
+    PROFILE_LOG;
+    NeuralNetwork& network = GetNeuralNetwork();
 
+    const CostType currentCost = HyperParameters::cost;
 
-	// Perform forward propagation
-	std::vector<double> forwardPropagationData = CurrentNeuralNetwork.ForwardPropagation(inputData);
+    for (int epoch = 0; epoch < HyperParameters::epochs; ++epoch)
+    {
+        // Perform forward propagation
+        std::vector<double> predictions = network.ForwardPropagation(inputData);
 
-	// Perform back propagation
+        // Calculate Cost and Log Progress
+        double cost = Cost::CalculateCost(currentCost, predictions, targetOutput);
 
-	const int outputLayerIndex = CurrentNeuralNetwork.layers.size() - 1;
+        std::cout << "Epoch " << epoch << " - Cost: " << cost << '\n';
 
-	Layer outputLayer = CurrentNeuralNetwork.layers[outputLayerIndex];
+        // Calculate Error Gradient for Backpropogation
+        std::vector<double> costGradient = Cost::CalculateCostDerivative(currentCost, predictions, targetOutput);
 
-	//Cost::CalculateCost HERE LAST
+        // Perform Backwards Propagation
+        network.BackwardPropagation(costGradient);
 
-	// Example: Print or process the output
+        // if (epoch % ::HyperParameters::visualizationUpdateInterval == 0 &&  visualizationCallback)
+        {
+            visualizationCallback(CurrentNeuralNetwork);
+        }
+    }
 
-	// Further actions after the propagation can be added here
+    // const int outputLayerIndex = network.layers.size() - 1;
+    //
+    // Layer outputLayer = CurrentNeuralNetwork.layers[outputLayerIndex];
+    //Cost::CalculateCost HERE LAST
+
+    // Example: Print or process the output
+
+    // Further actions after the propagation can be added here
+}
+
+void NeuralNetworkSubsystem::SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback)
+{
+    visualizationCallback = std::move(callback);
 }

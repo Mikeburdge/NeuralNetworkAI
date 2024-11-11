@@ -1,5 +1,7 @@
 #include "Cost.h"
 
+#include "HyperParameters.h"
+
 double Cost::CalculateCost(const CostType inCostType, const std::vector<double>& predicted,
                            const std::vector<double>& actual)
 {
@@ -42,4 +44,29 @@ double Cost::crossEntropy(const std::vector<double>& predicted, const std::vecto
 		error += actual[i] * log(predicted[i]) + (1 - actual[i]) * log(1 - predicted[i]); // Calculate cross-entropy
 	}
 	return -error / predicted.size(); // Return negative of the calculated cross-entropy
+}
+
+std::vector<double> Cost::CalculateCostDerivative(const CostType inCostType, const std::vector<double>& predicted, const std::vector<double>& actual)
+{
+	std::vector<double> costGradient(predicted.size());
+
+	for (size_t i = 0; i < predicted.size(); ++i)
+	{
+		switch (inCostType) {
+		case CostType::meanSquaredError:
+			// MSE Derivative: predicted - actual
+			costGradient[i] = predicted[i] - actual[i];
+			break;
+		case CostType::crossEntropy:
+			// Cross-Entropy Derivative: assuming sigmoid output layer
+			costGradient[i] = predicted[i] - actual[i];
+			// If I'm going to use softmax then I'll need to use a different approach here. 
+			break;
+		case cost_Count:
+			costGradient[i] = 0.0;
+			break;
+		}
+	}
+		
+	return costGradient;
 }
