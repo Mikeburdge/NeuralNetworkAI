@@ -5,10 +5,6 @@
 #include "imgui_impl_vulkan.h"
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
-#include "Cost.h"
-#include "HyperParameters.h"
-#include "NeuralNetwork.h"
-#include "NeuralNetworkSubsystem.h"
 #include "string"
 #include "stb_image.h"
 #include "VisualisationUtility.h"

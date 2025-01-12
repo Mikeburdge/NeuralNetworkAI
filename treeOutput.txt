@@ -1,0 +1,355 @@
+Folder PATH listing for volume Code Cruncherz
+Volume serial number is 56A0-45E2
+Z:.
+¦   .gitattributes
+¦   .gitignore
+¦   CombineCode - Copy.bat
+¦   CombineCode.bat
+¦   combined_code.txt
+¦   imgui.ini
+¦   main.cpp
+¦   NeuralNetworkAI.sln
+¦   NeuralNetworkAI.vcxproj
+¦   NeuralNetworkAI.vcxproj.filters
+¦   NeuralNetworkAI.vcxproj.user
+¦   NeuralNetworkSubsystem.cpp
+¦   NeuralNetworkSubsystem.h
+¦   README.md
+¦   SingletonBase.cpp
+¦   SingletonBase.h
+¦   stb_image.h
+¦   treeOutput.txt
+¦   VectorMaths.cpp
+¦   VectorMaths.h
+¦   
++---.idea
+¦   +---.idea.NeuralNetworkAI
+¦       +---.idea
+¦               .gitignore
+¦               encodings.xml
+¦               indexLayout.xml
+¦               projectSettingsUpdater.xml
+¦               vcs.xml
+¦               workspace.xml
+¦               
++---backends
+¦   ¦   imgui_impl_allegro5.cpp
+¦   ¦   imgui_impl_allegro5.h
+¦   ¦   imgui_impl_android.cpp
+¦   ¦   imgui_impl_android.h
+¦   ¦   imgui_impl_dx10.cpp
+¦   ¦   imgui_impl_dx10.h
+¦   ¦   imgui_impl_dx11.cpp
+¦   ¦   imgui_impl_dx11.h
+¦   ¦   imgui_impl_dx12.cpp
+¦   ¦   imgui_impl_dx12.h
+¦   ¦   imgui_impl_dx9.cpp
+¦   ¦   imgui_impl_dx9.h
+¦   ¦   imgui_impl_glfw.cpp
+¦   ¦   imgui_impl_glfw.h
+¦   ¦   imgui_impl_glut.cpp
+¦   ¦   imgui_impl_glut.h
+¦   ¦   imgui_impl_metal.h
+¦   ¦   imgui_impl_metal.mm
+¦   ¦   imgui_impl_opengl2.cpp
+¦   ¦   imgui_impl_opengl2.h
+¦   ¦   imgui_impl_opengl3.cpp
+¦   ¦   imgui_impl_opengl3.h
+¦   ¦   imgui_impl_opengl3_loader.h
+¦   ¦   imgui_impl_osx.h
+¦   ¦   imgui_impl_osx.mm
+¦   ¦   imgui_impl_sdl2.cpp
+¦   ¦   imgui_impl_sdl2.h
+¦   ¦   imgui_impl_sdl3.cpp
+¦   ¦   imgui_impl_sdl3.h
+¦   ¦   imgui_impl_sdlrenderer2.cpp
+¦   ¦   imgui_impl_sdlrenderer2.h
+¦   ¦   imgui_impl_sdlrenderer3.cpp
+¦   ¦   imgui_impl_sdlrenderer3.h
+¦   ¦   imgui_impl_vulkan.cpp
+¦   ¦   imgui_impl_vulkan.h
+¦   ¦   imgui_impl_wgpu.cpp
+¦   ¦   imgui_impl_wgpu.h
+¦   ¦   imgui_impl_win32.cpp
+¦   ¦   imgui_impl_win32.h
+¦   ¦   
+¦   +---vulkan
+¦           generate_spv.sh
+¦           glsl_shader.frag
+¦           glsl_shader.vert
+¦           
++---DataFiles
+¦   +---ActualData
+¦           Letter_A.png
+¦           Letter_A_White.png
+¦           
++---Debug
+¦   ¦   Project 1 - Learning the Basics.log
+¦   ¦   vc143.idb
+¦   ¦   vc143.pdb
+¦   ¦   
+¦   +---Project .35ffbe07.tlog
+¦           CL.command.1.tlog
+¦           CL.read.1.tlog
+¦           CL.write.1.tlog
+¦           link-cvtres.read.1.tlog
+¦           link-cvtres.write.1.tlog
+¦           link-rc.read.1.tlog
+¦           link-rc.write.1.tlog
+¦           link.command.1.tlog
+¦           link.read.1.tlog
+¦           link.read.2.tlog
+¦           link.write.1.tlog
+¦           Project 1 - Learning the Basics.lastbuildstate
+¦           unsuccessfulbuild
+¦           
++---imgui
+¦       imconfig.h
+¦       imgui.cpp
+¦       imgui.h
+¦       imgui_demo.cpp
+¦       imgui_draw.cpp
+¦       imgui_internal.h
+¦       imgui_tables.cpp
+¦       imgui_widgets.cpp
+¦       imstb_rectpack.h
+¦       imstb_textedit.h
+¦       imstb_truetype.h
+¦       LICENSE.txt
+¦       
++---libs
+¦   +---emscripten
+¦   ¦       emscripten_mainloop_stub.h
+¦   ¦       shell_minimal.html
+¦   ¦       
+¦   +---freetype-2.13.3
+¦   ¦   ¦   MSBuild.rsp
+¦   ¦   ¦   
+¦   ¦   +---builds
+¦   ¦       +---windows
+¦   ¦           +---visualc
+¦   ¦           ¦       freetype.dsp
+¦   ¦           ¦       freetype.dsw
+¦   ¦           ¦       
+¦   ¦           +---visualce
+¦   ¦                   freetype.dsp
+¦   ¦                   freetype.dsw
+¦   ¦                   
+¦   +---glfw
+¦   ¦   +---include
+¦   ¦   ¦   +---GLFW
+¦   ¦   ¦           glfw3.h
+¦   ¦   ¦           glfw3native.h
+¦   ¦   ¦           
+¦   ¦   +---lib-vc2022
+¦   ¦           glfw3.dll
+¦   ¦           glfw3.lib
+¦   ¦           glfw3dll.lib
+¦   ¦           glfw3_mt.lib
+¦   ¦           
+¦   +---ImGuiFileDialog
+¦   ¦   ¦   CMakeLists.txt
+¦   ¦   ¦   Documentation.md
+¦   ¦   ¦   ImGuiFileDialog.cpp
+¦   ¦   ¦   ImGuiFileDialog.h
+¦   ¦   ¦   ImGuiFileDialogConfig.h
+¦   ¦   ¦   LICENSE
+¦   ¦   ¦   README.md
+¦   ¦   ¦   
+¦   ¦   +---dirent
+¦   ¦   ¦       ChangeLog
+¦   ¦   ¦       dirent.h
+¦   ¦   ¦       LICENSE
+¦   ¦   ¦       README.md
+¦   ¦   ¦       
+¦   ¦   +---stb
+¦   ¦           LICENSE
+¦   ¦           README.md
+¦   ¦           stb_image.h
+¦   ¦           stb_image_resize2.h
+¦   ¦           
+¦   +---usynergy
+¦           README.txt
+¦           uSynergy.c
+¦           uSynergy.h
+¦           
++---LogFiles
+¦       NeuralNetworkAILogFile_2024-11-10_17-58-29.txt
+¦       NeuralNetworkAILogFile_2024-11-10_18-22-53.txt
+¦       NeuralNetworkAILogFile_2024-11-10_18-41-00.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-14-20.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-41-18.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-45-00.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-56-09.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-56-18.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-57-01.txt
+¦       NeuralNetworkAILogFile_2024-11-10_19-58-32.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-02-51.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-04-25.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-07-27.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-09-45.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-10-06.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-11-30.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-12-02.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-12-52.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-13-54.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-15-47.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-16-00.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-20-20.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-21-27.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-23-14.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-30-16.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-33-01.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-35-36.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-37-12.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-38-25.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-40-13.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-45-04.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-47-16.txt
+¦       NeuralNetworkAILogFile_2024-11-10_20-58-20.txt
+¦       NeuralNetworkAILogFile_2024-11-10_21-33-00.txt
+¦       NeuralNetworkAILogFile_2024-11-10_21-53-06.txt
+¦       NeuralNetworkAILogFile_2024-11-10_21-54-36.txt
+¦       NeuralNetworkAILogFile_2024-11-10_21-55-35.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-06-47.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-14-08.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-14-53.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-15-12.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-15-42.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-16-04.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-16-35.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-16-51.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-17-38.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-17-52.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-18-05.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-18-35.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-18-46.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-19-41.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-20-35.txt
+¦       NeuralNetworkAILogFile_2024-11-10_22-40-14.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-01-23.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-02-14.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-02-33.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-02-53.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-03-31.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-04-19.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-04-52.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-06-53.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-14-18.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-14-45.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-15-35.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-17-22.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-20-33.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-32-41.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-35-28.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-43-32.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-44-16.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-45-16.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-47-50.txt
+¦       NeuralNetworkAILogFile_2024-11-10_23-58-42.txt
+¦       NeuralNetworkAILogFile_2024-11-11_00-00-55.txt
+¦       NeuralNetworkAILogFile_2024-11-11_00-01-49.txt
+¦       NeuralNetworkAILogFile_2024-11-11_00-02-35.txt
+¦       NeuralNetworkAILogFile_2024-11-11_00-06-33.txt
+¦       NeuralNetworkAILogFile_2024-11-11_00-09-48.txt
+¦       NeuralNetworkAILogFile_2024-12-18_11-06-30.txt
+¦       NeuralNetworkAILogFile_2025-01-12_18-45-40.txt
+¦       
++---Logging
+¦       Logger.cpp
+¦       Logger.h
+¦       
++---misc
+¦   ¦   README.txt
+¦   ¦   
+¦   +---cpp
+¦   ¦       imgui_stdlib.cpp
+¦   ¦       imgui_stdlib.h
+¦   ¦       README.txt
+¦   ¦       
+¦   +---debuggers
+¦   ¦       imgui.gdb
+¦   ¦       imgui.natstepfilter
+¦   ¦       imgui.natvis
+¦   ¦       README.txt
+¦   ¦       
+¦   +---fonts
+¦   ¦       binary_to_compressed_c.cpp
+¦   ¦       Cousine-Regular.ttf
+¦   ¦       DroidSans.ttf
+¦   ¦       Karla-Regular.ttf
+¦   ¦       ProggyClean.ttf
+¦   ¦       ProggyTiny.ttf
+¦   ¦       Roboto-Medium.ttf
+¦   ¦       
+¦   +---freetype
+¦   ¦       imgui_freetype.cpp
+¦   ¦       imgui_freetype.h
+¦   ¦       README.md
+¦   ¦       
+¦   +---single_file
+¦           imgui_single_file.h
+¦           
++---NeuralNetworkAI
+¦   +---x64
+¦       +---Debug
+¦           ¦   Activation.obj
+¦           ¦   Cost.obj
+¦           ¦   HyperParameters.obj
+¦           ¦   imgui.obj
+¦           ¦   ImGuiFileDialog.obj
+¦           ¦   imgui_demo.obj
+¦           ¦   imgui_draw.obj
+¦           ¦   imgui_impl_glfw.obj
+¦           ¦   imgui_impl_vulkan.obj
+¦           ¦   imgui_tables.obj
+¦           ¦   imgui_widgets.obj
+¦           ¦   Layer.obj
+¦           ¦   Logger.obj
+¦           ¦   main.obj
+¦           ¦   NeuralNetwork.obj
+¦           ¦   NeuralNetworkAI.exe.recipe
+¦           ¦   NeuralNetworkAI.ilk
+¦           ¦   NeuralNetworkSubsystem.obj
+¦           ¦   SingletonBase.obj
+¦           ¦   uSynergy.obj
+¦           ¦   vc143.idb
+¦           ¦   vc143.pdb
+¦           ¦   
+¦           +---NeuralNetworkAI.tlog
+¦                   CL.command.1.tlog
+¦                   Cl.items.tlog
+¦                   CL.read.1.tlog
+¦                   CL.write.1.tlog
+¦                   link.command.1.tlog
+¦                   link.read.1.tlog
+¦                   link.secondary.1.tlog
+¦                   link.write.1.tlog
+¦                   NeuralNetworkAI.lastbuildstate
+¦                   
++---Private
+¦       Activation.cpp
+¦       Cost.cpp
+¦       HyperParameters.cpp
+¦       Layer.cpp
+¦       NeuralNetwork.cpp
+¦       
++---Public
+¦       Activation.h
+¦       Cost.h
+¦       HyperParameters.h
+¦       Layer.h
+¦       NeuralNetwork.h
+¦       Neuron.h
+¦       VisualisationUtility.h
+¦       
++---src
+¦   +---core
++---TrainingData
+¦       TestImageNum3.png
+¦       
++---x64
+    +---Debug
+            NeuralNetworkAI.exe
+            NeuralNetworkAI.pdb
+            

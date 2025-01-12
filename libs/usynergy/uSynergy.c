@@ -227,7 +227,7 @@ static void sProcessMessage(uSynergyContext *context, const uint8_t *message)
 		{
 			// Let's assume we're connected
 			char buffer[256+1];
-			sprintf(buffer, "Connected as client \"%s\"", context->m_clientName);
+			sprintf_s(buffer, "Connected as client \"%s\"", context->m_clientName);
 			sTrace(context, buffer);
 			context->m_hasReceivedHello = USYNERGY_TRUE;
 		}
@@ -443,7 +443,7 @@ static void sProcessMessage(uSynergyContext *context, const uint8_t *message)
 		//		kMsgEUnknown		= "EUNK"
 		//		kMsgEBad			= "EBAD"
 		char buffer[64];
-		sprintf(buffer, "Unknown packet '%c%c%c%c'", message[4], message[5], message[6], message[7]);
+		sprintf_s(buffer, "Unknown packet '%c%c%c%c'", message[4], message[5], message[6], message[7]);
 		sTrace(context, buffer);
 		return;
 	}
@@ -483,7 +483,7 @@ static void sUpdateContext(uSynergyContext *context)
 	{
 		/* Receive failed, let's try to reconnect */
 		char buffer[128];
-		sprintf(buffer, "Receive failed (%d bytes asked, %d bytes received), trying to reconnect in a second", receive_size, num_received);
+		sprintf_s(buffer, "Receive failed (%d bytes asked, %d bytes received), trying to reconnect in a second", receive_size, num_received);
 		sTrace(context, buffer);
 		sSetDisconnected(context);
 		context->m_sleepFunc(context->m_cookie, 1000);
@@ -532,7 +532,7 @@ static void sUpdateContext(uSynergyContext *context)
 	{
 		/* Oversized packet, ditch tail end */
 		char buffer[128];
-		sprintf(buffer, "Oversized packet: '%c%c%c%c' (length %d)", context->m_receiveBuffer[4], context->m_receiveBuffer[5], context->m_receiveBuffer[6], context->m_receiveBuffer[7], packlen);
+		sprintf_s(buffer, "Oversized packet: '%c%c%c%c' (length %d)", context->m_receiveBuffer[4], context->m_receiveBuffer[5], context->m_receiveBuffer[6], context->m_receiveBuffer[7], packlen);
 		sTrace(context, buffer);
 		num_received = context->m_receiveOfs-4; // 4 bytes for the size field
 		while (num_received != packlen)
@@ -618,7 +618,7 @@ void uSynergySendClipboard(uSynergyContext *context, const char *text)
 	if (text_length > max_length)
 	{
 		char buffer[128];
-		sprintf(buffer, "Clipboard buffer too small, clipboard truncated at %d characters", max_length);
+		sprintf_s(buffer, "Clipboard buffer too small, clipboard truncated at %d characters", max_length);
 		sTrace(context, buffer);
 		text_length = max_length;
 	}
