@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="libs\emscripten\emscripten_mainloop_stub.h" />
+    <ClInclude Include="libs\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="libs\glfw\include\GLFW\glfw3native.h" />
+    <ClInclude Include="libs\usynergy\uSynergy.h" />
     <ClInclude Include="Logging\Logger.h" />
     <ClInclude Include="NeuralNetworkSubsystem.h" />
     <ClInclude Include="Public\Activation.h" />
@@ -40,6 +44,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="libs\ImGuiFileDialog\ImGuiFileDialog.cpp" />
+    <ClCompile Include="libs\usynergy\uSynergy.c" />
     <ClCompile Include="Logging\Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NeuralNetworkSubsystem.cpp" />
@@ -49,6 +54,14 @@
     <ClCompile Include="Private\Layer.cpp" />
     <ClCompile Include="Private\NeuralNetwork.cpp" />
     <ClCompile Include="SingletonBase.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libs\emscripten\shell_minimal.html" />
+    <Content Include="libs\glfw\lib-vc2022\glfw3.dll" />
+    <Content Include="libs\glfw\lib-vc2022\glfw3.lib" />
+    <Content Include="libs\glfw\lib-vc2022\glfw3dll.lib" />
+    <Content Include="libs\glfw\lib-vc2022\glfw3_mt.lib" />
+    <Content Include="libs\usynergy\README.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
