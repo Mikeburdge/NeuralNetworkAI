@@ -1,10 +1,8 @@
 #pragma once
 #include <functional>
 
-#include "Cost.h"
-#include "NeuralNetwork.h"
-#include "SingletonBase.h"
-
+#include "core/SingletonBase.h"
+#include <core/NeuralNetwork.h>
 
 class NeuralNetworkSubsystem : public SingletonBase
 {

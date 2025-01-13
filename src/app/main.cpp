@@ -7,12 +7,10 @@
 #define GLFW_INCLUDE_VULKAN
 #include "string"
 #include "stb_image.h"
-#include "VisualisationUtility.h"
 #include "GLFW/glfw3.h"
-#include "libs/ImGuiFileDialog/ImGuiFileDialog.h"
-#include "Logging/Logger.h"
+#include "ImGuiFileDialog/ImGuiFileDialog.h"
 #include "vulkan/vulkan.h"
-#include "libs/ImGuiFileDialog/ImGuiFileDialog.h"
+#include "core/HyperParameters.h"
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -77,6 +75,9 @@ static void check_vk_result(VkResult err)
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "core/NeuralNetwork.h"
+#include "core/VisualisationUtility.h"
+#include "subsystems/NeuralNetworkSubsystem.h"
 
 // A struct to manage data related to one image in vulkan
 struct MyTextureData

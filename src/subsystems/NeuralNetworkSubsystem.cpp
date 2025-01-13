@@ -3,10 +3,9 @@
 #include <iostream>
 #include <utility>
 #include <vulkan/vulkan_core.h>
+#include <core/HyperParameters.h>
+#include <logging/Logger.h>
 
-#include "Cost.h"
-#include "HyperParameters.h"
-#include "Logging/Logger.h"
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
