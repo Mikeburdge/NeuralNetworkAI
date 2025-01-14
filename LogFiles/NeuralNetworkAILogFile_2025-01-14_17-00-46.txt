@@ -1,0 +1,288 @@
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:00:51] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:00:51] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:00:51] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:00:51] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:00:51] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:00:51] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:35] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:35] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:35] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:35] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:35] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:35] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:36] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:36] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:36] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:37] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:37] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:37] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (1 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (1 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomBiases (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:47:38] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:47:38] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:47:38] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomWeights (0 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:48:50] [DEBUG] Exiting NeuralNetwork::AddLayer (0 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomWeights (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:48:50] [DEBUG] Exiting NeuralNetwork::AddLayer (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomWeights (24 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:48:50] [DEBUG] Exiting NeuralNetwork::AddLayer (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomBiases
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomBiases (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering Layer::InitializeRandomWeights
+[2025-01-14 17:48:50] [DEBUG] Exiting Layer::InitializeRandomWeights (1 ms)
+[2025-01-14 17:48:50] [DEBUG] Entering NeuralNetwork::AddLayer
+[2025-01-14 17:48:50] [DEBUG] Exiting NeuralNetwork::AddLayer (1 ms)
