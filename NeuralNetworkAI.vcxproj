@@ -32,6 +32,7 @@
     <ClInclude Include="src\core\SingletonBase.h" />
     <ClInclude Include="src\core\VectorMaths.h" />
     <ClInclude Include="src\core\VisualisationUtility.h" />
+    <ClInclude Include="src\dataloader\MNISTDataSet.h" />
     <ClInclude Include="src\dataloader\MNISTLoader.h" />
     <ClInclude Include="src\logging\Logger.h" />
     <ClInclude Include="src\subsystems\NeuralNetworkSubsystem.h" />
@@ -53,8 +54,7 @@
     <ClCompile Include="src\core\HyperParameters.cpp" />
     <ClCompile Include="src\core\Layer.cpp" />
     <ClCompile Include="src\core\NeuralNetwork.cpp" />
-    <ClCompile Include="src\core\SingletonBase.cpp" />
-    <ClCompile Include="src\core\VectorMaths.cpp" />
+    <ClCompile Include="src\dataloader\MNISTDataSet.cpp" />
     <ClCompile Include="src\dataloader\MNISTLoader.cpp" />
     <ClCompile Include="src\logging\Logger.cpp" />
     <ClCompile Include="src\subsystems\NeuralNetworkSubsystem.cpp" />

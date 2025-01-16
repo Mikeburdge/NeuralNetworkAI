@@ -12,6 +12,38 @@ void Logger::log(const LogLevel level, const string& message)
     {
         filesystem::create_directory("LogFiles");
     }
+
+    bool bShouldLog = false;
+    
+    switch (level)
+    {
+    case LogLevel::INFO:
+        bShouldLog = true;
+        break;
+    case LogLevel::PROFILING:
+        bShouldLog = false;
+        break;
+    case LogLevel::DEBUG:
+        bShouldLog = true;
+        break;
+    case LogLevel::FLOW:
+        bShouldLog = true;
+        break;
+    case LogLevel::WARNING:
+        bShouldLog = true;
+        break;
+    case LogLevel::ERROR:
+        bShouldLog = true;
+        break;
+    case LogLevel::FATAL:
+        bShouldLog = true;
+        break;
+    }
+
+    if (!bShouldLog)
+    {
+        return;
+    }
     
     ofstream logFile(fileName, ios::app);
     
@@ -93,12 +125,12 @@ ScopedLogger::~ScopedLogger()
 
 ProfilingLogger::ProfilingLogger(string functionName): func(move(functionName)), start(chrono::high_resolution_clock::now())
 {
-    Logger::log(LogLevel::DEBUG, "Entering " + func);
+    Logger::log(LogLevel::PROFILING, "Entering " + func);
 }
 
 ProfilingLogger::~ProfilingLogger()
 {
     const auto end = chrono::high_resolution_clock::now();
     const auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-    Logger::log(LogLevel::DEBUG, "Exiting " + func + " (" + to_string(duration.count()) + " ms)");
+    Logger::log(LogLevel::PROFILING, "Exiting " + func + " (" + to_string(duration.count()) + " ms)");
 }
