@@ -42,11 +42,18 @@ private:
     // for stopping the training
     std::atomic<bool> stopRequested{false};
 
-
+    int vizUpdateInterval = 10;
+    int vizBatchCounter   = 0;
+    
 public:
 
+    void SetVizUpdateInterval(int interval)
+    {
+        vizUpdateInterval = interval;
+    }
+    
     // number of neurons to display in one layer
-    int maxNeuronsToDisplay = 30;
+    int maxNeuronsToDisplay = 20;
     
     void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                            int inputLayerSize, int hiddenLayers, int hiddenLayerSize,
@@ -81,10 +88,12 @@ public:
     // Saving and Loading
     bool SaveNetwork(const std::string& filePath);
     bool LoadNetwork(const std::string& filePath);
+    int InferSingleImageFromPath(const std::string& path);
 
 
     // To call whe ninferring an image
     int InferSingleImage(const std::vector<double>& image);
+    std::vector<double> LoadAndProcessPNG(const std::string& path);
 
 
     // functions for stopRequested atomic variable

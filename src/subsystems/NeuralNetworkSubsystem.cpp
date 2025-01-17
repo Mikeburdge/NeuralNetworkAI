@@ -1,11 +1,18 @@
 #include "NeuralNetworkSubsystem.h"
 
+#include <cstdint>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 #include <utility>
-#include <vulkan/vulkan_core.h>
+#include <vector>
 #include <core/HyperParameters.h>
 #include <logging/Logger.h>
+#include <vulkan/vulkan_core.h>
 
+// Include stb_image for image loading
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
@@ -157,11 +164,23 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             std::shuffle(indices.begin(), indices.end(), gen);
         }
 
+        if (stopRequested.load())
+        {
+            LOG(LogLevel::INFO, "Early Stop: user requested stop at epoch %i", e);
+            break;
+        }
+
         double epochCostSum = 0.0; // accumulate cost accross mini-batches
         int numBatches = 0;
         // mini batches
         for (size_t startIndex = 0; startIndex < datasetSize; startIndex += batchsize)
         {
+            if (stopRequested.load())
+            {
+                LOG(LogLevel::INFO, "Stop mid-epoch...");
+                goto doneTraining; // I dont like doing goto's and I havent done one in over a decade but fck it
+            }
+
             size_t endIndex = std::min(startIndex + batchsize, datasetSize); // Again possibly datasetSize - 1 if we hit out of index stuff here
             size_t realBatch = endIndex - startIndex;
             // make the batch
@@ -218,17 +237,27 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             // update the visuals
 
-            if (visualizationCallback)
+            vizBatchCounter++;
+            if (vizBatchCounter % vizUpdateInterval == 0)
             {
-                visualizationCallback(CurrentNeuralNetwork);
+                if (visualizationCallback)
+                    visualizationCallback(CurrentNeuralNetwork);
             }
-        } // End of mini batch loop
-        double epochCostAvg = epochCostSum / (double)numBatches;
 
-        LOG(LogLevel::INFO, "Epoch %d / %d batches - AverageCost: %", epoch, (double)numBatches, epochCostAvg);
+            ++numBatches;
+            epochCostSum += batchCost; // from your original code
+        }
+
+        // end of epoch
+        double avgCost = epochCostSum / numBatches;
+        LOG(LogLevel::INFO, "Epoch %i cost= %s", e, std::to_string(avgCost));
     }
-    LOG(LogLevel::INFO, "Completed mini-batch training on MNIST!");
+
+doneTraining:
+    stopRequested.store(false); // reset for next time
+    LOG(LogLevel::INFO, "TrainOnMNIST done or stopped early.");
 }
+
 
 void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
 {
@@ -360,6 +389,12 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
     return true;
 }
 
+int NeuralNetworkSubsystem::InferSingleImageFromPath(const std::string& path)
+{
+    std::vector<double> ProcessedImage = LoadAndProcessPNG(path);
+    return InferSingleImage(ProcessedImage);
+}
+
 int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
 {
     if (CurrentNeuralNetwork.layers.empty())
@@ -380,6 +415,39 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
         }
     }
     LOG(LogLevel::INFO, "Inference Finished. Inferred value: %d", bestValue);
+}
+
+std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
+{
+    int width, height, channels;
+
+    // Load the image using stb_image
+    unsigned char* imgData = stbi_load(path.c_str(), &width, &height, &channels, 1); // Force grayscale
+    if (!imgData)
+    {
+        throw std::runtime_error("Failed to load image: " + path);
+    }
+
+    // Ensure the image is 28x28
+    if (width != 28 || height != 28)
+    {
+        stbi_image_free(imgData);
+        throw std::runtime_error("Image is not 28x28 pixels.");
+    }
+
+    std::vector<double> pixels;
+    pixels.reserve(width * height);
+
+    // Normalize pixel values to [0, 1]
+    for (int i = 0; i < width * height; ++i)
+    {
+        pixels.push_back(static_cast<double>(imgData[i]) / 255.0);
+    }
+
+    // Free the image memory
+    stbi_image_free(imgData);
+
+    return pixels;
 }
 
 void NeuralNetworkSubsystem::SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback)

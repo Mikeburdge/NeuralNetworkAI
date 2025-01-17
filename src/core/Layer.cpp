@@ -48,8 +48,8 @@ void Layer::adjustWeights(const vector<double>& errorGradient)
 			weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
 		}
 		
-		string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";
-		LOG(LogLevel::DEBUG, logMessage);
+		// string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";
+		// LOG(LogLevel::DEBUG, logMessage);
 
 		biases[i] -= learningRate * errorGradient[i]; // Update biases
 	}
