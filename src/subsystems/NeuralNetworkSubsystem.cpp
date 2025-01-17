@@ -13,6 +13,7 @@
 // Include stb_image for image loading
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "utility/NeuralNetworkUtility.h"
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
@@ -311,8 +312,10 @@ void NeuralNetworkSubsystem::TrainOnMNISTAsync()
 
     // mark training as started
     trainingInProgress.store(true);
+    stopRequested.store(false);
 
     trainingThread = std::thread(&NeuralNetworkSubsystem::TrainOnMNISTThreadEntry, this);
+    LOG(LogLevel::FLOW, "Launched async training thread.");
 }
 
 void NeuralNetworkSubsystem::StopTraining()
@@ -474,6 +477,11 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
 {
     LOG(LogLevel::FLOW, "Started background training thread...");
     TrainOnMNIST();
+
+    std::string FileName = "NeuralNetwork_" + NeuralNetworkUtility::GetInitTimestamp() + ".txt";
+    std::string filePath = (std::filesystem::current_path() / "Saved" / FileName).string();
+    SaveNetwork(filePath);
+
     trainingInProgress.store(false);
-    LOG(LogLevel::FLOW, "Finished background thread training.");
+    LOG(LogLevel::FLOW, "Finished background thread training. Network saved to: " + filePath);
 }
