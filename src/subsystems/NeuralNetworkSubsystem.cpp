@@ -96,7 +96,7 @@ void NeuralNetworkSubsystem::StartNeuralNetwork(const std::vector<double>& input
 bool NeuralNetworkSubsystem::LoadMNISTTrainingData(const std::string& imagesPath, const std::string& labelsPath)
 {
     bool loaded = trainingDataSet.LoadTrainingSet(imagesPath, labelsPath);
-    mnistTrainingDataLoaded = loaded;
+    bIsMnistTrainingDataLoaded = loaded;
 
     if (!loaded)
     {
@@ -116,7 +116,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     PROFILE_LOG;
 
     // Neeeds to have data
-    if (!mnistTrainingDataLoaded)
+    if (!bIsMnistTrainingDataLoaded)
     {
         LOG(LogLevel::ERROR, "Failed to load MNIST training data!");
         return;
@@ -234,7 +234,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
 {
     PROFILE_LOG;
 
-    if (!mnistTrainingDataLoaded)
+    if (!bIsMnistTrainingDataLoaded)
     {
         LOG(LogLevel::INFO, "No data loaded. Attempting auto-load from default paths...");
 
@@ -248,7 +248,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
     if (CurrentNeuralNetwork.layers.empty())
     {
         LOG(LogLevel::INFO, "No existing network. Auto-creating 784->128->10 with Sigmoid/CrossEntropy.");
-        
+
         // todo: After some testing I want to see if adding a second hidden layer produces better results
         InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 1, /*HiddenLayerSize*/ 128, /*output*/ 10);
     }
@@ -257,7 +257,118 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
     TrainOnMNIST();
 }
 
+void NeuralNetworkSubsystem::TrainOnMNISTAsync()
+{
+    if (trainingInProgress.load())
+    {
+        LOG(LogLevel::WARNING, "Training in progress.");
+        return;
+    }
+
+    // mark training as started
+    trainingInProgress.store(true);
+
+    trainingThread = std::thread(&NeuralNetworkSubsystem::TrainOnMNISTThreadEntry, this);
+}
+
+void NeuralNetworkSubsystem::StopTraining()
+{
+    if (trainingInProgress.load())
+    {
+        LOG(LogLevel::INFO, "Stop requested, NOT IMPLEMENTED");
+        // ADDING THERE HERE BUT ITS NOT FINISHED YET
+    }
+}
+
+bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
+{
+    // todo: could and probably should make a new subsystem/ file for this but i need this quickly so fuck it
+    std::ofstream ofs(filePath);
+    if (!ofs.is_open())
+    {
+        LOG(LogLevel::ERROR, "Could not open file to save: %s", filePath);
+        // LOG(LogLevel::ERROR, "Could not open file to save: " + filePath);
+        return false;
+    }
+
+    int layerCount = (int)CurrentNeuralNetwork.layers.size();
+    ofs << layerCount << "\n";
+    for (Layer layer : CurrentNeuralNetwork.layers)
+    {
+        // neurons
+        ofs << layer.numNeurons << " " << layer.numNeuronsOutOfPreviousLayer << "\n";
+
+        // biases
+        for (double bias : layer.biases)
+        {
+            ofs << bias << " ";
+        }
+        // next line after biases
+        ofs << "\n";
+
+        // weights
+
+        for (std::vector<double> weightVector : layer.weights)
+        {
+            for (double weight : weightVector)
+            {
+                ofs << weight << " ";
+            }
+            ofs << "\n";
+        }
+    }
+    LOG(LogLevel::INFO, "Saved network to: %s", filePath.c_str());
+    return true;
+}
+
+bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
+{
+    std::ifstream ifs(filePath);
+    if (!ifs.is_open())
+    {
+        LOG(LogLevel::ERROR, "Could not open file to load: %s", filePath);
+        return false;
+    }
+    NeuralNetwork newNeuralNetwork;
+    int layerCount;
+    ifs >> layerCount;
+
+    for (int i = 0; i < layerCount; ++i)
+    {
+        int numNeurons, outOfPreviousLayer;
+        ifs >> numNeurons >> outOfPreviousLayer;
+        Layer layer(HyperParameters::activationType, HyperParameters::cost, numNeurons, outOfPreviousLayer);
+
+        // biases
+        for (int biasesIndex = 0; biasesIndex < numNeurons; ++biasesIndex)
+        {
+            ifs >> layer.biases[biasesIndex];
+        }
+
+        // weights
+        for (int weightsMatrixIndex = 0; weightsMatrixIndex < numNeurons; ++weightsMatrixIndex)
+        {
+            for (int weightsIndex = 0; weightsIndex < layer.numNeuronsOutOfPreviousLayer; ++weightsIndex)
+            {
+                ifs >> layer.weights[weightsMatrixIndex][weightsIndex];
+            }
+        }
+        newNeuralNetwork.layers.push_back(layer);
+    }
+    CurrentNeuralNetwork = newNeuralNetwork;
+    LOG(LogLevel::INFO, "Loaded network from: %s", filePath.c_str());
+    return true;
+}
+
 void NeuralNetworkSubsystem::SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback)
 {
     visualizationCallback = std::move(callback);
+}
+
+void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
+{
+    LOG(LogLevel::FLOW, "Started background training thread...");
+    TrainOnMNIST();
+    trainingInProgress.store(false);
+    LOG(LogLevel::FLOW, "Finished background thread training.");
 }

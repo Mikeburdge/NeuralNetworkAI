@@ -208,6 +208,8 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     std::vector<LineInfo> lineInfos;
 
+    int maxNeuronDisplay = NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay;
+
     // Render Layers
     for (int layerIndex = 0; layerIndex < (int)network.layers.size(); ++layerIndex)
     {
@@ -215,8 +217,10 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         float layerPosX = (layerIndex + 1) * layerSpacing;
         int numNeurons = layer.numNeurons;
         float neuronSpacing = windowSize.y / (numNeurons + 1);
-
-        for (int neuronIndex = 0; neuronIndex < numNeurons; ++neuronIndex)
+        
+        int displayCount = std::min(numNeurons, maxNeuronDisplay);
+        
+        for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
         {
             float circleSize = std::min(maxCircleSize, neuronSpacing * 0.5f);
             float posX = layerPosX;
