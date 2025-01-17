@@ -360,6 +360,28 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
     return true;
 }
 
+int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
+{
+    if (CurrentNeuralNetwork.layers.empty())
+    {
+        LOG(LogLevel::ERROR, "No layers in the network.. Inference impossible.");
+        return false;
+    }
+
+    std::vector<double> outputs = CurrentNeuralNetwork.ForwardPropagation(image);
+    int bestIndex = -1;
+    double bestValue = std::numeric_limits<double>::lowest();
+    for (int i = 0; i < (int)outputs.size(); ++i)
+    {
+        if (outputs[i] > bestValue)
+        {
+            bestValue = outputs[i];
+            bestIndex = i;
+        }
+    }
+    LOG(LogLevel::INFO, "Inference Finished. Inferred value: %d", bestValue);
+}
+
 void NeuralNetworkSubsystem::SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback)
 {
     visualizationCallback = std::move(callback);

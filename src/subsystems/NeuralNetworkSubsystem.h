@@ -83,6 +83,8 @@ public:
     bool LoadNetwork(const std::string& filePath);
 
 
+    // To call whe ninferring an image
+    int InferSingleImage(const std::vector<double>& image);
 
 
     // functions for stopRequested atomic variable
