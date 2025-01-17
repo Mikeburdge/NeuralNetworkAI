@@ -166,7 +166,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         if (stopRequested.load())
         {
-            LOG(LogLevel::INFO, "Early Stop: user requested stop at epoch %i", e);
+            LOG(LogLevel::INFO, "Early Stop: user requested stop at epoch " + std::to_string(epoch));
             break;
         }
 
@@ -250,7 +250,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         // end of epoch
         double avgCost = epochCostSum / numBatches;
-        LOG(LogLevel::INFO, "Epoch %i cost= %s", e, std::to_string(avgCost));
+        LOG(LogLevel::INFO, "Epoch " + std::to_string(epoch) + " cost= " + std::to_string(avgCost));
     }
 
 doneTraining:
@@ -315,7 +315,7 @@ bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
     std::ofstream ofs(filePath);
     if (!ofs.is_open())
     {
-        LOG(LogLevel::ERROR, "Could not open file to save: %s", filePath);
+        LOG(LogLevel::ERROR, "Could not open file to save: " + filePath);
         // LOG(LogLevel::ERROR, "Could not open file to save: " + filePath);
         return false;
     }
@@ -346,7 +346,7 @@ bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
             ofs << "\n";
         }
     }
-    LOG(LogLevel::INFO, "Saved network to: %s", filePath.c_str());
+    LOG(LogLevel::INFO, "Saved network to: " + filePath.c_str());
     return true;
 }
 
@@ -355,7 +355,7 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
     std::ifstream ifs(filePath);
     if (!ifs.is_open())
     {
-        LOG(LogLevel::ERROR, "Could not open file to load: %s", filePath);
+        LOG(LogLevel::ERROR, "Could not open file to load: " + filePath);
         return false;
     }
     NeuralNetwork newNeuralNetwork;
@@ -385,7 +385,7 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         newNeuralNetwork.layers.push_back(layer);
     }
     CurrentNeuralNetwork = newNeuralNetwork;
-    LOG(LogLevel::INFO, "Loaded network from: %s", filePath.c_str());
+    LOG(LogLevel::INFO, "Loaded network from: " + filePath);
     return true;
 }
 
@@ -414,7 +414,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
             bestIndex = i;
         }
     }
-    LOG(LogLevel::INFO, "Inference Finished. Inferred value: %d", bestValue);
+    LOG(LogLevel::INFO, "Inference Finished. Best Index: " + std::to_string(bestIndex) + " Best Value: " + std::to_string(bestValue));
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
