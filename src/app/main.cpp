@@ -215,10 +215,16 @@ void ShowTrainingMetrics(bool* p_open)
         return;
     }
 
-    // Example usage
-    ImGui::Text("Current Loss: %.4f", currentLoss);
-    ImGui::Text("Current Accuracy: %.2f%%", currentAcc);
-    ImGui::Text("Epoch: %d / %d", currentEpoch, totalEpochs);
+    NeuralNetworkSubsystem& NN = NeuralNetworkSubsystem::GetInstance();
+
+    float loss = NN.currentLossAtomic.load();
+    float accuracy = NN.currentAccuracyAtomic.load();
+    int epoch = NN.currentEpochAtomic.load();
+    int totalEpochs = NN.totalEpochsAtomic.load();
+
+    ImGui::Text("Current Loss: %.4f", loss);
+    ImGui::Text("Current Accuracy: %.2f%%", accuracy);
+    ImGui::Text("Epoch: %d / %d", epoch, totalEpochs);
 
     ImGui::End();
 }
@@ -497,7 +503,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             NeuralNetworkSubsystem::GetInstance().RequestStopTraining();
         }
     }
-    
+
     ImGui::End();
 
     if (showLegendWindow)
@@ -619,7 +625,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputInt("Batch Size", &HyperParameters::batchSize);
             ImGui::InputInt("Epochs", &HyperParameters::epochs);
             ImGui::InputDouble("Momentum", &HyperParameters::momentum, 0.1, 0.2, "%.2f");
-            ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.3f");
+            ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.5f");
 
             ImGui::Checkbox("Use Dropout", &HyperParameters::useDropoutRate);
             if (HyperParameters::useDropoutRate)
@@ -650,7 +656,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputText("Load Path##Network", loadFilePath.data(), sizeof(loadFilePath));
             if (ImGui::Button("Load Network"))
             {
-                NeuralNetworkSubsystem::GetInstance().SaveNetwork(loadFilePath);
+                NeuralNetworkSubsystem::GetInstance().LoadNetwork(loadFilePath);
             }
 
             ImGui::EndTabItem();

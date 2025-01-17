@@ -154,9 +154,18 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
 
     // Main Training Loop
+    totalEpochsAtomic.store(epochs);
 
     for (size_t epoch = 0; epoch < epochs; ++epoch)
     {
+        currentEpochAtomic.store(epoch);
+
+        double epochAverageCost = 0.0;
+        double epochAccuracy = 0.0;
+
+        currentLossAtomic.store(float(epochAverageCost));
+        currentAccuracyAtomic.store(float(epochAccuracy));
+
         // Shuffle the dataset indeces. its not necessary but its normal for Stochastic Gradient Descent
         {
             static std::random_device rd;
@@ -282,8 +291,14 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
         InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 1, /*HiddenLayerSize*/ 128, /*output*/ 10);
     }
 
+    if (trainingInProgress.load())
+    {
+        LOG(LogLevel::WARNING, "Training is already in progress");
+        return;
+    }
+
     // start the training
-    TrainOnMNIST();
+    TrainOnMNISTAsync();
 }
 
 void NeuralNetworkSubsystem::TrainOnMNISTAsync()
@@ -346,7 +361,7 @@ bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
             ofs << "\n";
         }
     }
-    LOG(LogLevel::INFO, "Saved network to: " + filePath.c_str());
+    LOG(LogLevel::INFO, "Saved network to: " + filePath);
     return true;
 }
 
@@ -414,7 +429,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
             bestIndex = i;
         }
     }
-    LOG(LogLevel::INFO, "Inference Finished. Best Index: " + std::to_string(bestIndex) + " Best Value: " + std::to_string(bestValue));
+    LOG(LogLevel::INFO, "Inference Finished. Best Index (Predicted Digit): " + std::to_string(bestIndex) + " Best Value (Confidence in that digit): " + std::to_string(bestValue));
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)

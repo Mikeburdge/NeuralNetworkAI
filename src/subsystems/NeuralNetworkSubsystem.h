@@ -35,17 +35,22 @@ private:
     MNISTDataSet trainingDataSet;
     bool bIsMnistTrainingDataLoaded = false;
 
-    // Threadding
-    std::thread trainingThread;
-    std::atomic<bool> trainingInProgress{false};
-
-    // for stopping the training
-    std::atomic<bool> stopRequested{false};
-
     int vizUpdateInterval = 10;
     int vizBatchCounter   = 0;
     
 public:
+    
+    // Threadding
+    std::thread trainingThread;
+    std::atomic<bool> trainingInProgress{false};
+
+    std::atomic<int> currentEpochAtomic{0};
+    std::atomic<float> currentLossAtomic{0.0f};
+    std::atomic<float> currentAccuracyAtomic{0.0f};
+    std::atomic<int> totalEpochsAtomic{0};
+
+    // for stopping the training
+    std::atomic<bool> stopRequested{false};
 
     void SetVizUpdateInterval(int interval)
     {
