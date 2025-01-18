@@ -17,6 +17,16 @@ static const std::string DEFAULT_LABELS_PATH = (std::filesystem::current_path() 
 class NeuralNetworkSubsystem : public SingletonBase
 {
 public:
+    struct TrainingTimer
+    {
+        std::chrono::steady_clock::time_point startTime;
+        std::chrono::steady_clock::time_point lastEpochTime;
+        double epochDuration = 0.0;
+        bool isInitialized = false;
+    };
+
+    static TrainingTimer trainingTimer;
+
     static NeuralNetworkSubsystem& GetInstance()
     {
         static NeuralNetworkSubsystem instance;
@@ -36,10 +46,9 @@ private:
     bool bIsMnistTrainingDataLoaded = false;
 
     int vizUpdateInterval = 10;
-    int vizBatchCounter   = 0;
-    
+    int vizBatchCounter = 0;
+
 public:
-    
     // Threadding
     std::thread trainingThread;
     std::atomic<bool> trainingInProgress{false};
@@ -49,6 +58,9 @@ public:
     std::atomic<float> currentAccuracyAtomic{0.0f};
     std::atomic<int> totalEpochsAtomic{0};
 
+    std::atomic<int> currentBatchIndex{0};
+    std::atomic<int> totalBatchesInEpoch{0};
+
     // for stopping the training
     std::atomic<bool> stopRequested{false};
 
@@ -56,10 +68,10 @@ public:
     {
         vizUpdateInterval = interval;
     }
-    
+
     // number of neurons to display in one layer
     int maxNeuronsToDisplay = 20;
-    
+
     void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                            int inputLayerSize, int hiddenLayers, int hiddenLayerSize,
                            int outputLayerSize);
@@ -114,5 +126,4 @@ private:
 
 
     void TrainOnMNISTThreadEntry();
-    
 };

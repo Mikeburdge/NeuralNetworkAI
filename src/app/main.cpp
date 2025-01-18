@@ -216,16 +216,78 @@ void ShowTrainingMetrics(bool* p_open)
         return;
     }
 
-    NeuralNetworkSubsystem& NN = NeuralNetworkSubsystem::GetInstance();
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
-    float loss = NN.currentLossAtomic.load();
-    float accuracy = NN.currentAccuracyAtomic.load();
-    int epoch = NN.currentEpochAtomic.load();
-    int totalEpochs = NN.totalEpochsAtomic.load();
+    float loss = subsystem.currentLossAtomic.load();
+    float accuracy = subsystem.currentAccuracyAtomic.load();
+    int currentEpoch = subsystem.currentEpochAtomic.load();
+    int totalEpochs = subsystem.totalEpochsAtomic.load();
 
-    ImGui::Text("Current Loss: %.4f", loss);
-    ImGui::Text("Current Accuracy: %.2f%%", accuracy);
-    ImGui::Text("Epoch: %d / %d", epoch, totalEpochs);
+    int currentBatch = subsystem.currentBatchIndex.load();
+    int totalBatchesThisEpoch = subsystem.totalBatchesInEpoch.load();
+
+
+    float epochFraction = 0.0f;
+    if (totalBatchesThisEpoch > 0)
+    {
+        epochFraction = static_cast<float>(currentBatch) / static_cast<float>(totalBatchesThisEpoch);
+    }
+
+    float overallFraction = 0.0f;
+    if (totalEpochs > 0)
+    {
+        overallFraction = (static_cast<float>(currentEpoch) + epochFraction) / static_cast<float>(totalEpochs);
+    }
+
+    ImGui::ProgressBar(epochFraction, ImVec2(-1.0f, 0.0f), "Epoch Progress");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("%.1f%% done", epochFraction * 100.0f);
+    }
+    ImGui::ProgressBar(overallFraction, ImVec2(-1.0f, 0.0f), "Trainig Progress");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("%.1f%% done", overallFraction * 100.0f);
+    }
+
+    if (subsystem.trainingTimer.isInitialized)
+    {
+        std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::high_resolution_clock::now();
+        double elapsed = std::chrono::duration<double>(now - subsystem.trainingTimer.startTime).count();
+
+        double epochTime = 0.0;
+        if (currentEpoch > 0)
+        {
+            epochTime = subsystem.trainingTimer.epochDuration;
+        }
+        else
+        {
+            if (currentEpoch > 0)
+            {
+                epochTime = elapsed / static_cast<double>(currentEpoch);
+            }
+            else
+            {
+                epochTime = 0.0;
+            }   
+        }
+
+        int epochsLeft = totalEpochs - (currentEpoch + 1);
+        double estimateRemainingTime = epochsLeft * epochTime;
+
+        
+        ImGui::Text("Time Elapsed: %.1f s", elapsed);
+        ImGui::Text("Time Remaining: %.1f s", estimateRemainingTime);
+    }
+    else
+    {
+        ImGui::Text("Time Elapsed: N/A");
+        ImGui::Text("Time Remaining: N/A");
+    }
+
+    ImGui::Text("Epoch: %d/%d (Batch %d/%d)", currentEpoch + 1, totalEpochs, currentBatch, totalBatchesThisEpoch);
+    ImGui::Text("Loss: %.4f", loss);
+    ImGui::Text("Accuracy: %.2f%%", accuracy * 100.f);
 
     ImGui::End();
 }
@@ -566,14 +628,76 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     ImGui::TextWrapped("Will add ability to browse and load specific data sets here, for now it's all hooked up to one dataset");
     ImGui::Separator();
 
-    static std::string inferenceImgPath;
-    ImGui::InputText("28x28 PNG Path##Inference", inferenceImgPath.data(), sizeof(inferenceImgPath));
 
-    if (ImGui::Button("Infer!"))
+    static std::string inferenceImgPath;
+
+    if (ImGui::Button("Browse Load Path..."))
     {
-        int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
-        ImGui::Text("Predicted digit = %d", digit);
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Load Path", ".txt\0*.txt\0\0");
     }
+
+    if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            inferenceImgPath = ImGuiFileDialog::Instance()->GetFilePathName();
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    ImGui::InputText("28x28 PNG Path##Inference", inferenceImgPath.data(), sizeof(inferenceImgPath));
+        
+    static std::vector<float> lastInferencePixels;
+    static bool havePreview = false;
+
+    if (ImGui::Button("Load & Preview"))
+    {
+        try
+        {
+            auto pixelDoubles = NeuralNetworkSubsystem::GetInstance().LoadAndProcessPNG(inferenceImgPath);
+            
+            lastInferencePixels.resize(pixelDoubles.size());
+            for (size_t i=0; i< pixelDoubles.size(); i++)
+            {
+                lastInferencePixels[i] = float(pixelDoubles[i]);
+            }
+            havePreview = true;
+        }
+        catch(const std::exception& e)
+        {
+            LOG(LogLevel::ERROR, e.what());
+            havePreview = false;
+        }
+    }
+
+    if (havePreview)
+    {
+        ImGui::Text("28x28 Preview:");
+        float scale = 4.0f; // each pixel 4x4 on screen
+        ImVec2 startPos = ImGui::GetCursorScreenPos();
+        for (int row=0; row<28; row++)
+        {
+            for (int col=0; col<28; col++)
+            {
+                float val = lastInferencePixels[row*28 + col]; // 0..1
+                // We'll map it to a grayscale
+                ImColor color = ImColor(val, val, val, 1.0f);
+                ImVec2 ul = ImVec2(startPos.x + col*scale, startPos.y + row*scale);
+                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
+            }
+        }
+        // Advance the ImGui cursor so next item is below
+        ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28*scale + 10));
+
+        // Next, do the inference
+        if (ImGui::Button("Infer from Preview"))
+        {
+            int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
+            ImGui::Text("Predicted digit = %d", digit);
+        }
+    }
+
 
     ImGui::End();
 }
@@ -667,6 +791,21 @@ void NeuralNetworkControlsWindow(bool* p_open)
         if (ImGui::BeginTabItem("Save/Load"))
         {
             static std::string saveFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
+
+            if (ImGui::Button("Browse Save Path..."))
+            {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseSaveFileDlgKey", "Choose Save Path", ".txt\0*.txt\0\0");
+            }
+
+            if (ImGuiFileDialog::Instance()->Display("ChooseSaveFileDlgKey"))
+            {
+                if (ImGuiFileDialog::Instance()->IsOk())
+                {
+                    saveFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
+
             ImGui::InputText("Save Path##Network", saveFilePath.data(), sizeof(saveFilePath));
             if (ImGui::Button("Save Network"))
             {
@@ -676,6 +815,21 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::SameLine();
 
             static std::string loadFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
+
+            if (ImGui::Button("Browse Load Path..."))
+            {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Load Path", ".txt\0*.txt\0\0");
+            }
+
+            if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
+            {
+                if (ImGuiFileDialog::Instance()->IsOk())
+                {
+                    loadFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
+
             ImGui::InputText("Load Path##Network", loadFilePath.data(), sizeof(loadFilePath));
             if (ImGui::Button("Load Network"))
             {

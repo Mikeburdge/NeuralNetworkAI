@@ -59,7 +59,7 @@ public:
     /// Function to update weights during backpropagation.
     /// </summary>
     /// <param name="errorGradient">The gradient of the error with respect to the output.</param>
-    void adjustWeights(const std::vector<double>& errorGradient);
+    void adjustWeights(const std::vector<double>& errorGradient, const std::vector<double>& prevLayerActivations);
 
     void InitializeRandomBiases(std::mt19937& rng);
     void InitializeRandomWeights(std::mt19937& rng);

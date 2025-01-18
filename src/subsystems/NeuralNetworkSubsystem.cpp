@@ -15,6 +15,8 @@
 #include "stb_image.h"
 #include "utility/NeuralNetworkUtility.h"
 
+NeuralNetworkSubsystem::TrainingTimer NeuralNetworkSubsystem::trainingTimer;
+
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
                                                const int hiddenLayers, const int hiddenLayersSizes,
@@ -147,12 +149,20 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     //  we need an index list so we can shuffle nicely
 
     std::vector<size_t> indices(datasetSize);
-
     for (size_t i = 0; i < datasetSize; i++)
     {
         indices[i] = i;
     }
 
+    // Initialize RNG with a fixed seed for reproducibility
+    std::mt19937 rng(42);
+
+    // Configure dropout for each layer if enabled
+    for (Layer& layer : network.layers)
+    {
+        // todo: Need to re-add and get this function working properly 
+        // layer.SetDropout(HyperParameters::useDropoutRate, HyperParameters::dropoutRate);
+    }
 
     // Main Training Loop
     totalEpochsAtomic.store(epochs);
@@ -161,28 +171,27 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     {
         currentEpochAtomic.store(epoch);
 
+
+        // Shuffle dataset
+        std::shuffle(indices.begin(), indices.end(), rng);
+
+        // Calculate total batches for this epoch
+        size_t totalBatches = (datasetSize + batchsize - 1) / batchsize; // Ceiling division
+
         double epochAverageCost = 0.0;
         double epochAccuracy = 0.0;
 
         currentLossAtomic.store(float(epochAverageCost));
         currentAccuracyAtomic.store(float(epochAccuracy));
+        totalBatchesInEpoch.store(static_cast<int>(totalBatches));
 
-        // Shuffle the dataset indeces. its not necessary but its normal for Stochastic Gradient Descent
-        {
-            static std::random_device rd;
-            static std::mt19937 gen(rd());
-            std::shuffle(indices.begin(), indices.end(), gen);
-        }
+        // Reset current batch index
+        currentBatchIndex.store(0);
 
-        if (stopRequested.load())
-        {
-            LOG(LogLevel::INFO, "Early Stop: user requested stop at epoch " + std::to_string(epoch));
-            break;
-        }
-
-        double epochCostSum = 0.0; // accumulate cost accross mini-batches
+        // Initialize epoch variables
+        double epochCostSum = 0.0;
         int numBatches = 0;
-        // mini batches
+
         for (size_t startIndex = 0; startIndex < datasetSize; startIndex += batchsize)
         {
             if (stopRequested.load())
@@ -254,9 +263,13 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                     visualizationCallback(CurrentNeuralNetwork);
             }
 
-            ++numBatches;
-            epochCostSum += batchCost; // from your original code
+            // Increment current batch index
+            currentBatchIndex.fetch_add(1);
         }
+        // Calculate epoch duration
+        std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+        trainingTimer.epochDuration = std::chrono::duration<double>(now - trainingTimer.lastEpochTime).count();
+        trainingTimer.lastEpochTime = now;
 
         // end of epoch
         double avgCost = epochCostSum / numBatches;
@@ -311,6 +324,11 @@ void NeuralNetworkSubsystem::TrainOnMNISTAsync()
     // mark training as started
     trainingInProgress.store(true);
     stopRequested.store(false);
+
+    trainingTimer.startTime = std::chrono::steady_clock::now();
+    trainingTimer.lastEpochTime = trainingTimer.startTime;
+    trainingTimer.epochDuration = 0.0;
+    trainingTimer.isInitialized = true;
 
     trainingThread = std::thread(&NeuralNetworkSubsystem::TrainOnMNISTThreadEntry, this);
     LOG(LogLevel::FLOW, "Launched async training thread.");
@@ -404,14 +422,26 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         LOG(LogLevel::ERROR, "Could not open file to load: " + filePath);
         return false;
     }
+
+    int layerCount = 0;
+    if (!(ifs >> layerCount))
+    {
+        LOG(LogLevel::ERROR, "Invalid network file format (layerCount).");
+        return false;
+    }
+
     NeuralNetwork newNeuralNetwork;
-    int layerCount;
-    ifs >> layerCount;
 
     for (int i = 0; i < layerCount; ++i)
     {
         int numNeurons, outOfPreviousLayer;
-        ifs >> numNeurons >> outOfPreviousLayer;
+
+        if (!(ifs >> numNeurons >> outOfPreviousLayer))
+        {
+            LOG(LogLevel::ERROR, "Malformed network file (layer header).");
+            return false;
+        }
+
         Layer layer(HyperParameters::activationType, HyperParameters::cost, numNeurons, outOfPreviousLayer);
 
         // biases
@@ -425,7 +455,10 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         {
             for (int weightsIndex = 0; weightsIndex < layer.numNeuronsOutOfPreviousLayer; ++weightsIndex)
             {
-                ifs >> layer.weights[weightsMatrixIndex][weightsIndex];
+                if (!(ifs >> layer.weights[weightsMatrixIndex][weightsIndex])) {
+                    LOG(LogLevel::ERROR, "Malformed network file (weight read).");
+                    return false;
+                }
             }
         }
         newNeuralNetwork.layers.push_back(layer);

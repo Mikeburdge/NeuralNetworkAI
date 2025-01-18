@@ -32,7 +32,7 @@ vector<double> Layer::computeOutput(const vector<double>& input)
     return output;
 }
 
-void Layer::adjustWeights(const vector<double>& errorGradient)
+void Layer::adjustWeights(const vector<double>& errorGradient, const std::vector<double>& prevLayerActivations)
 {
     PROFILE_LOG;
 
@@ -48,7 +48,8 @@ void Layer::adjustWeights(const vector<double>& errorGradient)
     {
         for (int j = 0; j < weights[i].size(); ++j)
         {
-            weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
+            // weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
+            weights[i][j] -= learningRate * errorGradient[i] * prevLayerActivations[j];
         }
 
         // string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";

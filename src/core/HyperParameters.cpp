@@ -4,18 +4,18 @@
 
 #include "Activation.h"
 
-int HyperParameters::defaultInputLayerSize = 2;
+int HyperParameters::defaultInputLayerSize = 784;
 int HyperParameters::defaultNumHiddenLayers = 2;
 
-int HyperParameters::defaultHiddenLayerSize = 5;
-int HyperParameters::defaultOutputLayerSize = 2;
+int HyperParameters::defaultHiddenLayerSize = 128; // could possibly do 256 but if we've got two hidden layers this should be fine.
+int HyperParameters::defaultOutputLayerSize = 10;
 
-float HyperParameters::defaultLearningRate = 0.001f;
-int HyperParameters::defaultBatchSize = 32;
-int HyperParameters::defaultEpochs = 100;
+float HyperParameters::defaultLearningRate = 0.01f;
+int HyperParameters::defaultBatchSize = 64;
+int HyperParameters::defaultEpochs = 10;
 
 double HyperParameters::defaultMomentum = 0.9;
-double HyperParameters::defaultWeightDecay = 0.001;
+double HyperParameters::defaultWeightDecay = 0.0001;
 bool HyperParameters::defaultUseDropoutRate = false;
 float HyperParameters::defaultDropoutRate = 0.3f;
 
