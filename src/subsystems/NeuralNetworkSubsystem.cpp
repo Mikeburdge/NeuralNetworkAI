@@ -197,7 +197,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             if (stopRequested.load())
             {
                 LOG(LogLevel::INFO, "Stop mid-epoch...");
-                goto doneTraining; // I dont like doing goto's and I havent done one in over a decade but fck it
+                break;
             }
 
             size_t endIndex = std::min(startIndex + batchsize, datasetSize); // Again possibly datasetSize - 1 if we hit out of index stuff here
@@ -278,11 +278,14 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         // update the UI
         currentLossAtomic.store(static_cast<float>(avgCost));
         currentAccuracyAtomic.store(static_cast<float>(epochAccuracy));
+
+        if (stopRequested.load())
+        {
+            break;
+        }
     }
 
-doneTraining:
     stopRequested.store(false); // reset for next time
-    LOG(LogLevel::INFO, "TrainOnMNIST done or stopped early.");
 }
 
 
