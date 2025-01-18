@@ -582,9 +582,21 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     const char* colourModes[] = {"Default", "Red-Green Gradient"};
     if (ImGui::BeginCombo("Colour Mode", colourModes[colourModeIndex]))
     {
-        for (int i = 0; i < sizeof(colourModes); i++) // I THINK sizeof() WORKS HERE BUT IF NOT TRY IM_ARRAYSIZE
+        for (int i = 0; i < IM_ARRAYSIZE(colourModes); i++)
         {
+            bool isSelected = colourModeIndex == i;
+            if (ImGui::Selectable(colourModes[i], isSelected))
+            {
+                colourModeIndex = i;
+
+                g_CircleColourMode = (i == 0 ? CircleColourMode::DefaultActivation : CircleColourMode::Gradient);
+            }
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
         }
+        ImGui::EndCombo();
     }
 
     static int vizInt = 10;
