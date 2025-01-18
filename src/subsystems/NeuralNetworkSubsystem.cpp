@@ -284,13 +284,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
             return;
         }
     }
-    if (CurrentNeuralNetwork.layers.empty())
-    {
-        LOG(LogLevel::INFO, "No existing network. Auto-creating 784->128->10 with Sigmoid/CrossEntropy.");
 
-        // todo: After some testing I want to see if adding a second hidden layer produces better results
-        InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 1, /*HiddenLayerSize*/ 128, /*output*/ 10);
-    }
 
     if (trainingInProgress.load())
     {
@@ -298,7 +292,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
         return;
     }
 
-    // start the training
+    // start the training on async
     TrainOnMNISTAsync();
 }
 
@@ -322,8 +316,23 @@ void NeuralNetworkSubsystem::StopTraining()
 {
     if (trainingInProgress.load())
     {
-        LOG(LogLevel::INFO, "Stop requested, NOT IMPLEMENTED");
-        // ADDING THERE HERE BUT ITS NOT FINISHED YET
+        LOG(LogLevel::INFO, "Stop requested");
+        stopRequested.store(true);
+
+        if (trainingThread.joinable())
+        {
+            trainingThread.join();
+        }
+        else
+        {
+            LOG(LogLevel::ERROR, "Failed to stop training thread.");
+        }
+
+        LOG(LogLevel::INFO, "Stop complete. Training thread joined.");
+    }
+    else
+    {
+        LOG(LogLevel::INFO, "No training in progress, nothing to stop idiot");
     }
 }
 

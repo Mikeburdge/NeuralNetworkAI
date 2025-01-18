@@ -18,6 +18,7 @@
 #include "core/VisualisationUtility.h"
 
 #include "dataloader/MNISTDataSet.h"
+#include "logging/Logger.h"
 #include "subsystems/NeuralNetworkSubsystem.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
@@ -540,6 +541,24 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     if (ImGui::Button("Train MNIST (Full Process)"))
     {
+        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+        
+        if (subsystem.GetNeuralNetwork().layers.empty())
+        {
+            LOG(LogLevel::INFO, "No existing network. Auto-creating layers 784->128->10 with Sigmoid/CrossEntropy.");
+
+            // todo: After some testing I want to see if adding a second hidden layer produces better results
+            subsystem.InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 2, /*HiddenLayerSize*/ 128, /*output*/ 10);
+        }
+        
+        subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
+        {
+            showVisualizationPanelWindow = true;
+        });
+
+        showDatasetManagementWindow = true;
+        showVisualizationPanelWindow = true;
+        
         NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
     }
 
