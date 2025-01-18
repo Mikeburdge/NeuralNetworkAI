@@ -83,6 +83,15 @@ static int totalEpochs = 10;
 std::string filePathName;
 std::string filePath;
 
+// Circle Colour stuff
+enum class CircleColourMode
+{
+    DefaultActivation,
+    Gradient
+};
+
+static CircleColourMode g_CircleColourMode = CircleColourMode::Gradient;
+
 //--------------------------------------------------------------------
 // Forward refs
 //--------------------------------------------------------------------
@@ -269,13 +278,13 @@ void ShowTrainingMetrics(bool* p_open)
             else
             {
                 epochTime = 0.0;
-            }   
+            }
         }
 
         int epochsLeft = totalEpochs - (currentEpoch + 1);
         double estimateRemainingTime = epochsLeft * epochTime;
 
-        
+
         ImGui::Text("Time Elapsed: %.1f s", elapsed);
         ImGui::Text("Time Remaining: %.1f s", estimateRemainingTime);
     }
@@ -403,9 +412,24 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             const Neuron& curNeuron = layer.neurons[neuronIndex];
             float activationVal = (float)curNeuron.ActivationValue;
 
+            ImColor baseColor;
+            switch (g_CircleColourMode)
+            {
+            case CircleColourMode::DefaultActivation:
+                {
+                    baseColor = VisualisationUtility::GetActivationColour(activationVal, HyperParameters::activationType);
+                }
+            case CircleColourMode::Gradient:
+                {
+                    const float ratio = std::max(0.0f, std::min(1.0f, activationVal));
+                    const float red = 1.0f - ratio;
+                    const float green = ratio;
+                    baseColor = ImColor(red, green, 0.0f, 1.0f);
+                }
+            }
+
             // Base color
-            ImColor baseColor = VisualisationUtility::GetActivationColour(
-                activationVal, HyperParameters::activationType);
+
 
             // Possibly pulse if > 0.5
             float actualSize = circleSize;
@@ -552,6 +576,17 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     ImGui::Checkbox("Show Legend Window", &showLegendWindow);
     ImGui::Checkbox("Show Training Metrics", &showTrainingMetricsWindow);
 
+    ImGui::Text("Neuron Colour Mode");
+    static int colourModeIndex = 0;
+
+    const char* colourModes[] = {"Default", "Red-Green Gradient"};
+    if (ImGui::BeginCombo("Colour Mode", colourModes[colourModeIndex]))
+    {
+        for (int i = 0; i < sizeof(colourModes); i++) // I THINK sizeof() WORKS HERE BUT IF NOT TRY IM_ARRAYSIZE
+        {
+        }
+    }
+
     static int vizInt = 10;
     ImGui::InputInt("Visualization Interval (batches)", &vizInt);
     if (ImGui::Button("Apply Visualization Interval"))
@@ -631,9 +666,9 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     static std::string inferenceImgPath;
 
-    if (ImGui::Button("Browse Load Path..."))
+    if (ImGui::Button("Browse Image..."))
     {
-        ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Load Path", ".txt\0*.txt\0\0");
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Image", ".png\0*.png\0\0");
     }
 
     if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
@@ -646,7 +681,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     }
 
     ImGui::InputText("28x28 PNG Path##Inference", inferenceImgPath.data(), sizeof(inferenceImgPath));
-        
+
     static std::vector<float> lastInferencePixels;
     static bool havePreview = false;
 
@@ -655,15 +690,15 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         try
         {
             auto pixelDoubles = NeuralNetworkSubsystem::GetInstance().LoadAndProcessPNG(inferenceImgPath);
-            
+
             lastInferencePixels.resize(pixelDoubles.size());
-            for (size_t i=0; i< pixelDoubles.size(); i++)
+            for (size_t i = 0; i < pixelDoubles.size(); i++)
             {
                 lastInferencePixels[i] = float(pixelDoubles[i]);
             }
             havePreview = true;
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             LOG(LogLevel::ERROR, e.what());
             havePreview = false;
@@ -675,20 +710,20 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         ImGui::Text("28x28 Preview:");
         float scale = 4.0f; // each pixel 4x4 on screen
         ImVec2 startPos = ImGui::GetCursorScreenPos();
-        for (int row=0; row<28; row++)
+        for (int row = 0; row < 28; row++)
         {
-            for (int col=0; col<28; col++)
+            for (int col = 0; col < 28; col++)
             {
-                float val = lastInferencePixels[row*28 + col]; // 0..1
+                float val = lastInferencePixels[row * 28 + col]; // 0..1
                 // We'll map it to a grayscale
                 ImColor color = ImColor(val, val, val, 1.0f);
-                ImVec2 ul = ImVec2(startPos.x + col*scale, startPos.y + row*scale);
+                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
                 ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
                 ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
             }
         }
         // Advance the ImGui cursor so next item is below
-        ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28*scale + 10));
+        ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28 * scale + 10));
 
         // Next, do the inference
         if (ImGui::Button("Infer from Preview"))
