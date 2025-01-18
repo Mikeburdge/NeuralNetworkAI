@@ -5,6 +5,7 @@ enum ActivationType
 	sigmoid,
 	sigmoidDerivative,
 	ReLU,
+	softmax,
 	Activation_Count
 };
 

@@ -70,7 +70,7 @@ std::vector<double> Cost::CalculateCostDerivative(const CostType inCostType, con
             {
                 costGradient[i] = (predicted[i] - actual[i]);
             }
-        // If I'm going to use softmax then I'll need to use a different approach here. / I think this came from a chat with Paolo
+            // If I'm going to use softmax then I'll need to use a different approach here.
             break;
         case cost_Count:
             costGradient[i] = 0.0;

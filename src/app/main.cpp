@@ -775,7 +775,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             // Activation
             static int activationElem = (int)sigmoid;
-            const char* activationNames[] = {"Sigmoid", "Sigmoid Derivative", "ReLU"};
+            const char* activationNames[] = {"Sigmoid", "Sigmoid Derivative", "ReLU", "softmax"};
             const char* actName = (activationElem >= 0 && activationElem < Activation_Count) ? activationNames[activationElem] : "Unknown";
             ImGui::SliderInt("Activation", &activationElem, 0, Activation_Count - 1, actName);
 

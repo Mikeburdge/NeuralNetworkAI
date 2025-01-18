@@ -24,9 +24,33 @@ vector<double> Layer::computeOutput(const vector<double>& input)
         {
             neuronOutput += input[neuronsOut] * weights[neuronsIn][neuronsOut]; // Sum the weighted inputs
         }
+    }
 
-        // Add the neuron's output to the layer's output
-        neurons[neuronsIn].ActivationValue = output[neuronsIn] = Activation::CalculateActivation(activation, neuronOutput);
+    if (activation == ActivationType::softmax)
+    {
+        // Exponentiate the raw values then normalize to get probabilities
+        double maxRaw = *std::max_element(output.begin(), output.end()); // numerical stability
+        double sumExp = 0.0;
+        for (int i = 0; i < numNeurons; ++i)
+        {
+            double expVal = std::exp(output[i] - maxRaw);
+            output[i] = expVal;
+            sumExp += expVal;
+        }
+
+        for (int i = 0; i < numNeurons; ++i)
+        {
+            double softmaxVal = output[i] / sumExp;
+            neurons[i].ActivationValue = output[i] = softmaxVal;
+        }
+    }
+    else
+    {
+        for (int neuronIn = 0; neuronIn < numNeurons; ++neuronIn)
+        {
+            double activatedVal = Activation::CalculateActivation(activation, output[neuronIn]);
+            neurons[neuronIn].ActivationValue = output[neuronIn] = activatedVal;
+        }
     }
 
     return output;
@@ -106,6 +130,5 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
 
     return previousLayerErrorGradient;
 }
-
 
 #pragma optimize("", on)
