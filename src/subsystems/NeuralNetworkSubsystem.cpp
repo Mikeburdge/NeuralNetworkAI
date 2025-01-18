@@ -339,6 +339,21 @@ void NeuralNetworkSubsystem::StopTraining()
 bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
 {
     // todo: could and probably should make a new subsystem/ file for this but i need this quickly so fuck it
+    try
+    {
+        std::filesystem::path path = filePath;
+        std::filesystem::path parentDir = path.parent_path();
+        if (parentDir.empty() && !std::filesystem::exists(parentDir))
+        {
+            std::filesystem::create_directories(parentDir);
+        }
+    }
+    catch (std::exception& e)
+    {
+        LOG(LogLevel::ERROR, "Failed to create directories for saving the network: " + std::string(e.what()));
+        return false;
+    }
+
     std::ofstream ofs(filePath);
     if (!ofs.is_open())
     {
