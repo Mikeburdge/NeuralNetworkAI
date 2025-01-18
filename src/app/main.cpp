@@ -501,7 +501,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     {
         if (ImGui::Button("Stop Training"))
         {
-            NeuralNetworkSubsystem::GetInstance().RequestStopTraining();
+            NeuralNetworkSubsystem::GetInstance().StopTraining();
         }
     }
 
@@ -542,7 +542,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     if (ImGui::Button("Train MNIST (Full Process)"))
     {
         NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
-        
+
         if (subsystem.GetNeuralNetwork().layers.empty())
         {
             LOG(LogLevel::INFO, "No existing network. Auto-creating layers 784->128->10 with Sigmoid/CrossEntropy.");
@@ -550,7 +550,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             // todo: After some testing I want to see if adding a second hidden layer produces better results
             subsystem.InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 2, /*HiddenLayerSize*/ 128, /*output*/ 10);
         }
-        
+
         subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
         {
             showVisualizationPanelWindow = true;
@@ -558,7 +558,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
         showDatasetManagementWindow = true;
         showVisualizationPanelWindow = true;
-        
+
         NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
     }
 
@@ -643,6 +643,10 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputFloat("Learning Rate", &HyperParameters::learningRate, 0.001f);
             ImGui::InputInt("Batch Size", &HyperParameters::batchSize);
             ImGui::InputInt("Epochs", &HyperParameters::epochs);
+            if (HyperParameters::epochs < 1)
+            {
+                HyperParameters::epochs = 1;
+            }
             ImGui::InputDouble("Momentum", &HyperParameters::momentum, 0.1, 0.2, "%.2f");
             ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.5f");
 

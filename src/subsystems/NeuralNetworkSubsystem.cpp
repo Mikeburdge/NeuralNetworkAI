@@ -261,6 +261,10 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         // end of epoch
         double avgCost = epochCostSum / numBatches;
         LOG(LogLevel::INFO, "Epoch " + std::to_string(epoch) + " cost= " + std::to_string(avgCost));
+
+        // update the UI
+        currentLossAtomic.store(static_cast<float>(avgCost));
+        currentAccuracyAtomic.store(static_cast<float>(epochAccuracy));
     }
 
 doneTraining:
