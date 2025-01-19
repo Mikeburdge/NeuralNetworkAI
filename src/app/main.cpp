@@ -744,7 +744,39 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             ImGui::Text("Predicted digit = %d", digit);
         }
     }
+    ImGui::SameLine();
+    static bool useTextPreview = false;
+    ImGui::Checkbox("Use Text-based Input Preview ", &useTextPreview);
+    if (useTextPreview)
+    {
+        ImGui::Text("Enter digit 0-9 (refactor this later)");
 
+        static char digitText[2] = "0";
+        ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
+
+        float scale = 4.0f;
+        ImVec2 startPos = ImGui::GetCursorScreenPos();
+        for (int row = 0; row < 28; row++)
+        {
+            for (int col = 0; col < 28; col++)
+            {
+                // top left bottom right
+                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
+                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, ImColor(0.0f, 0.0f, 0.0f, 0.0f));
+            }
+        }
+
+        ImVec2 textPos(startPos.x + (28 * scale * 0.3f), startPos.y + (28 * scale * 0.2f));
+        ImGui::GetWindowDrawList()->AddText(NULL, 24.0f /* big font size */, textPos, IM_COL32_BLACK, digitText);
+
+        ImGui::GetWindowDrawList()->AddRect(
+            startPos,
+            ImVec2(startPos.x + 28 * scale, startPos.y + 28 * scale),
+            IM_COL32(0, 0, 0, 255), // black border
+            0.0f, 0, 2.0f // rounding=0, corners=0, thickness=2
+        );
+    }
 
     ImGui::End();
 }

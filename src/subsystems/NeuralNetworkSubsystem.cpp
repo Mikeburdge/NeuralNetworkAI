@@ -273,7 +273,10 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         // end of epoch
         double avgCost = epochCostSum / numBatches;
-        LOG(LogLevel::INFO, "Epoch " + std::to_string(epoch) + " cost= " + std::to_string(avgCost));
+        LOG(LogLevel::INFO,
+            "Epoch " + std::to_string(epoch + 1) +
+            " of " + std::to_string(epochs) +
+            " cost: " + std::to_string(avgCost));
 
         // update the UI
         currentLossAtomic.store(static_cast<float>(avgCost));
@@ -458,7 +461,8 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         {
             for (int weightsIndex = 0; weightsIndex < layer.numNeuronsOutOfPreviousLayer; ++weightsIndex)
             {
-                if (!(ifs >> layer.weights[weightsMatrixIndex][weightsIndex])) {
+                if (!(ifs >> layer.weights[weightsMatrixIndex][weightsIndex]))
+                {
                     LOG(LogLevel::ERROR, "Malformed network file (weight read).");
                     return false;
                 }
