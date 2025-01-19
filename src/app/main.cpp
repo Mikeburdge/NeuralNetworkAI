@@ -717,6 +717,8 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         }
     }
 
+    ImGui::Columns(2, "PreviewColumns", false);
+
     if (havePreview)
     {
         ImGui::Text("28x28 Preview:");
@@ -734,49 +736,58 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
                 ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
             }
         }
-        // Advance the ImGui cursor so next item is below
+        
         ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28 * scale + 10));
-
-        // Next, do the inference
         if (ImGui::Button("Infer from Preview"))
         {
             int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
             ImGui::Text("Predicted digit = %d", digit);
         }
     }
-    ImGui::SameLine();
+    else
+    {
+        ImGui::Text("No image preview loaded yet.");
+    }
+
+    ImGui::NextColumn();
+
     static bool useTextPreview = false;
-    ImGui::Checkbox("Use Text-based Input Preview ", &useTextPreview);
+    ImGui::Checkbox("Use Text-based Preview", &useTextPreview);
+
     if (useTextPreview)
     {
-        ImGui::Text("Enter digit 0-9 (refactor this later)");
-
+        ImGui::Text("Enter digit 0-9:");
         static char digitText[2] = "0";
         ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
 
         float scale = 4.0f;
         ImVec2 startPos = ImGui::GetCursorScreenPos();
+
         for (int row = 0; row < 28; row++)
         {
             for (int col = 0; col < 28; col++)
             {
-                // top left bottom right
                 ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
                 ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
-                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, ImColor(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, IM_COL32_WHITE);
             }
         }
 
-        ImVec2 textPos(startPos.x + (28 * scale * 0.3f), startPos.y + (28 * scale * 0.2f));
-        ImGui::GetWindowDrawList()->AddText(NULL, 24.0f /* big font size */, textPos, IM_COL32_BLACK, digitText);
+        ImVec2 textPos(
+            startPos.x + (28.0f * scale * 0.3f),
+            startPos.y + (28.0f * scale * 0.2f)
+        );
+        ImGui::GetWindowDrawList()->AddText(NULL, 24.0f, textPos, IM_COL32_BLACK, digitText);
 
+        // Border
         ImGui::GetWindowDrawList()->AddRect(
             startPos,
             ImVec2(startPos.x + 28 * scale, startPos.y + 28 * scale),
-            IM_COL32(0, 0, 0, 255), // black border
-            0.0f, 0, 2.0f // rounding=0, corners=0, thickness=2
+            IM_COL32(0, 0, 0, 255), 0.0f, 0, 2.0f
         );
     }
+
+    ImGui::Columns(1);
 
     ImGui::End();
 }

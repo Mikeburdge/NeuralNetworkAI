@@ -24,6 +24,7 @@ vector<double> Layer::computeOutput(const vector<double>& input)
         {
             neuronOutput += input[neuronsOut] * weights[neuronsIn][neuronsOut]; // Sum the weighted inputs
         }
+        output[neuronsIn] = neuronOutput; // Make sure we store the output
     }
 
     if (activation == ActivationType::softmax)
