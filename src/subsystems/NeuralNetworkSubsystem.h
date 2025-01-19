@@ -1,24 +1,38 @@
 #pragma once
 
+#include <atomic>
 #include <filesystem>
 #include <functional>
+#include <thread>
 #include <vector>
-#include "core/SingletonBase.h"
+
 #include "core/NeuralNetwork.h"
+#include "core/SingletonBase.h"
 #include "dataloader/MNISTDataSet.h"
 
 
-static const std::string DEFAULT_IMAGES_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive"/ "train-images.idx3-ubyte").string();
-static const std::string DEFAULT_LABELS_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive"/ "train-labels.idx1-ubyte").string();
+static const std::string DEFAULT_IMAGES_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-images.idx3-ubyte").string();
+static const std::string DEFAULT_LABELS_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-labels.idx1-ubyte").string();
 
 class NeuralNetworkSubsystem : public SingletonBase
 {
 public:
+    struct TrainingTimer
+    {
+        std::chrono::steady_clock::time_point startTime;
+        std::chrono::steady_clock::time_point lastEpochTime;
+        double epochDuration = 0.0;
+        bool isInitialized = false;
+    };
+
+    static TrainingTimer trainingTimer;
+
     static NeuralNetworkSubsystem& GetInstance()
     {
         static NeuralNetworkSubsystem instance;
         return instance;
     }
+
     NeuralNetworkSubsystem() = default;
 
     // We do not allow copying
@@ -29,9 +43,35 @@ private:
 
     // The MNIST dataset loaded in memory
     MNISTDataSet trainingDataSet;
-    bool mnistTrainingDataLoaded = false;
+    bool bIsMnistTrainingDataLoaded = false;
+
+    int vizUpdateInterval = 10;
+    int vizBatchCounter = 0;
 
 public:
+    // Threadding
+    std::thread trainingThread;
+    std::atomic<bool> trainingInProgress{false};
+
+    std::atomic<int> currentEpochAtomic{0};
+    std::atomic<float> currentLossAtomic{0.0f};
+    std::atomic<float> currentAccuracyAtomic{0.0f};
+    std::atomic<int> totalEpochsAtomic{0};
+
+    std::atomic<int> currentBatchIndex{0};
+    std::atomic<int> totalBatchesInEpoch{0};
+
+    // for stopping the training
+    std::atomic<bool> stopRequested{false};
+
+    void SetVizUpdateInterval(int interval)
+    {
+        vizUpdateInterval = interval;
+    }
+
+    // number of neurons to display in one layer
+    int maxNeuronsToDisplay = 20;
+
     void InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                            int inputLayerSize, int hiddenLayers, int hiddenLayerSize,
                            int outputLayerSize);
@@ -39,7 +79,7 @@ public:
     NeuralNetwork& GetNeuralNetwork();
 
     // --------------------------------------------------------------------
-    // The old single-sample method (might still come in handy)
+    // The old single sample method (might still come in handy)
     void StartNeuralNetwork(const std::vector<double>& inputData,
                             const std::vector<double>& targetOutput);
 
@@ -47,18 +87,43 @@ public:
     bool LoadMNISTTrainingData(const std::string& imagesPath,
                                const std::string& labelsPath);
 
-    bool IsMNISTTrainingDataLoaded() const { return mnistTrainingDataLoaded; }
+    bool IsMNISTTrainingDataLoaded() const { return bIsMnistTrainingDataLoaded; }
     MNISTDataSet& GetTrainingDataSet() { return trainingDataSet; }
 
     // --------------------------------------------------------------------
-    // Newer multi-batch training with the entire dataset
-    // This replaces or extends the "StartNeuralNetwork" single sample approach method.
+    // New batch training with the entire dataset
+    // This extends on the "StartNeuralNetwork" single sample approach method.
     void TrainOnMNIST();
     void TrainOnMNISTFullProcess();
+
+    void TrainOnMNISTAsync(); // This will call the TrainOnMNIST functions
+    bool IsTrainingInProgress() const { return trainingInProgress.load(); }
+
+    void StopTraining();
+
+
+    // Saving and Loading
+    bool SaveNetwork(const std::string& filePath);
+    bool LoadNetwork(const std::string& filePath);
+    int InferSingleImageFromPath(const std::string& path);
+
+
+    // To call whe ninferring an image
+    int InferSingleImage(const std::vector<double>& image);
+    std::vector<double> LoadAndProcessPNG(const std::string& path);
+
+
+    // functions for stopRequested atomic variable
+    void RequestStopTraining() { stopRequested.store(true); }
+    bool IsStopRequested() const { return stopRequested.load(); }
+
 
     // Visualization callback for real-time network updates, if desired
     void SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback);
 
 private:
     std::function<void(const NeuralNetwork&)> visualizationCallback;
+
+
+    void TrainOnMNISTThreadEntry();
 };

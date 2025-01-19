@@ -13,6 +13,7 @@ double Activation::CalculateActivation(const ActivationType inActivation, const 
 		return sigmoidDerivative(x);
 	case ActivationType::ReLU:
 		return ReLU(x);
+	case softmax: // this ignorable on a per neuron basis cos its calculated in the layer 
 	default:
 		return 1.0; // Default return identity for no activation
 	}

@@ -58,24 +58,19 @@ std::vector<double> Cost::CalculateCostDerivative(const CostType inCostType, con
 {
     std::vector<double> costGradient(predicted.size());
 
-    for (size_t i = 0; i < predicted.size(); ++i)
+    switch (inCostType)
     {
-        switch (inCostType)
+    case CostType::meanSquaredError:
+    case CostType::crossEntropy:
+        // MSE Derivative: predicted - actual
+        // Cross-Entropy Derivative: assuming sigmoid output layer
+        for (size_t i = 0; i < predicted.size(); ++i)
         {
-        case CostType::meanSquaredError:
-        case CostType::crossEntropy:
-            // MSE Derivative: predicted - actual
-            // Cross-Entropy Derivative: assuming sigmoid output layer
-            for (size_t i = 0; i < predicted.size(); ++i)
-            {
-                costGradient[i] = (predicted[i] - actual[i]);
-            }
-        // If I'm going to use softmax then I'll need to use a different approach here. / I think this came from a chat with Paolo
-            break;
-        case cost_Count:
-            costGradient[i] = 0.0;
-            break;
+            costGradient[i] = (predicted[i] - actual[i]);
         }
+        break;
+    default:
+        break;
     }
 
     return costGradient;

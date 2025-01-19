@@ -24,8 +24,6 @@ private:
 
     static std::string getCurrentTimestamp();
 
-    static std::string getInitTimestamp();
-
     static std::string fileName;
 };
 

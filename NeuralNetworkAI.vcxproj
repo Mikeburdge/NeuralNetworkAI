@@ -36,6 +36,7 @@
     <ClInclude Include="src\dataloader\MNISTLoader.h" />
     <ClInclude Include="src\logging\Logger.h" />
     <ClInclude Include="src\subsystems\NeuralNetworkSubsystem.h" />
+    <ClInclude Include="src\utility\NeuralNetworkUtility.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +59,7 @@
     <ClCompile Include="src\dataloader\MNISTLoader.cpp" />
     <ClCompile Include="src\logging\Logger.cpp" />
     <ClCompile Include="src\subsystems\NeuralNetworkSubsystem.cpp" />
+    <ClCompile Include="src\utility\NeuralNetworkUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="libs\emscripten\shell_minimal.html" />

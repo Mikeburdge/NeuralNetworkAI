@@ -37,8 +37,20 @@ void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
     for (int layerIndex = layers.size() - 1; layerIndex >= 0; --layerIndex)
     {
         Layer& currentLayer = layers[layerIndex];
-
-        currentLayer.adjustWeights(errorGradient);
+        if (layerIndex > 0)
+        {
+            Layer& prevLayer = layers[layerIndex - 1];
+            std::vector<double> prevActivations(prevLayer.numNeurons);
+            for (int prevLayerIndex = 0; prevLayerIndex < prevLayer.numNeurons; prevLayerIndex++)
+            {
+                prevActivations[prevLayerIndex] = prevLayer.neurons[prevLayerIndex].ActivationValue;
+            }
+            currentLayer.adjustWeights(errorGradient, prevActivations);
+        }
+        else
+        {
+            currentLayer.adjustWeights(errorGradient, {});
+        }
 
         if (layerIndex > 0)
         {

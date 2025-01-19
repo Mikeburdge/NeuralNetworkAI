@@ -2,9 +2,11 @@
 
 #include <filesystem>
 
+#include "utility/NeuralNetworkUtility.h"
+
 using namespace std;
 
-std::string Logger::fileName = "LogFiles/NeuralNetworkAILogFile_" + getInitTimestamp() + ".txt";
+std::string Logger::fileName = "LogFiles/NeuralNetworkAILogFile_" + NeuralNetworkUtility::GetInitTimestamp() + ".txt";
 
 void Logger::log(const LogLevel level, const string& message)
 {
@@ -78,6 +80,10 @@ string Logger::getLogLevelAsString(const LogLevel level)
         return "ERROR";
     case LogLevel::FATAL:
         return "FATAL";
+    case LogLevel::PROFILING:
+        return "PROFILING";
+    case LogLevel::FLOW:
+        return "FLOW";
     default:
         return "UNKNOWN";
     }
@@ -94,21 +100,6 @@ string Logger::getCurrentTimestamp()
     
     char formattedTime[100];
     strftime(formattedTime, sizeof(formattedTime), "%Y-%m-%d %H:%M:%S", &buffer);
-
-    return  formattedTime;
-}
-
-string Logger::getInitTimestamp()
-{
-    const chrono::time_point<chrono::system_clock> now = chrono::system_clock::now();
-
-    const time_t nowTime = chrono::system_clock::to_time_t(now);
-
-    tm buffer;
-    localtime_s(&buffer, &nowTime);
-    
-    char formattedTime[100];
-    strftime(formattedTime, sizeof(formattedTime), "%Y-%m-%d_%H-%M-%S", &buffer);
 
     return  formattedTime;
 }

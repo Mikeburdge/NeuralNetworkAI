@@ -18,9 +18,9 @@
 #include "core/VisualisationUtility.h"
 
 #include "dataloader/MNISTDataSet.h"
+#include "logging/Logger.h"
 #include "subsystems/NeuralNetworkSubsystem.h"
 
-// [Win32] Our example includes a copy of glfw3.lib pre-compiled ...
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -54,18 +54,43 @@ bool showNeuralNetworkControlsWindow = true;
 bool showVisualizationPanelWindow = false;
 bool showAdvancedEditingWindow = false;
 
+// Visualization parameters
 float minCircleSizeValue = 5.0f;
 float maxCircleSizeValue = 50.0f;
 float circleThicknessValue = 1.0f;
 float minLineThicknessValue = 1.0f;
 bool drawLineConnections = true;
 bool drawWeights = false;
-bool activeNeuronCanPulse = true;
+bool activeNeuronCanPulse = false;
 int hoveredWeightIndex = -1;
 int clickedWeightIndex = -1;
 
+// Padding and labeling
+float topPadding = 30.0f;
+float bottomPadding = 30.0f;
+bool showLayerLabels = true;
+
+// Legend + Training Metrics
+bool showLegendWindow = true;
+bool showTrainingMetricsWindow = true;
+
+// Example training metrics (placeholder)
+static float currentLoss = 0.123f;
+static float currentAcc = 92.5f;
+static int currentEpoch = 0;
+static int totalEpochs = 10;
+
 std::string filePathName;
 std::string filePath;
+
+// Circle Colour stuff
+enum class CircleColourMode
+{
+    DefaultActivation,
+    Gradient
+};
+
+static CircleColourMode g_CircleColourMode = CircleColourMode::Gradient;
 
 //--------------------------------------------------------------------
 // Forward refs
@@ -74,7 +99,7 @@ static void glfw_error_callback(int error, const char* description);
 static void check_vk_result(VkResult err);
 
 //--------------------------------------------------------------------
-// [SECTION 3] A simple texture struct, if you need it
+// A possible texture struct (unused in this snippet, keep if needed)
 //--------------------------------------------------------------------
 struct MyTextureData
 {
@@ -88,7 +113,6 @@ struct MyTextureData
     VkSampler Sampler;
     VkBuffer UploadBuffer;
     VkDeviceMemory UploadBufferMemory;
-
     MyTextureData() { memset(this, 0, sizeof(*this)); }
 };
 
@@ -123,7 +147,7 @@ static void RemoveTexture(MyTextureData* tex_data)
 // [SECTION 5] ImGui Windows
 //--------------------------------------------------------------------
 
-// 5.1 Advanced Editing
+// 5.1: Advanced Editing (Weights & Biases)
 void AdvancedEditingWindow(bool* p_open, NeuralNetwork& network)
 {
     if (!ImGui::Begin("Advanced Editing (Weights & Biases)", p_open))
@@ -171,28 +195,152 @@ void AdvancedEditingWindow(bool* p_open, NeuralNetwork& network)
     ImGui::End();
 }
 
-// 5.2 Visualization Panel
+// 5.2: Legend Window
+void ShowLegendWindow(bool* p_open)
+{
+    if (!ImGui::Begin("Legend", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    ImGui::Text("Neuron Colors:");
+    ImGui::BulletText("Green if activation > 0.5, Red otherwise");
+    ImGui::Separator();
+
+    ImGui::Text("Line Colors:");
+    ImGui::BulletText("Green for positive weights, Red for negative");
+    ImGui::BulletText("Thickness indicates magnitude");
+    ImGui::Separator();
+
+    ImGui::End();
+}
+
+// 5.2.1: Training Metrics Window
+void ShowTrainingMetrics(bool* p_open)
+{
+    if (!ImGui::Begin("Training Metrics", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+    float loss = subsystem.currentLossAtomic.load();
+    float accuracy = subsystem.currentAccuracyAtomic.load();
+    int currentEpoch = subsystem.currentEpochAtomic.load();
+    int totalEpochs = subsystem.totalEpochsAtomic.load();
+
+    int currentBatch = subsystem.currentBatchIndex.load();
+    int totalBatchesThisEpoch = subsystem.totalBatchesInEpoch.load();
+
+
+    float epochFraction = 0.0f;
+    if (totalBatchesThisEpoch > 0)
+    {
+        epochFraction = static_cast<float>(currentBatch) / static_cast<float>(totalBatchesThisEpoch);
+    }
+
+    float overallFraction = 0.0f;
+    if (totalEpochs > 0)
+    {
+        overallFraction = (static_cast<float>(currentEpoch) + epochFraction) / static_cast<float>(totalEpochs);
+    }
+
+    ImGui::ProgressBar(epochFraction, ImVec2(-1.0f, 0.0f), "Epoch Progress");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("%.1f%% done", epochFraction * 100.0f);
+    }
+    ImGui::ProgressBar(overallFraction, ImVec2(-1.0f, 0.0f), "Trainig Progress");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("%.1f%% done", overallFraction * 100.0f);
+    }
+
+    if (subsystem.trainingTimer.isInitialized)
+    {
+        std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::high_resolution_clock::now();
+        double elapsed = std::chrono::duration<double>(now - subsystem.trainingTimer.startTime).count();
+
+        double epochTime = 0.0;
+        if (currentEpoch > 0)
+        {
+            epochTime = subsystem.trainingTimer.epochDuration;
+        }
+        else
+        {
+            if (currentEpoch > 0)
+            {
+                epochTime = elapsed / static_cast<double>(currentEpoch);
+            }
+            else
+            {
+                epochTime = 0.0;
+            }
+        }
+
+        int epochsLeft = totalEpochs - (currentEpoch + 1);
+        double estimateRemainingTime = epochsLeft * epochTime;
+
+
+        ImGui::Text("Time Elapsed: %.1f s", elapsed);
+        ImGui::Text("Time Remaining: %.1f s", estimateRemainingTime);
+    }
+    else
+    {
+        ImGui::Text("Time Elapsed: N/A");
+        ImGui::Text("Time Remaining: N/A");
+    }
+
+    ImGui::Text("Epoch: %d/%d (Batch %d/%d)", currentEpoch + 1, totalEpochs, currentBatch, totalBatchesThisEpoch);
+    ImGui::Text("Loss: %.4f", loss);
+    ImGui::Text("Accuracy: %.2f%%", accuracy * 100.f);
+
+    ImGui::End();
+}
+
+// 5.3: Calculation for circle size
 static float CalculateMaxCircleSize(const ImVec2& winSize, int numLayers, float maxCircleSizeValue)
 {
+    // same as before
     return std::min(std::min(winSize.x, winSize.y) / (numLayers * 2.0f), maxCircleSizeValue);
 }
 
+// 5.4: Visualization Panel
 void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 {
+    // Begin the main visualization window
     if (!ImGui::Begin("Neural Network Visualization (Panel)", p_open))
     {
         ImGui::End();
         return;
     }
 
-    const ImVec2 windowSize = ImGui::GetWindowSize();
-    const ImVec2 windowPos = ImGui::GetWindowPos();
-    const float windowScrollY = ImGui::GetScrollY();
-    const float maxCircleSize = CalculateMaxCircleSize(windowSize,
-                                                       (int)network.layers.size(),
-                                                       maxCircleSizeValue);
-    const float layerSpacing = windowSize.x / (network.layers.size() + 1);
+    const int layerCount = (int)network.layers.size();
+    if (layerCount == 0)
+    {
+        ImGui::Text("No layers to display.");
+        ImGui::End();
+        return;
+    }
 
+    // Grab the size & position of this window
+    ImVec2 availSize = ImGui::GetWindowSize();
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    float scrollY = ImGui::GetScrollY();
+
+    // We'll display neurons in the area: topPadding..(availSize.y - bottomPadding)
+    float innerHeight = availSize.y - (topPadding + bottomPadding);
+
+    // A "max circle size" based on how many layers are horizontally
+    float maxCircSize = CalculateMaxCircleSize(availSize, layerCount, maxCircleSizeValue);
+
+    // Horizontal spacing between columns
+    float layerSpacing = (layerCount > 1) ? (availSize.x / (float)(layerCount + 1)) : (availSize.x * 0.5f);
+
+    // We'll store info about lines so we can draw numeric weights
     struct LineInfo
     {
         ImVec2 lineStart;
@@ -205,114 +353,202 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         {
         }
     };
-
     std::vector<LineInfo> lineInfos;
 
-    // Render Layers
-    for (int layerIndex = 0; layerIndex < (int)network.layers.size(); ++layerIndex)
+    // For each layer...
+    int maxNeuronDisplay = NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay;
+
+    for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
         const Layer& layer = network.layers[layerIndex];
-        float layerPosX = (layerIndex + 1) * layerSpacing;
         int numNeurons = layer.numNeurons;
-        float neuronSpacing = windowSize.y / (numNeurons + 1);
+        int displayCount = std::min(numNeurons, maxNeuronDisplay);
 
-        for (int neuronIndex = 0; neuronIndex < numNeurons; ++neuronIndex)
+        // We'll space the truncated set across "innerHeight"
+        float neuronSpacing = (displayCount > 1) ? (innerHeight / (float)(displayCount + 1)) : (innerHeight * 0.5f);
+
+        // X position of this layer
+        float layerPosX = (layerIndex + 1) * layerSpacing;
+
+        // If we label the layer
+        if (showLayerLabels)
         {
-            float circleSize = std::min(maxCircleSize, neuronSpacing * 0.5f);
-            float posX = layerPosX;
-            float posY = (neuronIndex + 1) * neuronSpacing;
-
-            ImGui::SetCursorPos(ImVec2(posX - circleSize, posY - circleSize));
-            ImGui::BeginGroup();
-            ImGui::PushID((void*)((uintptr_t(layerIndex) << 16) | uintptr_t(neuronIndex)));
-
-            const Neuron currentNeuron = layer.neurons[neuronIndex];
-            ImColor colour = VisualisationUtility::GetActivationColour(
-                (float)currentNeuron.ActivationValue, HyperParameters::activationType);
-
-            ImVec2 circlePos(
-                ImGui::GetCursorScreenPos().x + circleSize,
-                ImGui::GetCursorScreenPos().y + circleSize
-            );
-
-            float pulseSize = circleSize;
-            if (activeNeuronCanPulse && currentNeuron.ActivationValue > 0.5f)
+            // If first layer -> "Input Layer", last -> "Output Layer", else "Hidden ..."
+            std::string layerName;
+            if (layerIndex == 0)
             {
-                pulseSize += (sinf(ImGui::GetTime() * 5.0f) * 2.0f);
+                layerName = "Input Layer";
+            }
+            else if (layerIndex == layerCount - 1)
+            {
+                layerName = "Output Layer";
+            }
+            else
+            {
+                layerName = "Hidden Layer " + std::to_string(layerIndex);
             }
 
-            ImGui::GetWindowDrawList()->AddCircle(
-                circlePos, pulseSize, colour, 12, 1.0f
+            // Place label near top, but safely inside the window
+            float labelY = windowPos.y + scrollY + topPadding;
+            ImVec2 labelPos(windowPos.x + layerPosX, labelY);
+            ImGui::GetWindowDrawList()->AddText(labelPos, ImColor(255, 255, 0, 255), layerName.c_str());
+        }
+
+        // Draw each neuron
+        for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
+        {
+            float circleSize = std::min(maxCircSize, neuronSpacing * 0.5f);
+
+            // Y coordinate for this neuron
+            float posY = topPadding + (neuronIndex + 1) * neuronSpacing;
+
+            // The circle center
+            ImVec2 circleCenter(
+                windowPos.x + layerPosX,
+                windowPos.y + posY - scrollY
             );
 
+            // The neuron's activation
+            const Neuron& curNeuron = layer.neurons[neuronIndex];
+            float activationVal = (float)curNeuron.ActivationValue;
+
+            ImColor baseColor;
+            switch (g_CircleColourMode)
+            {
+            case CircleColourMode::DefaultActivation:
+                {
+                    baseColor = VisualisationUtility::GetActivationColour(activationVal, HyperParameters::activationType);
+                }
+            case CircleColourMode::Gradient:
+                {
+                    const float ratio = std::max(0.0f, std::min(1.0f, activationVal));
+                    const float red = 1.0f - ratio;
+                    const float green = ratio;
+                    baseColor = ImColor(red, green, 0.0f, 1.0f);
+                }
+            }
+
+            // Base color
+
+
+            // Possibly pulse if > 0.5
+            float actualSize = circleSize;
+            if (activeNeuronCanPulse && activationVal > 0.5f)
+            {
+                actualSize += (sinf(ImGui::GetTime() * 5.0f) * 2.0f);
+            }
+
             // Hover detection
-            const ImVec2 mousePos = ImGui::GetMousePos();
-            bool mouseHoveringNeuron =
-                VisualisationUtility::PointToCircleCollisionCheck(mousePos, circlePos, circleSize);
+            ImVec2 mousePos = ImGui::GetMousePos();
+            float dx = mousePos.x - circleCenter.x;
+            float dy = mousePos.y - circleCenter.y;
+            bool hoveredNeuron = (dx * dx + dy * dy) < (actualSize * actualSize);
 
-            // Draw activation text
+            // If hovered, show more decimals, highlight color
             char buf[32];
-            if (mouseHoveringNeuron) std::snprintf(buf, sizeof(buf), "%.3f", currentNeuron.ActivationValue);
-            else std::snprintf(buf, sizeof(buf), "%.1f", currentNeuron.ActivationValue);
+            if (hoveredNeuron)
+                std::snprintf(buf, sizeof(buf), "%.3f", activationVal);
+            else
+                std::snprintf(buf, sizeof(buf), "%.1f", activationVal);
 
-            ImVec2 textSize = ImGui::CalcTextSize(buf);
-            ImVec2 textPos = ImVec2(posX - textSize.x * 0.5f, posY - textSize.y * 0.5f);
-            ImGui::SetCursorPos(textPos);
-            ImGui::Text("%s", buf);
+            ImColor drawColor = hoveredNeuron ? ImColor(255, 255, 0, 255) : baseColor;
 
-            ImGui::PopID();
-            ImGui::EndGroup();
+            // Draw the circle
+            ImGui::GetWindowDrawList()->AddCircle(
+                circleCenter,
+                actualSize,
+                drawColor,
+                16,
+                circleThicknessValue
+            );
 
-            // Draw connections from previous layer
+            // Draw the text
+            ImVec2 txtSize = ImGui::CalcTextSize(buf);
+            ImVec2 txtPos(
+                circleCenter.x - txtSize.x * 0.5f,
+                circleCenter.y - txtSize.y * 0.5f
+            );
+            ImGui::GetWindowDrawList()->AddText(txtPos, IM_COL32_WHITE, buf);
+
+            // If we have a previous layer, draw connections
             if (layerIndex > 0 && drawLineConnections)
             {
-                float prevLayerPosX = layerPosX - layerSpacing;
                 const Layer& prevLayer = network.layers[layerIndex - 1];
-                int numNeuronsPrev = prevLayer.numNeurons;
-                float neuronSpacingPrev = windowSize.y / (numNeuronsPrev + 1);
-                float prevCircleSize = std::min(maxCircleSize, neuronSpacingPrev * 0.5f);
+                int prevCount = std::min(prevLayer.numNeurons, maxNeuronDisplay);
 
+                float prevNeuronSpacing = (prevCount > 1) ? (innerHeight / (float)(prevCount + 1)) : (innerHeight * 0.5f);
+
+                // Check shape
                 if ((int)layer.weights.size() == numNeurons &&
-                    (int)layer.weights[neuronIndex].size() == numNeuronsPrev)
+                    (int)layer.weights[neuronIndex].size() == prevLayer.numNeurons)
                 {
-                    for (int prevNeuronIndex = 0; prevNeuronIndex < numNeuronsPrev; ++prevNeuronIndex)
+                    for (int pIdx = 0; pIdx < prevCount; ++pIdx)
                     {
-                        float weight = (float)layer.weights[neuronIndex][prevNeuronIndex];
+                        float weightVal = (float)layer.weights[neuronIndex][pIdx];
                         float thickness = std::max(minLineThicknessValue,
-                                                   1.0f + std::min(4.0f, fabs(weight) / 5.0f));
+                                                   1.0f + std::min(4.0f, std::fabs(weightVal) / 5.0f));
 
+                        float prevPosY = topPadding + (pIdx + 1) * prevNeuronSpacing;
+                        // The previous layer's center X
+                        float prevLayerPosX = layerPosX - layerSpacing;
+
+                        // We connect from the right edge of that neuron circle
+                        // to the left edge of the current circle:
                         ImVec2 lineStart(
-                            prevLayerPosX + prevCircleSize + windowPos.x,
-                            (prevNeuronIndex + 1) * neuronSpacingPrev + windowPos.y - windowScrollY
+                            windowPos.x + prevLayerPosX + circleSize, // prev layer center + circleSize
+                            windowPos.y + prevPosY - scrollY
                         );
                         ImVec2 lineEnd(
-                            posX - circleSize + windowPos.x,
-                            posY + windowPos.y - windowScrollY
+                            circleCenter.x - circleSize, // subtract circleSize from this layer's center
+                            circleCenter.y
                         );
 
-                        bool isHovered =
-                        (VisualisationUtility::DistanceToLineSegment(mousePos, lineStart, lineEnd)
-                            < (minLineThicknessValue + 2.0f));
-                        bool isClicked = isHovered && ImGui::IsMouseClicked(0);
+                        // Hover detection for the line
+                        float dist = VisualisationUtility::DistanceToLineSegment(mousePos, lineStart, lineEnd);
 
-                        if (isHovered) hoveredWeightIndex = neuronIndex + numNeuronsPrev + prevNeuronIndex;
-                        if (isClicked) clickedWeightIndex = hoveredWeightIndex;
+                        // If we're hovering a neuron, we want lines from that neuron to highlight too
+                        bool highlightBecauseNeuron = hoveredNeuron;
 
-                        const ImColor lineColor = ImColor(isHovered ? ImVec4(255, 255, 0, 255) : VisualisationUtility::GetWeightColor(weight));
+                        bool hoveredLine = (dist < (minLineThicknessValue + 2.0f)) || highlightBecauseNeuron;
+                        bool clickedLine = hoveredLine && ImGui::IsMouseClicked(0);
+                        if (hoveredLine)
+                        {
+                            // set the hovered index (arbitrary logic)
+                            hoveredWeightIndex = neuronIndex + pIdx;
+                            if (clickedLine)
+                                clickedWeightIndex = hoveredWeightIndex;
+                        }
 
+                        ImColor lineColor = hoveredLine ? ImColor(255, 255, 0, 255) : ImColor(VisualisationUtility::GetWeightColor(weightVal));
+
+                        // Draw line
                         ImGui::GetWindowDrawList()->AddLine(lineStart, lineEnd, lineColor, thickness);
 
-                        if (drawWeights || isHovered || mouseHoveringNeuron)
+                        // If we either hover or "drawWeights" is on, store line info
+                        if (drawWeights || hoveredLine)
                         {
-                            lineInfos.emplace_back(lineStart, lineEnd, weight, isHovered);
+                            lineInfos.emplace_back(lineStart, lineEnd, weightVal, hoveredLine);
                         }
                     }
                 }
             }
-        }
-    }
+        } // end for neurons
 
-    // Weight text near lines
+        // If truncated, place text near bottom
+        if (numNeurons > displayCount)
+        {
+            float lastNeuronY = topPadding + displayCount * (innerHeight / (displayCount + 1));
+            ImVec2 truncatedPos(
+                windowPos.x + layerPosX - 40.0f, // shift left a bit so it's under the last neuron
+                windowPos.y + lastNeuronY + 10.0f - scrollY
+            );
+            char msg[64];
+            std::snprintf(msg, sizeof(msg), "Showing %d of %d", displayCount, numNeurons);
+            ImGui::GetWindowDrawList()->AddText(truncatedPos, IM_COL32(255, 255, 0, 255), msg);
+        }
+    } // end for layers
+
+    // Draw numeric weight text if we have lineInfos
     for (auto& info : lineInfos)
     {
         VisualisationUtility::DrawWeightText(info.lineStart, info.lineEnd, info.weight);
@@ -320,21 +556,69 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::End();
 
-    // Another window for customization
+    // Now the "Visualization Customization" window
     ImGui::Begin("Visualization Customization");
+    ImGui::SliderInt("Max Neurons Displayed", &NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay, 0.0f, 300.0f);
+
+    ImGui::SliderFloat("Top Padding", &topPadding, 0.0f, 300.0f);
+    ImGui::SliderFloat("Bottom Padding", &bottomPadding, 0.0f, 300.0f);
+
+    ImGui::Checkbox("Show Layer Labels", &showLayerLabels);
+    ImGui::Checkbox("Draw Lines", &drawLineConnections);
+    ImGui::Checkbox("Draw Weights", &drawWeights);
+    ImGui::Checkbox("Pulsating Neurons", &activeNeuronCanPulse);
+
     ImGui::SliderFloat("Min Circle Size", &minCircleSizeValue, 1.0f, 10.0f);
     ImGui::SliderFloat("Max Circle Size", &maxCircleSizeValue, 10.0f, 100.0f);
     ImGui::SliderFloat("Circle Thickness", &circleThicknessValue, 1.0f, 5.0f);
-    ImGui::Checkbox("Draw Lines", &drawLineConnections);
     ImGui::SliderFloat("Min Line Thickness", &minLineThicknessValue, 1.0f, 5.0f);
-    ImGui::Checkbox("Draw Weights", &drawWeights);
-    ImGui::Checkbox("Pulsating Neurons", &activeNeuronCanPulse);
+
+    ImGui::Checkbox("Show Legend Window", &showLegendWindow);
+    ImGui::Checkbox("Show Training Metrics", &showTrainingMetricsWindow);
+
+    ImGui::Text("Neuron Colour Mode");
+    static int colourModeIndex = 0;
+
+    const char* colourModes[] = {"Default", "Red-Green Gradient"};
+    if (ImGui::BeginCombo("Colour Mode", colourModes[colourModeIndex]))
+    {
+        for (int i = 0; i < IM_ARRAYSIZE(colourModes); i++)
+        {
+            bool isSelected = colourModeIndex == i;
+            if (ImGui::Selectable(colourModes[i], isSelected))
+            {
+                colourModeIndex = i;
+
+                g_CircleColourMode = (i == 0 ? CircleColourMode::DefaultActivation : CircleColourMode::Gradient);
+            }
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    static int vizInt = 10;
+    ImGui::InputInt("Visualization Interval (batches)", &vizInt);
+    if (ImGui::Button("Apply Visualization Interval"))
+    {
+        NeuralNetworkSubsystem::GetInstance().SetVizUpdateInterval(vizInt);
+    }
+
     ImGui::End();
+
+    if (showLegendWindow)
+    {
+        ShowLegendWindow(&showLegendWindow);
+    }
+    if (showTrainingMetricsWindow)
+    {
+        ShowTrainingMetrics(&showTrainingMetricsWindow);
+    }
 }
 
-// 5.3 Dataset Management
-MyTextureData loadedInputImage;
-
+// 5.5: Dataset Management
 void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 {
     if (!ImGui::Begin("Dataset Management", p_open))
@@ -345,7 +629,6 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     ImGui::TextWrapped("This panel lets you load MNIST data and train automatically.");
 
-    // If the data is loaded, show how many samples
     bool isDataLoaded = NeuralNetworkSubsystem::GetInstance().IsMNISTTrainingDataLoaded();
     if (isDataLoaded)
     {
@@ -357,22 +640,161 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         ImGui::Text("MNIST data is not loaded yet.");
     }
 
-    // Provide a button that triggers the "full flow"
     if (ImGui::Button("Train MNIST (Full Process)"))
     {
+        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+        if (subsystem.GetNeuralNetwork().layers.empty())
+        {
+            LOG(LogLevel::INFO, "No existing network. Auto-creating layers 784->128->10 with Sigmoid/CrossEntropy.");
+
+            // todo: After some testing I want to see if adding a second hidden layer produces better results
+            subsystem.InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 2, /*HiddenLayerSize*/ 128, /*output*/ 10);
+        }
+
+        subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
+        {
+            showVisualizationPanelWindow = true;
+        });
+
+        showDatasetManagementWindow = true;
+        showVisualizationPanelWindow = true;
+
         NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
     }
 
-    ImGui::Separator();
-    ImGui::TextWrapped("If you want to do things manually (browsing, etc.), you can still do so here...");
+    ImGui::SameLine();
 
-    // Typically you'd have manual file loading UI, but skipping for brevity...
-    // ...
+    if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
+    {
+        if (ImGui::Button("Stop Training"))
+        {
+            NeuralNetworkSubsystem::GetInstance().StopTraining();
+        }
+    }
+    
+    ImGui::Separator();
+    ImGui::TextWrapped("Will add ability to browse and load specific data sets here, for now it's all hooked up to one dataset");
+    ImGui::Separator();
+
+
+    static std::string inferenceImgPath;
+
+    if (ImGui::Button("Browse Image..."))
+    {
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Image", ".png\0*.png\0\0");
+    }
+
+    if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            inferenceImgPath = ImGuiFileDialog::Instance()->GetFilePathName();
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    ImGui::InputText("28x28 PNG Path##Inference", inferenceImgPath.data(), sizeof(inferenceImgPath));
+
+    static std::vector<float> lastInferencePixels;
+    static bool havePreview = false;
+
+    if (ImGui::Button("Load & Preview"))
+    {
+        try
+        {
+            auto pixelDoubles = NeuralNetworkSubsystem::GetInstance().LoadAndProcessPNG(inferenceImgPath);
+
+            lastInferencePixels.resize(pixelDoubles.size());
+            for (size_t i = 0; i < pixelDoubles.size(); i++)
+            {
+                lastInferencePixels[i] = float(pixelDoubles[i]);
+            }
+            havePreview = true;
+        }
+        catch (const std::exception& e)
+        {
+            LOG(LogLevel::ERROR, e.what());
+            havePreview = false;
+        }
+    }
+
+    ImGui::Columns(2, "PreviewColumns", false);
+
+    if (havePreview)
+    {
+        ImGui::Text("28x28 Preview:");
+        float scale = 4.0f; // each pixel 4x4 on screen
+        ImVec2 startPos = ImGui::GetCursorScreenPos();
+        for (int row = 0; row < 28; row++)
+        {
+            for (int col = 0; col < 28; col++)
+            {
+                float val = lastInferencePixels[row * 28 + col]; // 0..1
+                // We'll map it to a grayscale
+                ImColor color = ImColor(val, val, val, 1.0f);
+                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
+                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
+            }
+        }
+
+        ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28 * scale + 10));
+        if (ImGui::Button("Infer from Preview"))
+        {
+            int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
+            ImGui::Text("Predicted digit = %d", digit);
+        }
+    }
+    else
+    {
+        ImGui::Text("No image preview loaded yet.");
+    }
+
+    ImGui::NextColumn();
+
+    static bool useTextPreview = false;
+    ImGui::Checkbox("Use Text-based Preview", &useTextPreview);
+
+    if (useTextPreview)
+    {
+        ImGui::Text("Enter digit 0-9:");
+        static char digitText[2] = "0";
+        ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
+
+        float scale = 4.0f;
+        ImVec2 startPos = ImGui::GetCursorScreenPos();
+
+        for (int row = 0; row < 28; row++)
+        {
+            for (int col = 0; col < 28; col++)
+            {
+                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
+                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, IM_COL32_WHITE);
+            }
+        }
+
+        ImVec2 textPos(
+            startPos.x + (28.0f * scale * 0.3f),
+            startPos.y + (28.0f * scale * 0.2f)
+        );
+        ImGui::GetWindowDrawList()->AddText(NULL, 24.0f, textPos, IM_COL32_BLACK, digitText);
+
+        // Border
+        ImGui::GetWindowDrawList()->AddRect(
+            startPos,
+            ImVec2(startPos.x + 28 * scale, startPos.y + 28 * scale),
+            IM_COL32(0, 0, 0, 255), 0.0f, 0, 2.0f
+        );
+    }
+
+    ImGui::Columns(1);
 
     ImGui::End();
 }
 
-// 5.4 Neural Network Controls Window
+// 5.6: Neural Network Controls
 void NeuralNetworkControlsWindow(bool* p_open)
 {
     if (!ImGui::Begin("Neural Network Controls", p_open))
@@ -387,7 +809,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
         if (ImGui::BeginTabItem("Architecture"))
         {
             static int inputLayerSize = 784;
-            static int numHiddenLayers = 1;
+            static int numHiddenLayers = 2;
             static int hiddenLayerSize = 128;
             static int outputLayerSize = 10;
 
@@ -398,7 +820,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             // Activation
             static int activationElem = (int)sigmoid;
-            const char* activationNames[] = {"Sigmoid", "Sigmoid Derivative", "ReLU"};
+            const char* activationNames[] = {"Sigmoid", "Sigmoid Derivative", "ReLU", "softmax"};
             const char* actName = (activationElem >= 0 && activationElem < Activation_Count) ? activationNames[activationElem] : "Unknown";
             ImGui::SliderInt("Activation", &activationElem, 0, Activation_Count - 1, actName);
 
@@ -437,8 +859,12 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputFloat("Learning Rate", &HyperParameters::learningRate, 0.001f);
             ImGui::InputInt("Batch Size", &HyperParameters::batchSize);
             ImGui::InputInt("Epochs", &HyperParameters::epochs);
+            if (HyperParameters::epochs < 1)
+            {
+                HyperParameters::epochs = 1;
+            }
             ImGui::InputDouble("Momentum", &HyperParameters::momentum, 0.1, 0.2, "%.2f");
-            ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.3f");
+            ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.5f");
 
             ImGui::Checkbox("Use Dropout", &HyperParameters::useDropoutRate);
             if (HyperParameters::useDropoutRate)
@@ -453,12 +879,63 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             ImGui::EndTabItem();
         }
+        // Tab 3: Save/Load
+        if (ImGui::BeginTabItem("Save/Load"))
+        {
+            static std::string saveFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
+
+            if (ImGui::Button("Browse Save Path..."))
+            {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseSaveFileDlgKey", "Choose Save Path", ".txt\0*.txt\0\0");
+            }
+
+            if (ImGuiFileDialog::Instance()->Display("ChooseSaveFileDlgKey"))
+            {
+                if (ImGuiFileDialog::Instance()->IsOk())
+                {
+                    saveFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
+
+            ImGui::InputText("Save Path##Network", saveFilePath.data(), sizeof(saveFilePath));
+            if (ImGui::Button("Save Network"))
+            {
+                NeuralNetworkSubsystem::GetInstance().SaveNetwork(saveFilePath);
+            }
+
+            ImGui::SameLine();
+
+            static std::string loadFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
+
+            if (ImGui::Button("Browse Load Path..."))
+            {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Load Path", ".txt\0*.txt\0\0");
+            }
+
+            if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
+            {
+                if (ImGuiFileDialog::Instance()->IsOk())
+                {
+                    loadFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
+
+            ImGui::InputText("Load Path##Network", loadFilePath.data(), sizeof(loadFilePath));
+            if (ImGui::Button("Load Network"))
+            {
+                NeuralNetworkSubsystem::GetInstance().LoadNetwork(loadFilePath);
+            }
+
+            ImGui::EndTabItem();
+        }
     }
     ImGui::EndTabBar();
     ImGui::End();
 }
 
-// 5.5 DefaultWindows aggregator
+// 5.7: Default Windows aggregator
 void DefaultWindows()
 {
     if (showDatasetManagementWindow)
@@ -466,18 +943,15 @@ void DefaultWindows()
         DatasetManagementWindow(&showDatasetManagementWindow,
                                 NeuralNetworkSubsystem::GetInstance().GetNeuralNetwork());
     }
-
     if (showNeuralNetworkControlsWindow)
     {
         NeuralNetworkControlsWindow(&showNeuralNetworkControlsWindow);
     }
-
     if (showVisualizationPanelWindow)
     {
         VisualizationPanelWindow(&showVisualizationPanelWindow,
                                  NeuralNetworkSubsystem::GetInstance().GetNeuralNetwork());
     }
-
     if (showAdvancedEditingWindow)
     {
         AdvancedEditingWindow(&showAdvancedEditingWindow,
@@ -740,12 +1214,11 @@ static void CleanupVulkan()
 static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
 {
     VkResult err;
-    VkSemaphore image_acquired_sem = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
-    VkSemaphore render_complete_sem = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+    VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
+    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
 
     err = vkAcquireNextImageKHR(g_Device, wd->Swapchain, UINT64_MAX,
-                                image_acquired_sem,
-                                VK_NULL_HANDLE,
+                                image_acquired_semaphore, VK_NULL_HANDLE,
                                 &wd->FrameIndex);
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
     {
@@ -783,6 +1256,7 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
         vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
     }
 
+    // Record dear imgui primitives
     ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
 
     vkCmdEndRenderPass(fd->CommandBuffer);
@@ -792,30 +1266,29 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
         VkSubmitInfo submit_info = {};
         submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submit_info.waitSemaphoreCount = 1;
-        submit_info.pWaitSemaphores = &image_acquired_sem;
+        submit_info.pWaitSemaphores = &image_acquired_semaphore;
         submit_info.pWaitDstStageMask = &wait_stage;
         submit_info.commandBufferCount = 1;
         submit_info.pCommandBuffers = &fd->CommandBuffer;
         submit_info.signalSemaphoreCount = 1;
-        submit_info.pSignalSemaphores = &render_complete_sem;
+        submit_info.pSignalSemaphores = &render_complete_semaphore;
 
-        VkResult errEnd = vkEndCommandBuffer(fd->CommandBuffer);
-        check_vk_result(errEnd);
-
-        errEnd = vkQueueSubmit(g_Queue, 1, &submit_info, fd->Fence);
-        check_vk_result(errEnd);
+        err = vkEndCommandBuffer(fd->CommandBuffer);
+        check_vk_result(err);
+        err = vkQueueSubmit(g_Queue, 1, &submit_info, fd->Fence);
+        check_vk_result(err);
     }
 }
 
 static void FramePresent(ImGui_ImplVulkanH_Window* wd)
 {
-    if (g_SwapChainRebuild) return;
-
-    VkSemaphore render_complete_sem = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+    if (g_SwapChainRebuild)
+        return;
+    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
     VkPresentInfoKHR info = {};
     info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     info.waitSemaphoreCount = 1;
-    info.pWaitSemaphores = &render_complete_sem;
+    info.pWaitSemaphores = &render_complete_semaphore;
     info.swapchainCount = 1;
     info.pSwapchains = &wd->Swapchain;
     info.pImageIndices = &wd->FrameIndex;
@@ -850,21 +1323,23 @@ int main(int, char**)
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) return 1;
 
+    // Create window with Vulkan context
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "MNIST Full Flow Example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1880, 920, "MNIST Full Flow Example", nullptr, nullptr);
     if (!glfwVulkanSupported())
     {
         printf("GLFW: Vulkan Not Supported\n");
         return 1;
     }
 
+    // Collect required extensions
     ImVector<const char*> extensions;
     uint32_t extensions_count = 0;
     const char** glfw_ext = glfwGetRequiredInstanceExtensions(&extensions_count);
     for (uint32_t i = 0; i < extensions_count; i++)
         extensions.push_back(glfw_ext[i]);
 
-    // Setup Vulkan
+    // Initialize Vulkan
     SetupVulkan(extensions);
 
     // Create Window Surface
@@ -878,7 +1353,7 @@ int main(int, char**)
     ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
     SetupVulkanWindow(wd, surface, w, h);
 
-    // Setup ImGui
+    // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -895,6 +1370,7 @@ int main(int, char**)
         ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
+    // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForVulkan(window, true);
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance = g_Instance;
@@ -934,8 +1410,7 @@ int main(int, char**)
         begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         err = vkBeginCommandBuffer(cmd_buf, &begin_info);
         check_vk_result(err);
-
-        // Here you could do ImGui_ImplVulkan_CreateFontsTexture(cmd_buf) if needed
+        // If needed: ImGui_ImplVulkan_CreateFontsTexture(cmd_buf);
 
         VkSubmitInfo end_info = {};
         end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -943,19 +1418,18 @@ int main(int, char**)
         end_info.pCommandBuffers = &cmd_buf;
         err = vkEndCommandBuffer(cmd_buf);
         check_vk_result(err);
-
         err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
         check_vk_result(err);
-
         err = vkDeviceWaitIdle(g_Device);
         check_vk_result(err);
     }
 
-    // Main Loop
+    // Main loop
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
 
+        // Rebuild swapchain?
         if (g_SwapChainRebuild)
         {
             glfwGetFramebufferSize(window, &w, &h);
@@ -963,20 +1437,25 @@ int main(int, char**)
             {
                 ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
                 ImGui_ImplVulkanH_CreateOrResizeWindow(
-                    g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData,
-                    g_QueueFamily, g_Allocator, w, h, g_MinImageCount
+                    g_Instance, g_PhysicalDevice, g_Device,
+                    &g_MainWindowData,
+                    g_QueueFamily, g_Allocator,
+                    w, h, g_MinImageCount
                 );
                 g_MainWindowData.FrameIndex = 0;
                 g_SwapChainRebuild = false;
             }
         }
 
+        // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // Show the default windows
         DefaultWindows();
 
+        // Render
         ImGui::Render();
         ImDrawData* main_draw_data = ImGui::GetDrawData();
         bool minimized = (main_draw_data->DisplaySize.x <= 0.0f ||
@@ -995,7 +1474,6 @@ int main(int, char**)
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
         }
-
         if (!minimized)
             FramePresent(wd);
     }
