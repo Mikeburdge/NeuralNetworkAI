@@ -356,6 +356,7 @@ void NeuralNetworkSubsystem::StopTraining()
             LOG(LogLevel::ERROR, "Failed to stop training thread.");
         }
 
+        trainingTimer.isInitialized = false; // stop the timer when we stop the training
         LOG(LogLevel::INFO, "Stop complete. Training thread joined.");
     }
     else

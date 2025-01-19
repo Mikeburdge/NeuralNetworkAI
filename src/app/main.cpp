@@ -61,7 +61,7 @@ float circleThicknessValue = 1.0f;
 float minLineThicknessValue = 1.0f;
 bool drawLineConnections = true;
 bool drawWeights = false;
-bool activeNeuronCanPulse = true;
+bool activeNeuronCanPulse = false;
 int hoveredWeightIndex = -1;
 int clickedWeightIndex = -1;
 
@@ -606,14 +606,6 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         NeuralNetworkSubsystem::GetInstance().SetVizUpdateInterval(vizInt);
     }
 
-    if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
-    {
-        if (ImGui::Button("Stop Training"))
-        {
-            NeuralNetworkSubsystem::GetInstance().StopTraining();
-        }
-    }
-
     ImGui::End();
 
     if (showLegendWindow)
@@ -671,6 +663,16 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
     }
 
+    ImGui::SameLine();
+
+    if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
+    {
+        if (ImGui::Button("Stop Training"))
+        {
+            NeuralNetworkSubsystem::GetInstance().StopTraining();
+        }
+    }
+    
     ImGui::Separator();
     ImGui::TextWrapped("Will add ability to browse and load specific data sets here, for now it's all hooked up to one dataset");
     ImGui::Separator();
@@ -736,7 +738,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
                 ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
             }
         }
-        
+
         ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28 * scale + 10));
         if (ImGui::Button("Infer from Preview"))
         {
@@ -807,7 +809,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
         if (ImGui::BeginTabItem("Architecture"))
         {
             static int inputLayerSize = 784;
-            static int numHiddenLayers = 1;
+            static int numHiddenLayers = 2;
             static int hiddenLayerSize = 128;
             static int outputLayerSize = 10;
 
