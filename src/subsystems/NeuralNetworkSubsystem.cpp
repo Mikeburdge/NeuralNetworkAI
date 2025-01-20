@@ -27,6 +27,8 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
     HyperParameters::cost = inCost;
     HyperParameters::activationType = inActivation;
 
+    ActivationType finalLayerActivation = ActivationType::softmax;
+
     // Reserve the input, output and hidden layers
     CurrentNeuralNetwork.layers.reserve(hiddenLayers + 2);
 
@@ -53,7 +55,7 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
         CurrentNeuralNetwork.AddLayer(hiddenLayer);
     }
 
-    const Layer outputLayer(inActivation, inCost, outputLayerSize, hiddenLayersSizes);
+    const Layer outputLayer(finalLayerActivation, inCost, outputLayerSize, hiddenLayersSizes);
 
     CurrentNeuralNetwork.AddLayer(outputLayer);
 }
@@ -141,7 +143,6 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         return;
     }
 
-
     int epochs = HyperParameters::epochs;
     int batchsize = HyperParameters::batchSize;
     CostType currentCost = HyperParameters::cost;
@@ -167,10 +168,12 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     // Main Training Loop
     totalEpochsAtomic.store(epochs);
 
+    int totalCorrectPredictions = 0;
+    totalPredictionsAtomic.store(0);
+
     for (size_t epoch = 0; epoch < epochs; ++epoch)
     {
         currentEpochAtomic.store(epoch);
-
 
         // Shuffle dataset
         std::shuffle(indices.begin(), indices.end(), rng);
@@ -183,10 +186,10 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         currentLossAtomic.store(float(epochAverageCost));
         currentAccuracyAtomic.store(float(epochAccuracy));
-        totalBatchesInEpoch.store(static_cast<int>(totalBatches));
+        totalBatchesInEpochAtomic.store(static_cast<int>(totalBatches));
 
         // Reset current batch index
-        currentBatchIndex.store(0);
+        currentBatchIndexAtomic.store(0);
 
         // Initialize epoch variables
         double epochCostSum = 0.0;
@@ -194,7 +197,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         for (size_t startIndex = 0; startIndex < datasetSize; startIndex += batchsize)
         {
-            if (stopRequested.load())
+            if (stopRequestedAtomic.load())
             {
                 LOG(LogLevel::INFO, "Stop mid-epoch...");
                 break;
@@ -202,7 +205,6 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             size_t endIndex = std::min(startIndex + batchsize, datasetSize); // Again possibly datasetSize - 1 if we hit out of index stuff here
             size_t realBatch = endIndex - startIndex;
-            // make the batch
             std::vector<std::vector<double>> batchInputs(realBatch);
             std::vector<std::vector<double>> batchTargets(realBatch);
 
@@ -212,6 +214,9 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 batchInputs[i] = dataset.GetImages()[idx];
                 batchTargets[i] = dataset.GetLabelsOneHot()[idx];
             }
+
+            currentBatchSizeAtomic.store((int)realBatch);
+            totalPredictionsAtomic.fetch_add((int)realBatch);
 
             // Forward propogation, accumulating cost
             int correctCount = 0;
@@ -245,8 +250,13 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 if (bestPredictionIndex == actualIndex)
                 {
                     correctCount++;
+                    totalCorrectPredictions++;
                 }
             }
+
+            correctPredictionsThisBatchAtomic.store(correctCount);
+            totalCorrectPredictionsAtomic.store(totalCorrectPredictions);
+
             double batchAccuracy = (double)correctCount / (double)realBatch;
             epochAccuracy += batchAccuracy;
 
@@ -254,14 +264,12 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             epochCostSum += batchCost;
             ++numBatches;
 
-
             // Cost Geadient stuff for each sample
             // Theres a chance to do a better, more sophisticated 
             std::vector<double> totalGradient(network.layers.back().numNeurons, 0.0);
 
             for (size_t i = 0; i < realBatch; ++i)
             {
-                // Could do it differently here too but this is simpler for now.
                 std::vector<double> predictions = network.ForwardPropagation(batchInputs[i]);
                 std::vector<double> costGradient = Cost::CalculateCostDerivative(currentCost, predictions, batchTargets[i]);
 
@@ -274,6 +282,9 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             // Average the accuracy
             epochAccuracy /= (double)numBatches;
+
+            double partialAccuracy = (double)totalCorrectPredictions / (double)totalPredictionsAtomic.load();
+            currentAccuracyAtomic.store((float)partialAccuracy);
 
             // Average the gradient
             for (size_t j = 0; j < totalGradient.size(); ++j)
@@ -297,9 +308,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             }
 
             // Increment current batch index
-            currentBatchIndex.fetch_add(1);
+            currentBatchIndexAtomic.fetch_add(1);
         }
-
 
         // Calculate epoch duration
         std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
@@ -315,17 +325,15 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         // update the UI
         currentLossAtomic.store(static_cast<float>(avgCost));
-        currentAccuracyAtomic.store(static_cast<float>(epochAccuracy));
 
-        if (stopRequested.load())
+        if (stopRequestedAtomic.load())
         {
             break;
         }
     }
 
-    stopRequested.store(false); // reset for next time
+    stopRequestedAtomic.store(false); // reset for next time
 }
-
 
 void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
 {
@@ -344,7 +352,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
     }
 
 
-    if (trainingInProgress.load())
+    if (trainingInProgressAtomic.load())
     {
         LOG(LogLevel::WARNING, "Training is already in progress");
         return;
@@ -356,15 +364,15 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
 
 void NeuralNetworkSubsystem::TrainOnMNISTAsync()
 {
-    if (trainingInProgress.load())
+    if (trainingInProgressAtomic.load())
     {
         LOG(LogLevel::WARNING, "Training in progress.");
         return;
     }
 
     // mark training as started
-    trainingInProgress.store(true);
-    stopRequested.store(false);
+    trainingInProgressAtomic.store(true);
+    stopRequestedAtomic.store(false);
 
     trainingTimer.startTime = std::chrono::steady_clock::now();
     trainingTimer.lastEpochTime = trainingTimer.startTime;
@@ -377,10 +385,10 @@ void NeuralNetworkSubsystem::TrainOnMNISTAsync()
 
 void NeuralNetworkSubsystem::StopTraining()
 {
-    if (trainingInProgress.load())
+    if (trainingInProgressAtomic.load())
     {
         LOG(LogLevel::INFO, "Stop requested");
-        stopRequested.store(true);
+        stopRequestedAtomic.store(true);
 
         if (trainingThread.joinable())
         {
@@ -530,6 +538,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
     double bestValue = std::numeric_limits<double>::lowest();
     for (int i = 0; i < (int)outputs.size(); ++i)
     {
+        LOG(LogLevel::DEBUG, "Output: " + std::to_string(i) + " > " + std::to_string(outputs[i]));
         if (outputs[i] > bestValue)
         {
             bestValue = outputs[i];
@@ -586,6 +595,6 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
     std::string filePath = (std::filesystem::current_path() / "Saved" / FileName).string();
     SaveNetwork(filePath);
 
-    trainingInProgress.store(false);
+    StopTraining();
     LOG(LogLevel::FLOW, "Finished background thread training. Network saved to: " + filePath);
 }

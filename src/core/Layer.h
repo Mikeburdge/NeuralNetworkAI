@@ -65,4 +65,5 @@ public:
     void InitializeRandomWeights(std::mt19937& rng);
     std::vector<double> CalculatePreviousLayerError(const std::vector<double>& currentLayersErrorGradient,
                                                     const std::vector<Neuron>& previousLayerNeurons) const;
+    void SetDropout(bool useDropoutRate, float dropoutRate);
 };

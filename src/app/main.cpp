@@ -215,6 +215,11 @@ void ShowLegendWindow(bool* p_open)
     ImGui::BulletText("Thickness indicates magnitude");
     ImGui::Separator();
 
+    ImGui::Text("Output Layer Visualization:");
+    ImGui::BulletText("The largest output neuron is scaled to 1.0, \n others are scaled proportionally.");
+    ImGui::BulletText("So it's easier to see which neuron is winning.");
+    ImGui::Separator();
+
     ImGui::End();
 }
 
@@ -234,9 +239,13 @@ void ShowTrainingMetrics(bool* p_open)
     int currentEpoch = subsystem.currentEpochAtomic.load();
     int totalEpochs = subsystem.totalEpochsAtomic.load();
 
-    int currentBatch = subsystem.currentBatchIndex.load();
-    int totalBatchesThisEpoch = subsystem.totalBatchesInEpoch.load();
+    int currentBatch = subsystem.currentBatchIndexAtomic.load();
+    int totalBatchesThisEpoch = subsystem.totalBatchesInEpochAtomic.load();
 
+    int currentBatchSize = subsystem.currentBatchSizeAtomic.load();
+    int correctPredictionsThisBatch = subsystem.correctPredictionsThisBatchAtomic.load();
+    int totalCorrectPredictions = subsystem.totalCorrectPredictionsAtomic.load();
+    int totalPredictions = subsystem.totalPredictionsAtomic.load();
 
     float epochFraction = 0.0f;
     if (totalBatchesThisEpoch > 0)
@@ -296,9 +305,15 @@ void ShowTrainingMetrics(bool* p_open)
         ImGui::Text("Time Remaining: N/A");
     }
 
+
     ImGui::Text("Epoch: %d/%d (Batch %d/%d)", currentEpoch + 1, totalEpochs, currentBatch, totalBatchesThisEpoch);
     ImGui::Text("Loss: %.4f", loss);
     ImGui::Text("Accuracy: %.2f%%", accuracy * 100.f);
+
+    ImGui::Separator();
+    ImGui::Text("Correct Predictions (This Batch): %d / %d", correctPredictionsThisBatch, currentBatchSize);
+    ImGui::Text("Correct Predictions (Overall): %d / %d", totalCorrectPredictions, totalPredictions);
+
 
     ImGui::End();
 }
@@ -388,6 +403,35 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             ImGui::GetWindowDrawList()->AddText(labelPos, ImColor(255, 255, 0, 255), layerName.c_str());
         }
 
+
+        bool isFinalLayer = (layerIndex == layerCount - 1);
+
+        // We'll gather all the activation values first
+        static std::vector<float> displayActivations; // temp
+        displayActivations.resize(displayCount);
+
+        for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
+        {
+            float activationVal = (float)layer.neurons[neuronIndex].ActivationValue;
+            displayActivations[neuronIndex] = activationVal;
+        }
+
+        if (isFinalLayer)
+        {
+            float maxVal = 0.0f;
+            for (int i = 0; i < displayCount; i++)
+            {
+                if (displayActivations[i] > maxVal) maxVal = displayActivations[i];
+            }
+            if (maxVal > 0.0f)
+            {
+                for (int i = 0; i < displayCount; i++)
+                {
+                    displayActivations[i] /= maxVal;
+                }
+            }
+        }
+
         // Draw each neuron
         for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
         {
@@ -404,7 +448,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
             // The neuron's activation
             const Neuron& curNeuron = layer.neurons[neuronIndex];
-            float activationVal = (float)curNeuron.ActivationValue;
+            float activationVal = displayActivations[neuronIndex];
 
             ImColor baseColor;
             switch (g_CircleColourMode)
@@ -668,7 +712,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             NeuralNetworkSubsystem::GetInstance().StopTraining();
         }
     }
-    
+
     ImGui::Separator();
     ImGui::TextWrapped("Will add ability to browse and load specific data sets here, for now it's all hooked up to one dataset");
     ImGui::Separator();

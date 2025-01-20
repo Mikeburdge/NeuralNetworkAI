@@ -51,18 +51,23 @@ private:
 public:
     // Threadding
     std::thread trainingThread;
-    std::atomic<bool> trainingInProgress{false};
+    std::atomic<bool> trainingInProgressAtomic{false};
 
     std::atomic<int> currentEpochAtomic{0};
     std::atomic<float> currentLossAtomic{0.0f};
     std::atomic<float> currentAccuracyAtomic{0.0f};
     std::atomic<int> totalEpochsAtomic{0};
+    
+    std::atomic<int> correctPredictionsThisBatchAtomic{0};
+    std::atomic<int> currentBatchSizeAtomic{0};
+    std::atomic<int> totalCorrectPredictionsAtomic{0};
+    std::atomic<int> totalPredictionsAtomic{0};
 
-    std::atomic<int> currentBatchIndex{0};
-    std::atomic<int> totalBatchesInEpoch{0};
+    std::atomic<int> currentBatchIndexAtomic{0};
+    std::atomic<int> totalBatchesInEpochAtomic{0};
 
     // for stopping the training
-    std::atomic<bool> stopRequested{false};
+    std::atomic<bool> stopRequestedAtomic{false};
 
     void SetVizUpdateInterval(int interval)
     {
@@ -97,7 +102,7 @@ public:
     void TrainOnMNISTFullProcess();
 
     void TrainOnMNISTAsync(); // This will call the TrainOnMNIST functions
-    bool IsTrainingInProgress() const { return trainingInProgress.load(); }
+    bool IsTrainingInProgress() const { return trainingInProgressAtomic.load(); }
 
     void StopTraining();
 
@@ -114,8 +119,8 @@ public:
 
 
     // functions for stopRequested atomic variable
-    void RequestStopTraining() { stopRequested.store(true); }
-    bool IsStopRequested() const { return stopRequested.load(); }
+    void RequestStopTraining() { stopRequestedAtomic.store(true); }
+    bool IsStopRequested() const { return stopRequestedAtomic.load(); }
 
 
     // Visualization callback for real-time network updates, if desired

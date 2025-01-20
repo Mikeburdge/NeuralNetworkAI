@@ -132,4 +132,9 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
     return previousLayerErrorGradient;
 }
 
+void Layer::SetDropout(bool useDropoutRate, float dropoutRate)
+{
+    // todo: To Be Implemented
+}
+
 #pragma optimize("", on)

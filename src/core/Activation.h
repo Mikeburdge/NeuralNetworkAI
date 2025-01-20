@@ -5,8 +5,8 @@ enum ActivationType
 	sigmoid,
 	sigmoidDerivative,
 	ReLU,
-	softmax,
-	Activation_Count
+	Activation_Count,
+	softmax // used to trigger softmax on final layer hence why its after the activation count. must not be displayed to user
 };
 
 class Activation {
