@@ -214,12 +214,42 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             }
 
             // Forward propogation, accumulating cost
+            int correctCount = 0;
             double batchCost = 0.0;
             for (size_t i = 0; i < realBatch; ++i)
             {
                 std::vector<double> predictions = network.ForwardPropagation(batchInputs[i]);
                 batchCost += Cost::CalculateCost(currentCost, predictions, batchTargets[i]);
+
+                // predicted index vs actual
+                int bestPredictionIndex = -1;
+                double bestValue = 0.0;
+                for (int j = 0; j < (int)predictions.size(); j++)
+                {
+                    if (predictions[j] > bestValue)
+                    {
+                        bestValue = predictions[j];
+                        bestPredictionIndex = j;
+                    }
+                }
+
+                int actualIndex = -1;
+                for (int j = 0; j < (int)batchTargets.size(); j++)
+                {
+                    if (batchTargets[i][j] == 1)
+                    {
+                        actualIndex = j;
+                        break;
+                    }
+                }
+                if (bestPredictionIndex == actualIndex)
+                {
+                    correctCount++;
+                }
             }
+            double batchAccuracy = (double)correctCount / (double)realBatch;
+            epochAccuracy += batchAccuracy;
+
             batchCost /= (double)realBatch;
             epochCostSum += batchCost;
             ++numBatches;
@@ -241,6 +271,9 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                     totalGradient[j] += costGradient[j];
                 }
             }
+
+            // Average the accuracy
+            epochAccuracy /= (double)numBatches;
 
             // Average the gradient
             for (size_t j = 0; j < totalGradient.size(); ++j)
@@ -266,6 +299,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             // Increment current batch index
             currentBatchIndex.fetch_add(1);
         }
+
+
         // Calculate epoch duration
         std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
         trainingTimer.epochDuration = std::chrono::duration<double>(now - trainingTimer.lastEpochTime).count();

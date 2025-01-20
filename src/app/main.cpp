@@ -68,6 +68,8 @@ int clickedWeightIndex = -1;
 // Padding and labeling
 float topPadding = 30.0f;
 float bottomPadding = 30.0f;
+float leftPadding = 30.0f;
+float rightPadding = 30.0f;
 bool showLayerLabels = true;
 
 // Legend + Training Metrics
@@ -331,16 +333,13 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     ImVec2 windowPos = ImGui::GetWindowPos();
     float scrollY = ImGui::GetScrollY();
 
-    // We'll display neurons in the area: topPadding..(availSize.y - bottomPadding)
     float innerHeight = availSize.y - (topPadding + bottomPadding);
+    float innerWidth = availSize.x - (leftPadding + rightPadding);
 
-    // A "max circle size" based on how many layers are horizontally
     float maxCircSize = CalculateMaxCircleSize(availSize, layerCount, maxCircleSizeValue);
 
-    // Horizontal spacing between columns
     float layerSpacing = (layerCount > 1) ? (availSize.x / (float)(layerCount + 1)) : (availSize.x * 0.5f);
 
-    // We'll store info about lines so we can draw numeric weights
     struct LineInfo
     {
         ImVec2 lineStart;
@@ -355,7 +354,6 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     };
     std::vector<LineInfo> lineInfos;
 
-    // For each layer...
     int maxNeuronDisplay = NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay;
 
     for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
@@ -364,16 +362,12 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         int numNeurons = layer.numNeurons;
         int displayCount = std::min(numNeurons, maxNeuronDisplay);
 
-        // We'll space the truncated set across "innerHeight"
         float neuronSpacing = (displayCount > 1) ? (innerHeight / (float)(displayCount + 1)) : (innerHeight * 0.5f);
 
-        // X position of this layer
         float layerPosX = (layerIndex + 1) * layerSpacing;
 
-        // If we label the layer
         if (showLayerLabels)
         {
-            // If first layer -> "Input Layer", last -> "Output Layer", else "Hidden ..."
             std::string layerName;
             if (layerIndex == 0)
             {
@@ -562,6 +556,8 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::SliderFloat("Top Padding", &topPadding, 0.0f, 300.0f);
     ImGui::SliderFloat("Bottom Padding", &bottomPadding, 0.0f, 300.0f);
+    ImGui::SliderFloat("Left Padding", &leftPadding, 0.0f, 300.0f);
+    ImGui::SliderFloat("Right Padding", &rightPadding, 0.0f, 300.0f);
 
     ImGui::Checkbox("Show Layer Labels", &showLayerLabels);
     ImGui::Checkbox("Draw Lines", &drawLineConnections);
