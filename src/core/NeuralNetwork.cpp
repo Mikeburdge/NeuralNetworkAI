@@ -19,9 +19,9 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
     PROFILE_LOG;
     std::vector<double> currentInput = std::move(inputData);
 
-    // Iterate through layers
     for (int layerIndex = 1; layerIndex < layers.size(); layerIndex++)
     {
+    // Iterate through layers
         currentInput = layers[layerIndex].computeOutput(currentInput); // Compute output of the current layer
     }
 

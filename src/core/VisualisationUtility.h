@@ -11,14 +11,9 @@ public:
         switch (activationFunction)
         {
         case sigmoid:
-        case sigmoidDerivative:
-            return activationValue > 0.5f
-                       ? ImVec4{0.0f, 1.0f, 0.0f, activationValue}
-                       : ImVec4{1.0f, 0.0f, 0.0f, 1.0f - activationValue};
+            return activationValue > 0.5f ? ImVec4{0.0f, 1.0f, 0.0f, activationValue} : ImVec4{1.0f, 0.0f, 0.0f, 1.0f - activationValue};
         case ReLU:
-            return activationValue > 0.0f
-                       ? ImVec4{0.0f, 1.0f, 0.0f, activationValue}
-                       : ImVec4{1.0f, 0.0f, 0.0f, 1.0f};
+            return activationValue > 0.0f ? ImVec4{0.0f, 1.0f, 0.0f, activationValue} : ImVec4{1.0f, 0.0f, 0.0f, 1.0f};
         case Activation_Count:
         default:
             return {0.5f, 0.5f, 0.5f, 1.0f};
@@ -78,8 +73,6 @@ public:
     {
         const float distance = (circleCenter.x - point.x) * (circleCenter.x - point.x) + (circleCenter.y - point.y) * (circleCenter.y - point.y);
 
-        return distance < radius * radius;        
+        return distance < radius * radius;
     }
-
-    
 };

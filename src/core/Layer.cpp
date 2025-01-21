@@ -126,7 +126,11 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
             error += weights[neuronIdx][prevNeuronIdx] * currentLayersErrorGradient[neuronIdx];
         }
 
-        previousLayerErrorGradient[prevNeuronIdx] = error * Activation::CalculateActivation(activation, previousLayerNeurons[prevNeuronIdx].ActivationValue);
+        double activatedValue = previousLayerNeurons[prevNeuronIdx].ActivationValue;
+
+        double derivative = Activation::CalculateActivationDerivative(activation, activatedValue);
+
+        previousLayerErrorGradient[prevNeuronIdx] = error * derivative;
     }
 
     return previousLayerErrorGradient;
@@ -136,5 +140,3 @@ void Layer::SetDropout(bool useDropoutRate, float dropoutRate)
 {
     // todo: To Be Implemented
 }
-
-#pragma optimize("", on)

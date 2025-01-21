@@ -400,6 +400,7 @@ void NeuralNetworkSubsystem::StopTraining()
         }
 
         trainingTimer.isInitialized = false; // stop the timer when we stop the training
+        trainingInProgressAtomic.store(false);
         LOG(LogLevel::INFO, "Stop complete. Training thread joined.");
     }
     else
@@ -546,6 +547,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
         }
     }
     LOG(LogLevel::INFO, "Inference Finished. Best Index (Predicted Digit): " + std::to_string(bestIndex) + " Best Value (Confidence in that digit): " + std::to_string(bestValue));
+    
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
@@ -596,5 +598,6 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
     SaveNetwork(filePath);
 
     StopTraining();
+    // trainingTimer.isInitialized = false; // stop the timer when we stop the training
     LOG(LogLevel::FLOW, "Finished background thread training. Network saved to: " + filePath);
 }
