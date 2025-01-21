@@ -1,9 +1,12 @@
 #include "NeuralNetworkSubsystem.h"
 
 #include <cstdint>
+#include <future>
 #include <iostream>
+#include <numeric>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 #include <core/HyperParameters.h>
@@ -218,13 +221,26 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             currentBatchSizeAtomic.store((int)realBatch);
             totalPredictionsAtomic.fetch_add((int)realBatch);
 
-            // Forward propogation, accumulating cost
-            int correctCount = 0;
-            double batchCost = 0.0;
+            // Parallelize 
+            std::vector<std::future<std::vector<double>>> futures;
+            futures.reserve(realBatch);
+
             for (size_t i = 0; i < realBatch; ++i)
             {
-                std::vector<double> predictions = network.ForwardPropagation(batchInputs[i]);
-                batchCost += Cost::CalculateCost(currentCost, predictions, batchTargets[i]);
+                futures.push_back(std::async(std::launch::async, [&network, &batchInputs, i]()
+                {
+                    return network.ForwardPropagation(batchInputs[i]);
+                }));
+            }
+
+            std::vector<double> perSampleCosts(realBatch, 0.0);
+            int localCorrectCount = 0;
+
+            for (size_t i = 0; i < realBatch; ++i)
+            {
+                std::vector<double> predictions = futures[i].get();
+                double cost = Cost::CalculateCost(currentCost, predictions, batchTargets[i]);
+                perSampleCosts[i] = cost;
 
                 // predicted index vs actual
                 int bestPredictionIndex = -1;
@@ -249,37 +265,51 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 }
                 if (bestPredictionIndex == actualIndex)
                 {
-                    correctCount++;
+                    localCorrectCount++;
                     totalCorrectPredictions++;
                 }
             }
+            double batchCost = SumDoubles(perSampleCosts);
 
-            correctPredictionsThisBatchAtomic.store(correctCount);
+            correctPredictionsThisBatchAtomic.store(localCorrectCount);
             totalCorrectPredictionsAtomic.store(totalCorrectPredictions);
 
-            double batchAccuracy = (double)correctCount / (double)realBatch;
+            double batchAccuracy = (double)localCorrectCount / (double)realBatch;
             epochAccuracy += batchAccuracy;
 
             batchCost /= (double)realBatch;
             epochCostSum += batchCost;
             ++numBatches;
 
-            // Cost Geadient stuff for each sample
-            // Theres a chance to do a better, more sophisticated 
-            std::vector<double> totalGradient(network.layers.back().numNeurons, 0.0);
+            // Cost Gradient stuff for each sample.. now with all new pparrallellizzattionn
+            // Theres a chance to do a better, more sophisticated
+
+            std::vector<std::future<std::vector<double>>> gradientFutures;
+            gradientFutures.reserve(realBatch);
 
             for (size_t i = 0; i < realBatch; ++i)
             {
-                std::vector<double> predictions = network.ForwardPropagation(batchInputs[i]);
-                std::vector<double> costGradient = Cost::CalculateCostDerivative(currentCost, predictions, batchTargets[i]);
-
-                // Add them all up
-                for (size_t j = 0; j < totalGradient.size(); ++j)
+                gradientFutures.push_back(std::async(std::launch::async, [&network, &batchInputs, &batchTargets, i]()
                 {
-                    totalGradient[j] += costGradient[j];
+                    std::vector<double> localPredictions = network.ForwardPropagation(batchInputs[i]);
+                    return Cost::CalculateCostDerivative(HyperParameters::cost, localPredictions, batchTargets[i]);
+                }));
+            }
+
+std::vector<double> totalGradient(network.layers.back().numNeurons, 0.0);
+
+
+            for (size_t i = 0; i < realBatch; ++i)
+            {
+                std::vector<double> gradPart = gradientFutures[i].get();
+                for (size_t j = 0; j < gradPart.size(); ++j)
+                {
+                    totalGradient[j] += gradPart[j];
                 }
             }
 
+            // Updates each batch
+            
             // Average the accuracy
             epochAccuracy /= (double)numBatches;
 
@@ -547,7 +577,6 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
         }
     }
     LOG(LogLevel::INFO, "Inference Finished. Best Index (Predicted Digit): " + std::to_string(bestIndex) + " Best Value (Confidence in that digit): " + std::to_string(bestValue));
-    
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
@@ -600,4 +629,10 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
     StopTraining();
     // trainingTimer.isInitialized = false; // stop the timer when we stop the training
     LOG(LogLevel::FLOW, "Finished background thread training. Network saved to: " + filePath);
+}
+
+// Multithreading stuffs
+double NeuralNetworkSubsystem::SumDoubles(const std::vector<double>& values)
+{
+    return std::accumulate(values.begin(), values.end(), 0.0);
 }

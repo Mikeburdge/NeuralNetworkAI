@@ -131,4 +131,6 @@ private:
 
 
     void TrainOnMNISTThreadEntry();
+    
+    static double SumDoubles(const std::vector<double>& values);
 };
