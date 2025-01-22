@@ -296,20 +296,19 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 }));
             }
 
-std::vector<double> totalGradient(network.layers.back().numNeurons, 0.0);
-
+            std::vector<double> totalGradient(network.layers.back().numNeurons, 0.0);
 
             for (size_t i = 0; i < realBatch; ++i)
             {
-                std::vector<double> gradPart = gradientFutures[i].get();
-                for (size_t j = 0; j < gradPart.size(); ++j)
+                std::vector<double> gradientPartial = gradientFutures[i].get();
+                for (size_t j = 0; j < gradientPartial.size(); ++j)
                 {
-                    totalGradient[j] += gradPart[j];
+                    totalGradient[j] += gradientPartial[j];
                 }
             }
 
             // Updates each batch
-            
+
             // Average the accuracy
             epochAccuracy /= (double)numBatches;
 

@@ -21,7 +21,7 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
 
     for (int layerIndex = 1; layerIndex < layers.size(); layerIndex++)
     {
-    // Iterate through layers
+        // Iterate through layers
         currentInput = layers[layerIndex].computeOutput(currentInput); // Compute output of the current layer
     }
 
@@ -31,31 +31,51 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
 
 void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
 {
+    // Could do this in a more advanced way I think? if we run multiple layers' backpropagation
+    // simultaneously it would speed it up more but I'd have to figure out how to deal
+    // with the fact each layer needs the result from the previous layer. 
     PROFILE_LOG;
+    std::vector<std::thread> layerThreads;
+    layerThreads.reserve(layers.size());
+
     std::vector<double> errorGradient = costGradient;
 
     for (int layerIndex = layers.size() - 1; layerIndex >= 0; --layerIndex)
     {
-        Layer& currentLayer = layers[layerIndex];
-        if (layerIndex > 0)
-        {
-            Layer& prevLayer = layers[layerIndex - 1];
-            std::vector<double> prevActivations(prevLayer.numNeurons);
-            for (int prevLayerIndex = 0; prevLayerIndex < prevLayer.numNeurons; prevLayerIndex++)
+        // here i will put the error gradient in a temp layer,
+        // and combine them after in the main thread ready for the next iteration
+
+        layerThreads.emplace_back([this, layerIndex, &errorGradient]()
             {
-                prevActivations[prevLayerIndex] = prevLayer.neurons[prevLayerIndex].ActivationValue;
+                Layer& currentLayer = layers[layerIndex];
+                if (layerIndex > 0)
+                {
+                    const Layer& prevLayer = layers[layerIndex - 1];
+                    std::vector<double> prevActivations(prevLayer.numNeurons);
+                    for (int prevLayerIndex = 0; prevLayerIndex < prevLayer.numNeurons; prevLayerIndex++)
+                    {
+                        prevActivations[prevLayerIndex] = prevLayer.neurons[prevLayerIndex].ActivationValue;
+                    }
+                    currentLayer.adjustWeights(errorGradient, prevActivations);
+                }
+                else
+                {
+                    currentLayer.adjustWeights(errorGradient, {});
+                }
             }
-            currentLayer.adjustWeights(errorGradient, prevActivations);
-        }
-        else
-        {
-            currentLayer.adjustWeights(errorGradient, {});
-        }
+        );
+
+        // join/ wait to join the first layer added to the vector
+        layerThreads.back().join();
 
         if (layerIndex > 0)
         {
-            Layer& prevLayer = layers[layerIndex - 1];
+            const Layer& currentLayer = layers[layerIndex];
+            const Layer& prevLayer = layers[layerIndex - 1];
             errorGradient = currentLayer.CalculatePreviousLayerError(errorGradient, prevLayer.neurons);
         }
     }
+
+    // run through all threads
+     layerThreads.clear();
 }
