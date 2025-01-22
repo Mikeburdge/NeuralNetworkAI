@@ -61,11 +61,6 @@ void Layer::adjustWeights(const vector<double>& errorGradient, const std::vector
 {
     PROFILE_LOG;
 
-    if (isInputLayer)
-    {
-        return;
-    }
-
     const double learningRate = HyperParameters::learningRate;
 
     // Update weights based on the error gradient

@@ -19,7 +19,7 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
     PROFILE_LOG;
     std::vector<double> currentInput = std::move(inputData);
 
-    for (int layerIndex = 1; layerIndex < layers.size(); layerIndex++)
+    for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++)
     {
         // Iterate through layers
         currentInput = layers[layerIndex].computeOutput(currentInput); // Compute output of the current layer
@@ -58,16 +58,11 @@ void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
                     }
                     currentLayer.adjustWeights(errorGradient, prevActivations);
                 }
-                else
-                {
-                    currentLayer.adjustWeights(errorGradient, {});
-                }
             }
         );
 
         // join/ wait to join the first layer added to the vector
         layerThreads.back().join();
-
         if (layerIndex > 0)
         {
             const Layer& currentLayer = layers[layerIndex];
@@ -77,5 +72,5 @@ void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
     }
 
     // run through all threads
-     layerThreads.clear();
+    layerThreads.clear();
 }

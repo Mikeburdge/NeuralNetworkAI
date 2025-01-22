@@ -334,9 +334,9 @@ void ShowTrainingPlotsWindow(bool* p_open)
     // Grab references
     NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
-    static bool showLossGraphLocal     = subsystem.showLossGraph.load();
+    static bool showLossGraphLocal = subsystem.showLossGraph.load();
     static bool showAccuracyGraphLocal = subsystem.showAccuracyGraph.load();
-    static bool showRollingGraphLocal  = subsystem.showRollingAccuracyGraph.load();
+    static bool showRollingGraphLocal = subsystem.showRollingAccuracyGraph.load();
 
     ImGui::Checkbox("Show Loss", &showLossGraphLocal);
     ImGui::SameLine();
@@ -481,7 +481,67 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     };
     std::vector<LineInfo> lineInfos;
 
+    int pseudoInputCount = network.layers[0].numNeuronsOutOfPreviousLayer;
+    float inputLayerPosX = layerSpacing * 0.5f;
     int maxNeuronDisplay = NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay;
+    int displayedInputs = std::min(pseudoInputCount, maxNeuronDisplay);
+
+    float inputNeuronSpacing = (displayedInputs > 1) ? (innerHeight / (float)(displayedInputs + 1)) : (innerHeight * 0.5f);
+
+    if (showLayerLabels)
+    {
+        float labelY = windowPos.y + scrollY + topPadding;
+        ImVec2 labelPos(windowPos.x + inputLayerPosX, labelY);
+        ImGui::GetWindowDrawList()->AddText(labelPos, IM_COL32(255, 255, 0, 255), "Input Layer");
+    }
+
+    std::vector<ImVec2> pseudoInputCenters;
+    pseudoInputCenters.reserve(displayedInputs);
+
+    for (int i = 0; i < displayedInputs; ++i)
+    {
+        float circleSize = std::min(maxCircSize, inputNeuronSpacing * 0.5f);
+
+        float posY = topPadding + (i + 1) * inputNeuronSpacing;
+
+        ImVec2 circleCenter(
+            windowPos.x + inputLayerPosX,
+            windowPos.y + posY - scrollY
+        );
+
+        ImColor circleColor = ImColor(0.7f, 0.7f, 0.7f, 1.0f);
+
+        ImGui::GetWindowDrawList()->AddCircle(
+            circleCenter,
+            circleSize,
+            circleColor,
+            16, // segments
+            circleThicknessValue
+        );
+
+        char label[16];
+        std::snprintf(label, sizeof(label), "X%d", i);
+        ImVec2 labelSize = ImGui::CalcTextSize(label);
+        ImVec2 textPos(
+            circleCenter.x - labelSize.x * 0.5f,
+            circleCenter.y - labelSize.y * 0.5f
+        );
+        ImGui::GetWindowDrawList()->AddText(textPos, IM_COL32_WHITE, label);
+
+        pseudoInputCenters.push_back(circleCenter);
+    }
+
+    if (pseudoInputCount > displayedInputs)
+    {
+        float truncatedY = topPadding + displayedInputs * (innerHeight / (displayedInputs + 1));
+        ImVec2 truncatedPos(
+            windowPos.x + inputLayerPosX - 40.0f,
+            windowPos.y + truncatedY + 10.0f - scrollY
+        );
+        char msg[64];
+        std::snprintf(msg, sizeof(msg), "Showing %d of %d", displayedInputs, pseudoInputCount);
+        ImGui::GetWindowDrawList()->AddText(truncatedPos, IM_COL32(255, 255, 0, 255), msg);
+    }
 
     for (int layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
@@ -496,38 +556,26 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         if (showLayerLabels)
         {
             std::string layerName;
-            if (layerIndex == 0)
-            {
-                layerName = "Input Layer";
-            }
-            else if (layerIndex == layerCount - 1)
-            {
+            if (layerIndex == layerCount - 1)
                 layerName = "Output Layer";
-            }
             else
-            {
                 layerName = "Hidden Layer " + std::to_string(layerIndex);
-            }
 
-            // Place label near top, but safely inside the window
             float labelY = windowPos.y + scrollY + topPadding;
             ImVec2 labelPos(windowPos.x + layerPosX, labelY);
-            ImGui::GetWindowDrawList()->AddText(labelPos, ImColor(255, 255, 0, 255), layerName.c_str());
+            ImGui::GetWindowDrawList()->AddText(labelPos, IM_COL32(255, 255, 0, 255), layerName.c_str());
         }
 
-
-        bool isFinalLayer = (layerIndex == layerCount - 1);
-
-        // We'll gather all the activation values first
-        static std::vector<float> displayActivations; // temp
+        static std::vector<float> displayActivations;
         displayActivations.resize(displayCount);
 
-        for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
+        for (int n = 0; n < displayCount; ++n)
         {
-            float activationVal = (float)layer.neurons[neuronIndex].ActivationValue;
-            displayActivations[neuronIndex] = activationVal;
+            float activationVal = (float)layer.neurons[n].ActivationValue;
+            displayActivations[n] = activationVal;
         }
 
+        bool isFinalLayer = (layerIndex == layerCount - 1);
         if (isFinalLayer)
         {
             float maxVal = 0.0f;
@@ -538,9 +586,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             if (maxVal > 0.0f)
             {
                 for (int i = 0; i < displayCount; i++)
-                {
                     displayActivations[i] /= maxVal;
-                }
             }
         }
 
@@ -548,44 +594,39 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         for (int neuronIndex = 0; neuronIndex < displayCount; ++neuronIndex)
         {
             float circleSize = std::min(maxCircSize, neuronSpacing * 0.5f);
-
-            // Y coordinate for this neuron
             float posY = topPadding + (neuronIndex + 1) * neuronSpacing;
-
-            // The circle center
             ImVec2 circleCenter(
                 windowPos.x + layerPosX,
                 windowPos.y + posY - scrollY
             );
 
-            // The neuron's activation
-            const Neuron& curNeuron = layer.neurons[neuronIndex];
+            // activation-based color
             float activationVal = displayActivations[neuronIndex];
 
             ImColor baseColor;
             switch (g_CircleColourMode)
             {
             case CircleColourMode::DefaultActivation:
-                {
-                    baseColor = VisualisationUtility::GetActivationColour(activationVal, HyperParameters::activationType);
-                }
+                baseColor = VisualisationUtility::GetActivationColour(
+                    activationVal, HyperParameters::activationType);
+                break;
+
             case CircleColourMode::Gradient:
+            default:
                 {
-                    const float ratio = std::max(0.0f, std::min(1.0f, activationVal));
-                    const float red = 1.0f - ratio;
-                    const float green = ratio;
+                    float ratio = std::max(0.0f, std::min(1.0f, activationVal));
+                    float red = 1.0f - ratio;
+                    float green = ratio;
                     baseColor = ImColor(red, green, 0.0f, 1.0f);
                 }
+                break;
             }
 
-            // Base color
-
-
-            // Possibly pulse if > 0.5
+            // Possibly pulse if over 0.5
             float actualSize = circleSize;
             if (activeNeuronCanPulse && activationVal > 0.5f)
             {
-                actualSize += (sinf(ImGui::GetTime() * 5.0f) * 2.0f);
+                actualSize += sinf(ImGui::GetTime() * 5.0f) * 2.0f;
             }
 
             // Hover detection
@@ -594,16 +635,17 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             float dy = mousePos.y - circleCenter.y;
             bool hoveredNeuron = (dx * dx + dy * dy) < (actualSize * actualSize);
 
-            // If hovered, show more decimals, highlight color
+            // neuron text
             char buf[32];
             if (hoveredNeuron)
                 std::snprintf(buf, sizeof(buf), "%.3f", activationVal);
             else
                 std::snprintf(buf, sizeof(buf), "%.1f", activationVal);
 
+            // highlight if hovered
             ImColor drawColor = hoveredNeuron ? ImColor(255, 255, 0, 255) : baseColor;
 
-            // Draw the circle
+            // Draw circle
             ImGui::GetWindowDrawList()->AddCircle(
                 circleCenter,
                 actualSize,
@@ -612,7 +654,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
                 circleThicknessValue
             );
 
-            // Draw the text
+            // Draw text
             ImVec2 txtSize = ImGui::CalcTextSize(buf);
             ImVec2 txtPos(
                 circleCenter.x - txtSize.x * 0.5f,
@@ -620,83 +662,81 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
             );
             ImGui::GetWindowDrawList()->AddText(txtPos, IM_COL32_WHITE, buf);
 
-            // If we have a previous layer, draw connections
-            if (layerIndex > 0 && drawLineConnections)
+            if (drawLineConnections)
             {
-                const Layer& prevLayer = network.layers[layerIndex - 1];
-                int prevCount = std::min(prevLayer.numNeurons, maxNeuronDisplay);
+                int prevLayerCount = (layerIndex == 0) ? pseudoInputCount : network.layers[layerIndex - 1].numNeurons;
 
-                float prevNeuronSpacing = (prevCount > 1) ? (innerHeight / (float)(prevCount + 1)) : (innerHeight * 0.5f);
+                // limit how many lines we draw
+                int prevDisplayCount = std::min(prevLayerCount, maxNeuronDisplay);
 
-                // Check shape
-                if ((int)layer.weights.size() == numNeurons &&
-                    (int)layer.weights[neuronIndex].size() == prevLayer.numNeurons)
+                float prevPosX = (layerIndex == 0) ?
+                                     inputLayerPosX // from pseudo input
+                                     :
+                                     ((layerIndex) * layerSpacing);
+
+                float prevNeuronSpacing = (prevDisplayCount > 1) ? (innerHeight / (float)(prevDisplayCount + 1)) : (innerHeight * 0.5f);
+
+                for (int pIdx = 0; pIdx < prevDisplayCount; ++pIdx)
                 {
-                    for (int pIdx = 0; pIdx < prevCount; ++pIdx)
+                    float weightVal = layer.weights[neuronIndex][pIdx];
+
+                    float prevPosY = topPadding + (pIdx + 1) * prevNeuronSpacing;
+                    ImVec2 lineStart(
+                        windowPos.x + prevPosX + circleSize,
+                        windowPos.y + prevPosY - scrollY
+                    );
+                    ImVec2 lineEnd(
+                        circleCenter.x - circleSize,
+                        circleCenter.y
+                    );
+
+                    // hover detection
+                    float distLine = VisualisationUtility::DistanceToLineSegment(
+                        mousePos, lineStart, lineEnd);
+                    bool highlightBecauseNeuron = hoveredNeuron;
+                    bool hoveredLine = (distLine < (minLineThicknessValue + 2.0f))
+                        || highlightBecauseNeuron;
+                    bool clickedLine = (hoveredLine && ImGui::IsMouseClicked(0));
+
+                    if (hoveredLine)
                     {
-                        float weightVal = (float)layer.weights[neuronIndex][pIdx];
-                        float thickness = std::max(minLineThicknessValue,
-                                                   1.0f + std::min(4.0f, std::fabs(weightVal) / 5.0f));
+                        hoveredWeightIndex = neuronIndex + pIdx;
+                        if (clickedLine)
+                            clickedWeightIndex = hoveredWeightIndex;
+                    }
 
-                        float prevPosY = topPadding + (pIdx + 1) * prevNeuronSpacing;
-                        // The previous layer's center X
-                        float prevLayerPosX = layerPosX - layerSpacing;
+                    float thickness = std::max(minLineThicknessValue,
+                                               1.0f + std::min(4.0f, (float)fabs(weightVal) / 5.0f));
+                    ImColor lineColor = hoveredLine ? ImColor(255, 255, 0, 255) : ImColor(VisualisationUtility::GetWeightColor(weightVal));
 
-                        // We connect from the right edge of that neuron circle
-                        // to the left edge of the current circle:
-                        ImVec2 lineStart(
-                            windowPos.x + prevLayerPosX + circleSize, // prev layer center + circleSize
-                            windowPos.y + prevPosY - scrollY
-                        );
-                        ImVec2 lineEnd(
-                            circleCenter.x - circleSize, // subtract circleSize from this layer's center
-                            circleCenter.y
-                        );
+                    ImGui::GetWindowDrawList()->AddLine(
+                        lineStart,
+                        lineEnd,
+                        lineColor,
+                        thickness
+                    );
 
-                        // Hover detection for the line
-                        float dist = VisualisationUtility::DistanceToLineSegment(mousePos, lineStart, lineEnd);
-
-                        // If we're hovering a neuron, we want lines from that neuron to highlight too
-                        bool highlightBecauseNeuron = hoveredNeuron;
-
-                        bool hoveredLine = (dist < (minLineThicknessValue + 2.0f)) || highlightBecauseNeuron;
-                        bool clickedLine = hoveredLine && ImGui::IsMouseClicked(0);
-                        if (hoveredLine)
-                        {
-                            // set the hovered index (arbitrary logic)
-                            hoveredWeightIndex = neuronIndex + pIdx;
-                            if (clickedLine)
-                                clickedWeightIndex = hoveredWeightIndex;
-                        }
-
-                        ImColor lineColor = hoveredLine ? ImColor(255, 255, 0, 255) : ImColor(VisualisationUtility::GetWeightColor(weightVal));
-
-                        // Draw line
-                        ImGui::GetWindowDrawList()->AddLine(lineStart, lineEnd, lineColor, thickness);
-
-                        // If we either hover or "drawWeights" is on, store line info
-                        if (drawWeights || hoveredLine)
-                        {
-                            lineInfos.emplace_back(lineStart, lineEnd, weightVal, hoveredLine);
-                        }
+                    // If we either hover or have "drawWeights" on, store line info
+                    if (drawWeights || hoveredLine)
+                    {
+                        lineInfos.emplace_back(lineStart, lineEnd, weightVal, hoveredLine);
                     }
                 }
             }
-        } // end for neurons
+        }
 
-        // If truncated, place text near bottom
         if (numNeurons > displayCount)
         {
             float lastNeuronY = topPadding + displayCount * (innerHeight / (displayCount + 1));
             ImVec2 truncatedPos(
-                windowPos.x + layerPosX - 40.0f, // shift left a bit so it's under the last neuron
+                windowPos.x + layerPosX - 40.0f,
                 windowPos.y + lastNeuronY + 10.0f - scrollY
             );
             char msg[64];
             std::snprintf(msg, sizeof(msg), "Showing %d of %d", displayCount, numNeurons);
             ImGui::GetWindowDrawList()->AddText(truncatedPos, IM_COL32(255, 255, 0, 255), msg);
         }
-    } // end for layers
+    }
 
     // Draw numeric weight text if we have lineInfos
     for (auto& info : lineInfos)
@@ -706,9 +746,9 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::End();
 
-    // Now the "Visualization Customization" window
+    // The separate customization window
     ImGui::Begin("Visualization Customization");
-    ImGui::SliderInt("Max Neurons Displayed", &NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay, 0.0f, 300.0f);
+    ImGui::SliderInt("Max Neurons Displayed", &NeuralNetworkSubsystem::GetInstance().maxNeuronsToDisplay, 0, 300);
 
     ImGui::SliderFloat("Top Padding", &topPadding, 0.0f, 300.0f);
     ImGui::SliderFloat("Bottom Padding", &bottomPadding, 0.0f, 300.0f);
@@ -731,17 +771,15 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::Text("Neuron Colour Mode");
     static int colourModeIndex = 0;
-
     const char* colourModes[] = {"Default", "Red-Green Gradient"};
     if (ImGui::BeginCombo("Colour Mode", colourModes[colourModeIndex]))
     {
         for (int i = 0; i < IM_ARRAYSIZE(colourModes); i++)
         {
-            bool isSelected = colourModeIndex == i;
+            bool isSelected = (colourModeIndex == i);
             if (ImGui::Selectable(colourModes[i], isSelected))
             {
                 colourModeIndex = i;
-
                 g_CircleColourMode = (i == 0 ? CircleColourMode::DefaultActivation : CircleColourMode::Gradient);
             }
             if (isSelected)
@@ -760,7 +798,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     }
 
     ImGui::End();
-
+    
     if (showLegendWindow)
     {
         ShowLegendWindow(&showLegendWindow);
@@ -769,9 +807,9 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     {
         ShowTrainingMetrics(&showTrainingMetricsWindow);
     }
-    if (showTrainingGraphWindow)
+    if (showTrainingMetricsWindow)
     {
-        ShowTrainingPlotsWindow(&showTrainingGraphWindow);
+        // ShowTrainingGraph();
     }
 }
 

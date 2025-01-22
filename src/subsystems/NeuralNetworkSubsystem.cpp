@@ -22,7 +22,7 @@ NeuralNetworkSubsystem::TrainingTimer NeuralNetworkSubsystem::trainingTimer;
 
 void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivation, const CostType& inCost,
                                                const int inputLayerSize,
-                                               const int hiddenLayers, const int hiddenLayersSizes,
+                                               const int hiddenLayers, const int hiddenLayerSize,
                                                const int outputLayerSize)
 {
     CurrentNeuralNetwork = NeuralNetwork();
@@ -33,33 +33,20 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
     ActivationType finalLayerActivation = ActivationType::softmax;
 
     // Reserve the input, output and hidden layers
-    CurrentNeuralNetwork.layers.reserve(hiddenLayers + 2);
+    CurrentNeuralNetwork.layers.reserve(hiddenLayers + 1);
 
+    int prevLayerSize = inputLayerSize;
 
-    // For now as every hidden layer has the same number of neurons we can just pass the hiddenLayersSizes in as the out neurons
-    const Layer inputLayer(inActivation, inCost, inputLayerSize, 0);
-
-    CurrentNeuralNetwork.AddLayer(inputLayer);
-
-
+    // build hidden layers
     for (int i = 0; i < hiddenLayers; i++)
     {
-        int neuronsOut;
-        if (i == 0)
-        {
-            neuronsOut = inputLayerSize; // Nodes coming out of the last layer
-        }
-        else
-        {
-            neuronsOut = hiddenLayersSizes;
-        }
-        const Layer hiddenLayer(inActivation, inCost, hiddenLayersSizes, neuronsOut);
-
+        Layer hiddenLayer(inActivation, inCost, hiddenLayerSize, prevLayerSize);
         CurrentNeuralNetwork.AddLayer(hiddenLayer);
+        prevLayerSize = hiddenLayerSize;
     }
 
-    const Layer outputLayer(finalLayerActivation, inCost, outputLayerSize, hiddenLayersSizes);
-
+    // build output layer
+    Layer outputLayer(finalLayerActivation, inCost, outputLayerSize, prevLayerSize);
     CurrentNeuralNetwork.AddLayer(outputLayer);
 }
 
@@ -327,8 +314,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             // create a data point
             TrainingMetricPoint dataPoint;
             dataPoint.timeSeconds = static_cast<float>(elapsedSeconds);
-            dataPoint.loss       = static_cast<float>(batchCost / realBatch); 
-            dataPoint.accuracy   = static_cast<float>(partialAccuracy * 100.f);
+            dataPoint.loss = static_cast<float>(batchCost / realBatch);
+            dataPoint.accuracy = static_cast<float>(partialAccuracy * 100.f);
             dataPoint.rollingAcc = static_cast<float>(rollingAccuracyAtomic.load() * 100.f);
         }
 

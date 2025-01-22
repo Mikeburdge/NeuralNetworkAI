@@ -20,21 +20,18 @@ public:
 
     std::vector<std::vector<double>> weights; // Weights matrix.
     std::vector<double> biases; // Biases vector.
-    
-    bool isInputLayer = false;
 
     Layer(const ActivationType& inActivation, const CostType& inCost, const int inNumNeurons, const int inNumNeuronsOut)
         : activation(inActivation), cost(inCost),
-          numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut),
-          isInputLayer(inNumNeuronsOut == 0)
+          numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut)
     {
-        // Initialize weights only if this is not the first layer (input layer)
-        if (!isInputLayer)
+        biases.resize(numNeurons);
+        weights.resize(numNeurons);
+        for (int i = 0; i < numNeurons; i++)
         {
-            weights = std::vector(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer));
-            biases = std::vector<double>(numNeurons);
+            weights[i].resize(numNeuronsOutOfPreviousLayer);
         }
-        
+
         std::random_device rd;
         std::mt19937 rng(rd());
 
