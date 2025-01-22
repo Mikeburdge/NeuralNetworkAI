@@ -68,45 +68,6 @@ NeuralNetwork& NeuralNetworkSubsystem::GetNeuralNetwork()
     return CurrentNeuralNetwork;
 }
 
-void NeuralNetworkSubsystem::StartNeuralNetwork(const std::vector<double>& inputData,
-                                                const std::vector<double>& targetOutput)
-{
-    PROFILE_LOG;
-    NeuralNetwork& network = GetNeuralNetwork();
-
-    const CostType currentCost = HyperParameters::cost;
-
-    for (int epoch = 0; epoch < HyperParameters::epochs; ++epoch)
-    {
-        // Perform forward propagation
-        std::vector<double> predictions = network.ForwardPropagation(inputData);
-
-        // Calculate Cost and Log Progress
-        double cost = Cost::CalculateCost(currentCost, predictions, targetOutput);
-
-        std::cout << "Epoch " << epoch << " - Cost: " << cost << '\n';
-
-        // Calculate Error Gradient for Backpropogation
-        std::vector<double> costGradient = Cost::CalculateCostDerivative(currentCost, predictions, targetOutput);
-
-        // Perform Backwards Propagation
-        network.BackwardPropagation(costGradient);
-
-        // if (epoch % ::HyperParameters::visualizationUpdateInterval == 0 &&  visualizationCallback)
-        {
-            visualizationCallback(CurrentNeuralNetwork);
-        }
-    }
-
-    // const int outputLayerIndex = network.layers.size() - 1;
-    //
-    // Layer outputLayer = CurrentNeuralNetwork.layers[outputLayerIndex];
-    //Cost::CalculateCost HERE LAST
-
-    // Example: Print or process the output
-
-    // Further actions after the propagation can be added here
-}
 
 bool NeuralNetworkSubsystem::LoadMNISTTrainingData(const std::string& imagesPath, const std::string& labelsPath)
 {
@@ -187,8 +148,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         double epochAverageCost = 0.0;
         double epochAccuracy = 0.0;
 
-        currentLossAtomic.store(float(epochAverageCost));
-        currentAccuracyAtomic.store(float(epochAccuracy));
+        currentLossAtomic.store(epochAverageCost);
+        currentAccuracyAtomic.store(epochAccuracy);
         totalBatchesInEpochAtomic.store(static_cast<int>(totalBatches));
 
         // Reset current batch index
@@ -255,7 +216,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 }
 
                 int actualIndex = -1;
-                for (int j = 0; j < (int)batchTargets.size(); j++)
+                for (int j = 0; j < (int)batchTargets[i].size(); j++)
                 {
                     if (batchTargets[i][j] == 1)
                     {
@@ -267,9 +228,31 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 {
                     localCorrectCount++;
                     totalCorrectPredictions++;
+
+                    pastPredictionResults.push_back(true);
+                    pastPredictionCorrectCount++;
                 }
+                else
+                {
+                    pastPredictionResults.push_back(false);
+                }
+
+                while (pastPredictionResults.size() > 1000)
+                {
+                    if (pastPredictionResults.front())
+                    {
+                        pastPredictionCorrectCount--;
+                    }
+                    pastPredictionResults.pop_front();
+                }
+
+                rollingAccuracyAtomic.store(
+                    static_cast<double>(pastPredictionCorrectCount) / pastPredictionResults.size()
+                );
             }
             double batchCost = SumDoubles(perSampleCosts);
+
+            currentLossAtomic.store(batchCost / (double)realBatch);
 
             correctPredictionsThisBatchAtomic.store(localCorrectCount);
             totalCorrectPredictionsAtomic.store(totalCorrectPredictions);
@@ -313,7 +296,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             epochAccuracy /= (double)numBatches;
 
             double partialAccuracy = (double)totalCorrectPredictions / (double)totalPredictionsAtomic.load();
-            currentAccuracyAtomic.store((float)partialAccuracy);
+            currentAccuracyAtomic.store(partialAccuracy);
 
             // Average the gradient
             for (size_t j = 0; j < totalGradient.size(); ++j)
@@ -321,11 +304,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 totalGradient[j] /= (double)realBatch;
             }
 
-            for (size_t j = 0; j < totalGradient.size(); ++j)
-            {
-                // Use backpropogation on the averaghe gradient
-                network.BackwardPropagation(totalGradient);
-            }
+            // Use backpropogation on the averaghe gradient
+            network.BackwardPropagation(totalGradient);
 
             // update the visuals
 
@@ -338,6 +318,18 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             // Increment current batch index
             currentBatchIndexAtomic.fetch_add(1);
+
+            // Graph Stuff
+            std::lock_guard<std::mutex> lock(metricMutex);
+
+            double elapsedSeconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - trainingTimer.startTime).count();
+
+            // create a data point
+            TrainingMetricPoint dataPoint;
+            dataPoint.timeSeconds = static_cast<float>(elapsedSeconds);
+            dataPoint.loss       = static_cast<float>(batchCost / realBatch); 
+            dataPoint.accuracy   = static_cast<float>(partialAccuracy * 100.f);
+            dataPoint.rollingAcc = static_cast<float>(rollingAccuracyAtomic.load() * 100.f);
         }
 
         // Calculate epoch duration
@@ -351,9 +343,6 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             "Epoch " + std::to_string(epoch + 1) +
             " of " + std::to_string(epochs) +
             " cost: " + std::to_string(avgCost));
-
-        // update the UI
-        currentLossAtomic.store(static_cast<float>(avgCost));
 
         if (stopRequestedAtomic.load())
         {
@@ -623,10 +612,10 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
 
     std::string FileName = "NeuralNetwork_" + NeuralNetworkUtility::GetInitTimestamp() + ".txt";
     std::string filePath = (std::filesystem::current_path() / "Saved" / FileName).string();
-    SaveNetwork(filePath);
+    // SaveNetwork(filePath);
 
-    StopTraining();
-    // trainingTimer.isInitialized = false; // stop the timer when we stop the training
+    // StopTraining();
+    trainingTimer.isInitialized = false; // stop the timer when we stop the training
     LOG(LogLevel::FLOW, "Finished background thread training. Network saved to: " + filePath);
 }
 

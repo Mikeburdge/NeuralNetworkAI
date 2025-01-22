@@ -75,12 +75,7 @@ bool showLayerLabels = true;
 // Legend + Training Metrics
 bool showLegendWindow = true;
 bool showTrainingMetricsWindow = true;
-
-// Example training metrics (placeholder)
-static float currentLoss = 0.123f;
-static float currentAcc = 92.5f;
-static int currentEpoch = 0;
-static int totalEpochs = 10;
+bool showTrainingGraphWindow = false;
 
 std::string filePathName;
 std::string filePath;
@@ -235,7 +230,8 @@ void ShowTrainingMetrics(bool* p_open)
     NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
     float loss = subsystem.currentLossAtomic.load();
-    float accuracy = subsystem.currentAccuracyAtomic.load();
+    float rollingAccuracy = subsystem.rollingAccuracyAtomic.load();
+    float totalAccuracy = subsystem.currentAccuracyAtomic.load();
     int currentEpoch = subsystem.currentEpochAtomic.load();
     int totalEpochs = subsystem.totalEpochsAtomic.load();
 
@@ -264,7 +260,7 @@ void ShowTrainingMetrics(bool* p_open)
     {
         ImGui::SetTooltip("%.1f%% done", epochFraction * 100.0f);
     }
-    ImGui::ProgressBar(overallFraction, ImVec2(-1.0f, 0.0f), "Trainig Progress");
+    ImGui::ProgressBar(overallFraction, ImVec2(-1.0f, 0.0f), "Training Progress");
     if (ImGui::IsItemHovered())
     {
         ImGui::SetTooltip("%.1f%% done", overallFraction * 100.0f);
@@ -308,12 +304,128 @@ void ShowTrainingMetrics(bool* p_open)
 
     ImGui::Text("Epoch: %d/%d (Batch %d/%d)", currentEpoch + 1, totalEpochs, currentBatch, totalBatchesThisEpoch);
     ImGui::Text("Loss: %.4f", loss);
-    ImGui::Text("Accuracy: %.2f%%", accuracy * 100.f);
+    ImGui::Text("Rolling Accuracy (last 1000): %.2f%%", rollingAccuracy * 100.f);
+    ImGui::Text("Total Accuracy: %.2f%%", totalAccuracy * 100.f);
 
     ImGui::Separator();
     ImGui::Text("Correct Predictions (This Batch): %d / %d", correctPredictionsThisBatch, currentBatchSize);
     ImGui::Text("Correct Predictions (Overall): %d / %d", totalCorrectPredictions, totalPredictions);
 
+
+    ImGui::End();
+}
+
+
+// 5.2.2: Training Metrics Graph Window
+
+bool showLossGraph = true;
+bool showAccuracyGraph = true;
+bool showRollingAccuracyGraph = true;
+
+// 5.2.2: Training Metrics Graph Window 
+void ShowTrainingPlotsWindow(bool* p_open)
+{
+    if (!ImGui::Begin("Training Graph", p_open))
+    {
+        ImGui::End();
+        return; // If window is collapsed, skip
+    }
+
+    // Grab references
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+    static bool showLossGraphLocal     = subsystem.showLossGraph.load();
+    static bool showAccuracyGraphLocal = subsystem.showAccuracyGraph.load();
+    static bool showRollingGraphLocal  = subsystem.showRollingAccuracyGraph.load();
+
+    ImGui::Checkbox("Show Loss", &showLossGraphLocal);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show Accuracy %", &showAccuracyGraphLocal);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show RollingAcc %", &showRollingGraphLocal);
+
+    subsystem.showLossGraph.store(showLossGraphLocal);
+    subsystem.showAccuracyGraph.store(showAccuracyGraphLocal);
+    subsystem.showRollingAccuracyGraph.store(showRollingGraphLocal);
+
+    static float minTime = 0.0f;
+    static float maxTime = 200.0f;
+
+    ImGui::Text("Time Range (seconds):");
+    ImGui::SliderFloat("Min Time", &minTime, 0.0f, 5000.0f, "%.1f");
+    ImGui::SliderFloat("Max Time", &maxTime, 0.0f, 5000.0f, "%.1f");
+
+    std::vector<float> plotLoss;
+    std::vector<float> plotAcc;
+    std::vector<float> plotRolling;
+
+    {
+        std::lock_guard<std::mutex> lock(subsystem.metricMutex);
+
+        for (auto& pt : subsystem.trainingHistory)
+        {
+            if (pt.timeSeconds >= minTime && pt.timeSeconds <= maxTime)
+            {
+                plotLoss.push_back(pt.loss);
+                plotAcc.push_back(pt.accuracy);
+                plotRolling.push_back(pt.rollingAcc);
+            }
+        }
+    }
+
+    const char* overlayText = "Training Metrics";
+
+    if (showLossGraphLocal)
+    {
+        ImGui::Separator();
+        ImGui::Text("Loss vs. Time (index-based)");
+        if (!plotLoss.empty())
+        {
+            ImGui::PlotLines("Loss", plotLoss.data(), (int)plotLoss.size(),
+                             0, overlayText,
+                             /*scale_min*/ FLT_MAX, /*scale_max*/ FLT_MAX,
+                             ImVec2(0, 150));
+        }
+        else
+        {
+            ImGui::Text("No loss data in this range.");
+        }
+    }
+
+    if (showAccuracyGraphLocal)
+    {
+        ImGui::Separator();
+        ImGui::Text("Overall Accuracy (%%) vs. Time (index-based)");
+        if (!plotAcc.empty())
+        {
+            // If you store accuracy in 0..100, you can do 0.0f..100.0f here
+            ImGui::PlotLines("Accuracy %", plotAcc.data(), (int)plotAcc.size(),
+                             0, overlayText,
+                             0.0f, 100.0f,
+                             ImVec2(0, 150));
+        }
+        else
+        {
+            ImGui::Text("No accuracy data in this range.");
+        }
+    }
+
+    if (showRollingGraphLocal)
+    {
+        ImGui::Separator();
+        ImGui::Text("Rolling Accuracy (%%) vs. Time (index-based)");
+        if (!plotRolling.empty())
+        {
+            ImGui::PlotLines("Rolling Acc %", plotRolling.data(), (int)plotRolling.size(),
+                             0, overlayText,
+                             0.0f, 100.0f,
+                             ImVec2(0, 150));
+        }
+        else
+        {
+            ImGui::Text("No rolling accuracy data in this range.");
+        }
+    }
 
     ImGui::End();
 }
@@ -615,6 +727,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::Checkbox("Show Legend Window", &showLegendWindow);
     ImGui::Checkbox("Show Training Metrics", &showTrainingMetricsWindow);
+    ImGui::Checkbox("Show Training Metrics Graph", &showTrainingGraphWindow);
 
     ImGui::Text("Neuron Colour Mode");
     static int colourModeIndex = 0;
@@ -655,6 +768,10 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     if (showTrainingMetricsWindow)
     {
         ShowTrainingMetrics(&showTrainingMetricsWindow);
+    }
+    if (showTrainingGraphWindow)
+    {
+        ShowTrainingPlotsWindow(&showTrainingGraphWindow);
     }
 }
 
@@ -860,7 +977,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             // Activation
             static int activationElem = (int)sigmoid;
-            const char* activationNames[] = {"Sigmoid", "ReLU"};
+            const char* activationNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
             const char* actName = (activationElem >= 0 && activationElem < Activation_Count) ? activationNames[activationElem] : "Unknown";
             ImGui::SliderInt("Activation", &activationElem, 0, Activation_Count - 1, actName);
 

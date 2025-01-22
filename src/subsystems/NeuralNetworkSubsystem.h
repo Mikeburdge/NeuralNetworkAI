@@ -1,8 +1,10 @@
 #pragma once
 
 #include <atomic>
+#include <deque>
 #include <filesystem>
 #include <functional>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -54,20 +56,44 @@ public:
     std::atomic<bool> trainingInProgressAtomic{false};
 
     std::atomic<int> currentEpochAtomic{0};
-    std::atomic<float> currentLossAtomic{0.0f};
-    std::atomic<float> currentAccuracyAtomic{0.0f};
+    std::atomic<double> currentLossAtomic{0.0};
+    std::atomic<double> currentAccuracyAtomic{0.0};
     std::atomic<int> totalEpochsAtomic{0};
-    
+
     std::atomic<int> correctPredictionsThisBatchAtomic{0};
     std::atomic<int> currentBatchSizeAtomic{0};
     std::atomic<int> totalCorrectPredictionsAtomic{0};
     std::atomic<int> totalPredictionsAtomic{0};
+
+    std::deque<bool> pastPredictionResults;
+    std::atomic<double> rollingAccuracyAtomic{0.0};
+
+    int pastPredictionCorrectCount = 0;
 
     std::atomic<int> currentBatchIndexAtomic{0};
     std::atomic<int> totalBatchesInEpochAtomic{0};
 
     // for stopping the training
     std::atomic<bool> stopRequestedAtomic{false};
+
+
+    // Graph Stuff
+    struct TrainingMetricPoint
+    {
+        float timeSeconds; // seconds since training started
+        float loss; // Y-axis
+        float accuracy; // Y-axis 
+        float rollingAcc; // Y-axis
+    };
+
+
+    std::vector<TrainingMetricPoint> trainingHistory;
+    std::mutex metricMutex; 
+    // Emable / disable
+    std::atomic<bool> showLossGraph{true};
+    std::atomic<bool> showAccuracyGraph{true};
+    std::atomic<bool> showRollingAccuracyGraph{true};
+
 
     void SetVizUpdateInterval(int interval)
     {
@@ -82,11 +108,6 @@ public:
                            int outputLayerSize);
 
     NeuralNetwork& GetNeuralNetwork();
-
-    // --------------------------------------------------------------------
-    // The old single sample method (might still come in handy)
-    void StartNeuralNetwork(const std::vector<double>& inputData,
-                            const std::vector<double>& targetOutput);
 
     // A function to load MNIST training data from disk
     bool LoadMNISTTrainingData(const std::string& imagesPath,
@@ -131,6 +152,6 @@ private:
 
 
     void TrainOnMNISTThreadEntry();
-    
+
     static double SumDoubles(const std::vector<double>& values);
 };

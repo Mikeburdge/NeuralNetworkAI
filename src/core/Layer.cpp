@@ -127,8 +127,12 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
         }
 
         double activatedValue = previousLayerNeurons[prevNeuronIdx].ActivationValue;
+        
+        // calculate if we're in the final layer, would be nice to pass this in for a more guaranteed
+        // final layer but it should be fine as we only ever choose sfoftmax for final layer. 
+        bool bIsFinalLayer = (cost == crossEntropy && activation == softmax);
 
-        double derivative = Activation::CalculateActivationDerivative(activation, activatedValue);
+        double derivative = bIsFinalLayer ? 1.0 : Activation::CalculateActivationDerivative(activation, activatedValue);
 
         previousLayerErrorGradient[prevNeuronIdx] = error * derivative;
     }
