@@ -4,6 +4,7 @@ enum ActivationType
 {
     sigmoid,
     ReLU,
+    LeakyReLU,
     Activation_Count,
     softmax // used to trigger softmax on final layer hence why its after the activation count. must not be displayed to user
 };
@@ -39,4 +40,10 @@ private:
 
     static double ReLUDerivative(double x);
     
+    static double LeakyReLU(double x);
+    
+    static double LeakyReLUDerivative(double x);
+
+
+    static constexpr double LeakyReLULeakRate = 0.01;
 };

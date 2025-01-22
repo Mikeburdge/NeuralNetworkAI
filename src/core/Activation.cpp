@@ -1,6 +1,7 @@
 #include "Activation.h"
 
 #include "cmath"
+#include "Cost.h"
 #include "logging/Logger.h"
 
 double Activation::CalculateActivation(const ActivationType inActivation, const double x)
@@ -11,6 +12,8 @@ double Activation::CalculateActivation(const ActivationType inActivation, const 
         return sigmoid(x);
     case ActivationType::ReLU:
         return ReLU(x);
+    case ActivationType::LeakyReLU:
+        return LeakyReLU(x);
     case ActivationType::softmax:
         __debugbreak();
         LOG(LogLevel::ERROR, "Should Never Hapen");
@@ -27,8 +30,9 @@ double Activation::CalculateActivationDerivative(const ActivationType inActivati
         return sigmoidDerivative(x);
     case ActivationType::ReLU:
         return ReLUDerivative(x);
+    case ActivationType::LeakyReLU:
+        return LeakyReLUDerivative(x);
     case ActivationType::softmax:
-
     default:
         return 1.0; // Default return identity for no activation
     }
@@ -56,3 +60,15 @@ double Activation::ReLUDerivative(double x)
 {
     return x > 0 ? 1.0 : 0;
 }
+
+double Activation::LeakyReLU(const double x)
+{
+    return x > 0 ? x : LeakyReLULeakRate * x;
+}
+
+double Activation::LeakyReLUDerivative(double x)
+{
+    return x > 0 ? 1.0 : LeakyReLULeakRate;
+}
+
+
