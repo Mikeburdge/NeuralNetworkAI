@@ -21,6 +21,8 @@ public:
     std::vector<std::vector<double>> weights; // Weights matrix.
     std::vector<double> biases; // Biases vector.
 
+    std::vector<std::vector<double>> velocity;
+
     Layer(const ActivationType& inActivation, const CostType& inCost, const int inNumNeurons, const int inNumNeuronsOut)
         : activation(inActivation), cost(inCost),
           numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut)
@@ -30,6 +32,12 @@ public:
         for (int i = 0; i < numNeurons; i++)
         {
             weights[i].resize(numNeuronsOutOfPreviousLayer);
+        }
+
+        velocity.resize(numNeurons);
+        for (int neuronIdx = 0; neuronIdx < numNeurons; ++neuronIdx)
+        {
+            velocity[neuronIdx].resize(numNeuronsOutOfPreviousLayer, 0.0);
         }
 
         std::random_device rd;

@@ -68,8 +68,14 @@ void Layer::adjustWeights(const vector<double>& errorGradient, const std::vector
     {
         for (int j = 0; j < weights[i].size(); ++j)
         {
-            // weights[i][j] -= learningRate * errorGradient[i] * Activation::CalculateActivation(activation, weights[i][j]);
-            weights[i][j] -= learningRate * errorGradient[i] * prevLayerActivations[j];
+            // weights[i][j] -= learningRate * errorGradient[i] * prevLayerActivations[j];
+
+            const double gradientTerm = errorGradient[i] * prevLayerActivations[j];
+            velocity[i][j] = (HyperParameters::momentum * velocity[i][j]) + (HyperParameters::learningRate * gradientTerm);
+
+            const double decay = HyperParameters::weightDecay * weights[i][j];
+
+            weights[i][j] -= (velocity[i][j] + decay);
         }
 
         // string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";
@@ -122,7 +128,7 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
         }
 
         double activatedValue = previousLayerNeurons[prevNeuronIdx].ActivationValue;
-        
+
         // calculate if we're in the final layer, would be nice to pass this in for a more guaranteed
         // final layer but it should be fine as we only ever choose sfoftmax for final layer. 
         bool bIsFinalLayer = (cost == crossEntropy && activation == softmax);
