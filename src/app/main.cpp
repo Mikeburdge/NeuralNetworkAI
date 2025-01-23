@@ -1194,7 +1194,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
     if (ImGui::BeginTabBar("##NNControlsTabs"))
     {
         // Tab 1: Architecture
-        if (ImGui::BeginTabItem("Architecture"))
+         if (ImGui::BeginTabItem("Architecture"))
         {
             static int inputLayerSize = 784;
             static int numHiddenLayers = 2;
@@ -1206,36 +1206,62 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputInt("Hidden Layer Size", &hiddenLayerSize);
             ImGui::InputInt("Output Size", &outputLayerSize);
 
-            // Activation
-            static int activationElem = (int)LeakyReLU;
+            static int activationElem = (int)ActivationType::ReLU;
             const char* activationNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
-            const char* actName = (activationElem >= 0 && activationElem < Activation_Count) ? activationNames[activationElem] : "Unknown";
-            ImGui::SliderInt("Activation", &activationElem, 0, Activation_Count - 1, actName);
+            const char* actName = (activationElem >= 0 && activationElem < 3) ? activationNames[activationElem] : "Unknown";
 
             // Cost
-            static int costElem = (int)crossEntropy;
+            static int costElem = (int)CostType::crossEntropy;
             const char* costNames[] = {"Mean Squared Error", "Cross Entropy"};
-            const char* costName = (costElem >= 0 && costElem < cost_Count) ? costNames[costElem] : "Unknown";
-            ImGui::SliderInt("Cost", &costElem, 0, cost_Count - 1, costName);
+            const char* costName = (costElem >= 0 && costElem < 2) ? costNames[costElem] : "Unknown";
+
+            ImGui::SliderInt("Activation", &activationElem, 0, 2, actName);
+            ImGui::SliderInt("Cost", &costElem, 0, 1, costName);
+
+            // NEW: Final-layer activation control
+            static int finalActElem = 0; 
+            const char* finalActNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
+
+            if (costElem == (int)crossEntropy)
+            {
+                // If crossEntropy, force final-layer to softmax
+                ImGui::TextDisabled("Final Layer Activation: Softmax (locked for crossEntropy)");
+            }
+            else
+            {
+                ImGui::Text("Final Layer Activation:");
+                if (ImGui::BeginCombo("##FinalLayerCombo", finalActNames[finalActElem]))
+                {
+                    for (int i = 0; i < IM_ARRAYSIZE(finalActNames); i++)
+                    {
+                        bool isSelected = (finalActElem == i);
+                        if (ImGui::Selectable(finalActNames[i], isSelected))
+                        {
+                            finalActElem = i;
+                        }
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+            }
 
             if (ImGui::Button("Create Neural Network (Manual)"))
             {
                 ActivationType actType = (ActivationType)activationElem;
                 CostType cType = (CostType)costElem;
 
-                auto& subsystem = NeuralNetworkSubsystem::GetInstance();
-                subsystem.InitNeuralNetwork(actType, cType,
-                                            inputLayerSize,
-                                            numHiddenLayers,
-                                            hiddenLayerSize,
-                                            outputLayerSize);
-                subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
-                {
-                    showVisualizationPanelWindow = true;
-                });
-
-                showDatasetManagementWindow = true;
-                showVisualizationPanelWindow = true;
+                // If crossEntropy => final layer forced in Subsystem to softmax
+                // Otherwise => pick from finalActElem
+                ActivationType finalLayer = (ActivationType)finalActElem;
+                
+                // This call is your actual creation. We'll pass `actType` for hidden layers,
+                // cost, and final layer can be logic in your subsystem
+                NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(actType, cType,
+                                                                       inputLayerSize,
+                                                                       numHiddenLayers,
+                                                                       hiddenLayerSize,
+                                                                       outputLayerSize);
             }
 
             ImGui::EndTabItem();

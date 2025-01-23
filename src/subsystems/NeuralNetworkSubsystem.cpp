@@ -35,7 +35,18 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
     HyperParameters::cost = inCost;
     HyperParameters::activationType = inActivation;
 
-    ActivationType finalLayerActivation = ActivationType::softmax;
+    ActivationType finalLayerActivation;
+    if (inCost == CostType::crossEntropy)
+    {
+        // Force softmax for crossEntropy
+        finalLayerActivation = ActivationType::softmax;
+    }
+    else
+    {
+        // Use the user-chosen final-layer activation
+        finalLayerActivation = inActivation;
+    }
+
 
     // Reserve the input, output and hidden layers
     CurrentNeuralNetwork.layers.reserve(hiddenLayers + 1);
