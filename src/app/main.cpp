@@ -1,5 +1,6 @@
 #include "cstdio"          // printf, fprintf
 #include "cstdlib"         // abort
+#include "imgui_internal.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
@@ -7,17 +8,18 @@
 #define GLFW_INCLUDE_VULKAN
 
 #include <filesystem>
-#include <string>
 #include <stb_image.h>
+#include <string>
 #include <GLFW/glfw3.h>
 #include <ImGuiFileDialog/ImGuiFileDialog.h>
 #include <vulkan/vulkan.h>
 
+#include "imgui_internal.h"
 #include "core/HyperParameters.h"
 #include "core/NeuralNetwork.h"
 #include "core/VisualisationUtility.h"
-
 #include "dataloader/MNISTDataSet.h"
+#include "implot/implot.h"
 #include "logging/Logger.h"
 #include "subsystems/NeuralNetworkSubsystem.h"
 
@@ -75,7 +77,8 @@ bool showLayerLabels = true;
 // Legend + Training Metrics
 bool showLegendWindow = true;
 bool showTrainingMetricsWindow = true;
-bool showTrainingGraphWindow = false;
+bool showSimpleGraphWindow = false;
+bool showAdvancedGraphWindow = true;
 
 std::string filePathName;
 std::string filePath;
@@ -243,6 +246,11 @@ void ShowTrainingMetrics(bool* p_open)
     int totalCorrectPredictions = subsystem.totalCorrectPredictionsAtomic.load();
     int totalPredictions = subsystem.totalPredictionsAtomic.load();
 
+    double batchTime = subsystem.totalBatchTimeAtomic.load();
+    double averageBatchTime = subsystem.averageBatchTimeAtomic.load();
+    double samplesPerSecond = subsystem.samplesPerSecAtomic.load(); 
+
+    
     float epochFraction = 0.0f;
     if (totalBatchesThisEpoch > 0)
     {
@@ -310,7 +318,10 @@ void ShowTrainingMetrics(bool* p_open)
     ImGui::Separator();
     ImGui::Text("Correct Predictions (This Batch): %d / %d", correctPredictionsThisBatch, currentBatchSize);
     ImGui::Text("Correct Predictions (Overall): %d / %d", totalCorrectPredictions, totalPredictions);
-
+    
+    ImGui::Text("Last Batch Time: %.2f seconds", batchTime);
+    ImGui::Text("Avg. Batch Time: %.2f seconds", averageBatchTime);
+    ImGui::Text("Samples/sec: %.0f", samplesPerSecond);
 
     ImGui::End();
 }
@@ -323,112 +334,289 @@ bool showAccuracyGraph = true;
 bool showRollingAccuracyGraph = true;
 
 // 5.2.2: Training Metrics Graph Window 
-void ShowTrainingPlotsWindow(bool* p_open)
+
+
+void ShowSimpleGraphWindow(bool* p_open)
 {
-    if (!ImGui::Begin("Training Graph", p_open))
+    if (!ImGui::Begin("Basic ImGui Graph", p_open))
     {
         ImGui::End();
-        return; // If window is collapsed, skip
+        return;
     }
 
-    // Grab references
     NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
-    static bool showLossGraphLocal = subsystem.showLossGraph.load();
-    static bool showAccuracyGraphLocal = subsystem.showAccuracyGraph.load();
-    static bool showRollingGraphLocal = subsystem.showRollingAccuracyGraph.load();
-
-    ImGui::Checkbox("Show Loss", &showLossGraphLocal);
-    ImGui::SameLine();
-    ImGui::Checkbox("Show Accuracy %", &showAccuracyGraphLocal);
-    ImGui::SameLine();
-    ImGui::Checkbox("Show RollingAcc %", &showRollingGraphLocal);
-
-    subsystem.showLossGraph.store(showLossGraphLocal);
-    subsystem.showAccuracyGraph.store(showAccuracyGraphLocal);
-    subsystem.showRollingAccuracyGraph.store(showRollingGraphLocal);
-
-    static float minTime = 0.0f;
-    static float maxTime = 200.0f;
-
-    ImGui::Text("Time Range (seconds):");
-    ImGui::SliderFloat("Min Time", &minTime, 0.0f, 5000.0f, "%.1f");
-    ImGui::SliderFloat("Max Time", &maxTime, 0.0f, 5000.0f, "%.1f");
-
-    std::vector<float> plotLoss;
-    std::vector<float> plotAcc;
-    std::vector<float> plotRolling;
+    static std::vector<float> accuracyData;
+    accuracyData.clear();
 
     {
         std::lock_guard<std::mutex> lock(subsystem.metricMutex);
 
+        accuracyData.reserve(subsystem.trainingHistory.size());
+
         for (auto& pt : subsystem.trainingHistory)
         {
-            if (pt.timeSeconds >= minTime && pt.timeSeconds <= maxTime)
-            {
-                plotLoss.push_back(pt.loss);
-                plotAcc.push_back(pt.accuracy);
-                plotRolling.push_back(pt.rollingAcc);
-            }
+            accuracyData.push_back(pt.accuracy);
         }
     }
 
-    const char* overlayText = "Training Metrics";
-
-    if (showLossGraphLocal)
+    if (!accuracyData.empty())
     {
-        ImGui::Separator();
-        ImGui::Text("Loss vs. Time (index-based)");
-        if (!plotLoss.empty())
-        {
-            ImGui::PlotLines("Loss", plotLoss.data(), (int)plotLoss.size(),
-                             0, overlayText,
-                             /*scale_min*/ FLT_MAX, /*scale_max*/ FLT_MAX,
-                             ImVec2(0, 150));
-        }
-        else
-        {
-            ImGui::Text("No loss data in this range.");
-        }
+        ImGui::PlotLines("Accuracy Over Iterations", 
+                         accuracyData.data(), 
+                         static_cast<int>(accuracyData.size()), 
+                         0,               // offset
+                         nullptr,         // optional overlay text
+                         FLT_MAX,         // min scale
+                         FLT_MAX,         // max scale
+                         ImVec2(0, 100)); // size of the plot in pixels (width=auto, height=100)
     }
-
-    if (showAccuracyGraphLocal)
+    else
     {
-        ImGui::Separator();
-        ImGui::Text("Overall Accuracy (%%) vs. Time (index-based)");
-        if (!plotAcc.empty())
-        {
-            // If you store accuracy in 0..100, you can do 0.0f..100.0f here
-            ImGui::PlotLines("Accuracy %", plotAcc.data(), (int)plotAcc.size(),
-                             0, overlayText,
-                             0.0f, 100.0f,
-                             ImVec2(0, 150));
-        }
-        else
-        {
-            ImGui::Text("No accuracy data in this range.");
-        }
-    }
-
-    if (showRollingGraphLocal)
-    {
-        ImGui::Separator();
-        ImGui::Text("Rolling Accuracy (%%) vs. Time (index-based)");
-        if (!plotRolling.empty())
-        {
-            ImGui::PlotLines("Rolling Acc %", plotRolling.data(), (int)plotRolling.size(),
-                             0, overlayText,
-                             0.0f, 100.0f,
-                             ImVec2(0, 150));
-        }
-        else
-        {
-            ImGui::Text("No rolling accuracy data in this range.");
-        }
+        ImGui::Text("No training data yet...");
     }
 
     ImGui::End();
 }
+
+void ShowAdvancedGraphWindow(bool* p_open)
+{
+    // 1) Create the ImGui Window
+    if (!ImGui::Begin("Advanced Graph Window (Time + Hover)", p_open))
+    {
+        ImGui::End();
+        return;
+    }
+
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+    // 2) Toggles
+    static bool showLoss       = true;
+    static bool showAccuracy   = true;
+    static bool showRollingAcc = false;
+
+    ImGui::Checkbox("Show Loss",       &showLoss);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show Accuracy",   &showAccuracy);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show RollingAcc", &showRollingAcc);
+
+    // 3) Copy out data from trainingHistory
+    static std::vector<float> timeData; 
+    static std::vector<float> lossData;
+    static std::vector<float> accData;
+    static std::vector<float> rollingData;
+
+    timeData.clear();
+    lossData.clear();
+    accData.clear();
+    rollingData.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(subsystem.metricMutex);
+
+        size_t count = subsystem.trainingHistory.size();
+        timeData.reserve(count);
+        lossData.reserve(count);
+        accData.reserve(count);
+        rollingData.reserve(count);
+
+        for (auto& pt : subsystem.trainingHistory)
+        {
+            timeData.push_back(pt.timeSeconds);
+            lossData.push_back(pt.loss);
+            accData.push_back(pt.accuracy);
+            rollingData.push_back(pt.rollingAcc);
+        }
+    }
+
+    // If no data, just say so
+    if (timeData.empty())
+    {
+        ImGui::Text("No training data to display yet.");
+        ImGui::End();
+        return;
+    }
+
+    // 4) Find min/max for Y domain, also find min/max for time
+    // We'll unify the Y domain across selected metrics
+
+    float globalMinY = FLT_MAX;
+    float globalMaxY = -FLT_MAX;
+
+    auto UpdateMinMax = [&](const std::vector<float>& data){
+        for (float v : data)
+        {
+            if (v < globalMinY) globalMinY = v;
+            if (v > globalMaxY) globalMaxY = v;
+        }
+    };
+
+    if (showLoss && !lossData.empty())         UpdateMinMax(lossData);
+    if (showAccuracy && !accData.empty())      UpdateMinMax(accData);
+    if (showRollingAcc && !rollingData.empty())UpdateMinMax(rollingData);
+
+    if (globalMinY == FLT_MAX || globalMaxY == -FLT_MAX)
+    {
+        ImGui::Text("No selected metrics have data.");
+        ImGui::End();
+        return;
+    }
+
+    // Time domain
+    float minTime = timeData.front();
+    float maxTime = timeData.back();
+    // If data is out of order or you want a sure minTime, maxTime, do a loop. 
+    // We'll assume trainingHistory is in ascending order of time.
+
+    // If all same value, pad
+    if (globalMinY == globalMaxY) { globalMaxY += 1.0f; globalMinY -= 1.0f; }
+    if (minTime == maxTime)       { maxTime += 1.0f;     minTime -= 1.0f;    }
+
+    // 5) Show min/max lines at top
+    ImGui::Separator();
+    ImGui::Text("Y-Axis Range: min=%.3f  max=%.3f", globalMinY, globalMaxY);
+    ImGui::Text("Time Range:   min=%.2f sec  max=%.2f sec", minTime, maxTime);
+    ImGui::Separator();
+
+    // 6) Child region for the chart
+    ImVec2 canvasSize(ImGui::GetContentRegionAvail().x, 300.0f);
+    ImGui::BeginChild("TimeGraphCanvas", canvasSize, true /*border*/);
+
+    ImVec2 pos  = ImGui::GetCursorScreenPos();
+    ImVec2 size = ImGui::GetContentRegionAvail();
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Background
+    ImU32 bgColor = IM_COL32(40, 40, 40, 255);
+    drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bgColor);
+
+    float pad = 25.0f; // extra padding to allow axis labels
+    ImVec2 graphStart(pos.x + pad, pos.y + pad);
+    ImVec2 graphEnd(pos.x + size.x - pad, pos.y + size.y - pad);
+
+    float width  = graphEnd.x - graphStart.x;
+    float height = graphEnd.y - graphStart.y;
+
+    // 7) A function to transform (time, val) -> ImVec2
+    auto transform = [&](float t, float val){
+        float xFrac = (t - minTime) / (maxTime - minTime);
+        float yFrac = (val - globalMinY) / (globalMaxY - globalMinY);
+
+        float xPos = graphStart.x + (xFrac * width);
+        float yPos = graphEnd.y - (yFrac * height);
+        return ImVec2(xPos, yPos);
+    };
+
+    // helper to draw lines for a single metric
+    auto drawMetricLine = [&](const std::vector<float>& dataVec, ImU32 color){
+        // dataVec matches timeData in indexing
+        int count = (int)dataVec.size();
+        for (int i = 0; i < count - 1; i++)
+        {
+            float t1 = timeData[i],     t2 = timeData[i + 1];
+            float v1 = dataVec[i],      v2 = dataVec[i + 1];
+            ImVec2 p1 = transform(t1, v1);
+            ImVec2 p2 = transform(t2, v2);
+            drawList->AddLine(p1, p2, color, 2.0f);
+        }
+    };
+
+    // 8) Draw lines for toggled metrics
+    if (showLoss && !lossData.empty())
+        drawMetricLine(lossData, IM_COL32(255, 165,   0, 255)); // Orange
+    if (showAccuracy && !accData.empty())
+        drawMetricLine(accData, IM_COL32(  0, 255,   0, 255)); // Green
+    if (showRollingAcc && !rollingData.empty())
+        drawMetricLine(rollingData, IM_COL32(255, 105, 180, 255)); // HotPink
+
+    // 9) Draw X-axis Ticks (Time Label)
+    // e.g. 5 or 6 ticks
+    int numXTicks = 6;
+    for (int i = 0; i < numXTicks; i++)
+    {
+        float tickFrac = (float)i / (float)(numXTicks - 1);
+        float tickTime = minTime + tickFrac * (maxTime - minTime);
+
+        // line
+        float tickX = graphStart.x + tickFrac * width;
+        drawList->AddLine(ImVec2(tickX, graphEnd.y),
+                          ImVec2(tickX, graphEnd.y + 5),
+                          IM_COL32_WHITE);
+
+        // label
+        char lbl[64];
+        snprintf(lbl, sizeof(lbl), "%.1f", tickTime);
+        ImVec2 textSize = ImGui::CalcTextSize(lbl);
+        float tx = tickX - textSize.x * 0.5f;
+        float ty = graphEnd.y + 6;
+        drawList->AddText(ImVec2(tx, ty), IM_COL32_WHITE, lbl);
+    }
+
+    // 10) Hovering to show tooltip & vertical line
+    ImVec2 canvasMin = graphStart;
+    ImVec2 canvasMax = graphEnd;
+    ImRect rect(canvasMin, canvasMax);
+
+    // Check if mouse is in the main plotting area
+    bool hovered = ImGui::IsMouseHoveringRect(canvasMin, canvasMax);
+
+    if (hovered)
+    {
+        ImVec2 mousePosInWindow = ImGui::GetMousePos();
+        
+        // constrain to the graph region
+        if (mousePosInWindow.x < canvasMin.x) mousePosInWindow.x = canvasMin.x;
+        if (mousePosInWindow.x > canvasMax.x) mousePosInWindow.x = canvasMax.x;
+
+        // Convert mouse X -> time
+        float xFrac = (mousePosInWindow.x - canvasMin.x) / (canvasMax.x - canvasMin.x);
+        float hoveredTime = minTime + xFrac * (maxTime - minTime);
+
+        // Find the closest index in timeData
+        // A simple linear search is okay for small data, or use std::lower_bound if large
+        int closestIndex = 0;
+        float minDist = FLT_MAX;
+        for (int i = 0; i < (int)timeData.size(); i++)
+        {
+            float dist = fabsf(timeData[i] - hoveredTime);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestIndex = i;
+            }
+        }
+
+        // draw vertical line
+        float lineX = transform(timeData[closestIndex], 0).x; // just need x
+        drawList->AddLine(ImVec2(lineX, canvasMin.y),
+                          ImVec2(lineX, canvasMax.y),
+                          IM_COL32(255,255,255,100),
+                          1.0f);
+
+        // 11) Show tooltip with metrics
+        if (ImGui::IsMouseHoveringRect(canvasMin, canvasMax))
+        {
+            // build text
+            float tVal = timeData[closestIndex];
+            float lVal = showLoss       ? lossData[closestIndex]       : NAN;
+            float aVal = showAccuracy   ? accData[closestIndex]        : NAN;
+            float rVal = showRollingAcc ? rollingData[closestIndex]    : NAN;
+
+            ImGui::BeginTooltip();
+            ImGui::Text("Time: %.2f sec", tVal);
+            if (showLoss)       ImGui::Text("Loss = %.3f", lVal);
+            if (showAccuracy)   ImGui::Text("Acc  = %.2f%%", aVal);
+            if (showRollingAcc) ImGui::Text("Roll = %.2f%%", rVal);
+            ImGui::EndTooltip();
+        }
+    }
+
+    ImGui::EndChild(); // end the child region
+
+    ImGui::End(); // end main window
+}
+
 
 // 5.3: Calculation for circle size
 static float CalculateMaxCircleSize(const ImVec2& winSize, int numLayers, float maxCircleSizeValue)
@@ -767,7 +955,8 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 
     ImGui::Checkbox("Show Legend Window", &showLegendWindow);
     ImGui::Checkbox("Show Training Metrics", &showTrainingMetricsWindow);
-    ImGui::Checkbox("Show Training Metrics Graph", &showTrainingGraphWindow);
+    ImGui::Checkbox("Show Simple Training Metrics Graph", &showSimpleGraphWindow);
+    ImGui::Checkbox("Show Advanced Metrics Graph", &showAdvancedGraphWindow);
 
     ImGui::Text("Neuron Colour Mode");
     static int colourModeIndex = 0;
@@ -807,9 +996,13 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     {
         ShowTrainingMetrics(&showTrainingMetricsWindow);
     }
-    if (showTrainingMetricsWindow)
+    if (showSimpleGraphWindow)
     {
-        // ShowTrainingGraph();
+        ShowSimpleGraphWindow(&showSimpleGraphWindow);
+    }
+    if (showAdvancedGraphWindow)
+    {
+        ShowAdvancedGraphWindow(&showAdvancedGraphWindow);
     }
 }
 
@@ -1014,7 +1207,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputInt("Output Size", &outputLayerSize);
 
             // Activation
-            static int activationElem = (int)sigmoid;
+            static int activationElem = (int)LeakyReLU;
             const char* activationNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
             const char* actName = (activationElem >= 0 && activationElem < Activation_Count) ? activationNames[activationElem] : "Unknown";
             ImGui::SliderInt("Activation", &activationElem, 0, Activation_Count - 1, actName);

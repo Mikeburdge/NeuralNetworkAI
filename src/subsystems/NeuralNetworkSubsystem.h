@@ -76,6 +76,11 @@ public:
     // for stopping the training
     std::atomic<bool> stopRequestedAtomic{false};
 
+    // more metrics
+    std::atomic<double> totalBatchTimeAtomic{0.0};
+    std::atomic<double> averageBatchTimeAtomic{0.0};
+    std::atomic<double> samplesPerSecAtomic{0.0};
+
 
     // Graph Stuff
     struct TrainingMetricPoint
@@ -88,7 +93,7 @@ public:
 
 
     std::vector<TrainingMetricPoint> trainingHistory;
-    std::mutex metricMutex; 
+    std::mutex metricMutex;
     // Emable / disable
     std::atomic<bool> showLossGraph{true};
     std::atomic<bool> showAccuracyGraph{true};

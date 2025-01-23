@@ -1,0 +1,3 @@
+[submodule "External/implot"]
+	path = External/implot
+	url = https://github.com/epezent/implot.git

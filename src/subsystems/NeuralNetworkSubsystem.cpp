@@ -25,6 +25,11 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
                                                const int hiddenLayers, const int hiddenLayerSize,
                                                const int outputLayerSize)
 {
+    {
+        std::lock_guard<std::mutex> lock(metricMutex);
+        trainingHistory.clear();
+    }
+
     CurrentNeuralNetwork = NeuralNetwork();
 
     HyperParameters::cost = inCost;
@@ -154,6 +159,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
                 break;
             }
 
+            auto batchStartTime = std::chrono::high_resolution_clock::now();
+
             size_t endIndex = std::min(startIndex + batchsize, datasetSize); // Again possibly datasetSize - 1 if we hit out of index stuff here
             size_t realBatch = endIndex - startIndex;
             std::vector<std::vector<double>> batchInputs(realBatch);
@@ -280,6 +287,19 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             // Updates each batch
 
+            auto batchEndTime = std::chrono::high_resolution_clock::now();
+            double batchDuration = std::chrono::duration_cast<std::chrono::duration<double>>(batchEndTime - batchStartTime).count();
+
+            totalBatchTimeAtomic.store(batchDuration);
+
+            double oldAvg = averageBatchTimeAtomic.load();
+            double newAvg = oldAvg * 0.9 + (batchDuration) * 0.1;
+
+            averageBatchTimeAtomic.store(newAvg);
+
+            double sps = (double)realBatch / batchDuration;
+            samplesPerSecAtomic.store(sps);
+
             // Average the accuracy
             epochAccuracy /= (double)numBatches;
 
@@ -312,12 +332,15 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             double elapsedSeconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - trainingTimer.startTime).count();
 
+
             // create a data point
             TrainingMetricPoint dataPoint;
             dataPoint.timeSeconds = static_cast<float>(elapsedSeconds);
             dataPoint.loss = static_cast<float>(batchCost / realBatch);
             dataPoint.accuracy = static_cast<float>(partialAccuracy * 100.f);
             dataPoint.rollingAcc = static_cast<float>(rollingAccuracyAtomic.load() * 100.f);
+
+            trainingHistory.push_back(dataPoint);
         }
 
         // Calculate epoch duration
