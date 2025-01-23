@@ -173,6 +173,8 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             std::vector<std::future<std::vector<double>>> futures;
             futures.reserve(realBatch);
 
+            std::vector<std::vector<double>> batchPredictions(realBatch);
+
             for (size_t i = 0; i < realBatch; ++i)
             {
                 futures.push_back(std::async(std::launch::async, [&network, &batchInputs, i]()
@@ -186,18 +188,18 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             for (size_t i = 0; i < realBatch; ++i)
             {
-                std::vector<double> predictions = futures[i].get();
-                double cost = Cost::CalculateCost(currentCost, predictions, batchTargets[i]);
+                batchPredictions[i] = futures[i].get();
+                double cost = Cost::CalculateCost(currentCost, batchPredictions[i], batchTargets[i]);
                 perSampleCosts[i] = cost;
 
                 // predicted index vs actual
                 int bestPredictionIndex = -1;
                 double bestValue = 0.0;
-                for (int j = 0; j < (int)predictions.size(); j++)
+                for (int j = 0; j < (int)batchPredictions[i].size(); j++)
                 {
-                    if (predictions[j] > bestValue)
+                    if (batchPredictions[i][j] > bestValue)
                     {
-                        bestValue = predictions[j];
+                        bestValue = batchPredictions[i][j];
                         bestPredictionIndex = j;
                     }
                 }
@@ -259,10 +261,9 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
             for (size_t i = 0; i < realBatch; ++i)
             {
-                gradientFutures.push_back(std::async(std::launch::async, [&network, &batchInputs, &batchTargets, i]()
+                gradientFutures.push_back(std::async(std::launch::async, [&batchPredictions, &batchTargets, i]()
                 {
-                    std::vector<double> localPredictions = network.ForwardPropagation(batchInputs[i]);
-                    return Cost::CalculateCostDerivative(HyperParameters::cost, localPredictions, batchTargets[i]);
+                    return Cost::CalculateCostDerivative(HyperParameters::cost, batchPredictions[i], batchTargets[i]);
                 }));
             }
 
