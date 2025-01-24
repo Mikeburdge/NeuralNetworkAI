@@ -301,8 +301,8 @@ void ShowTrainingMetrics(bool* p_open)
         const double estimateRemainingTime = epochsLeft * epochTime;
 
 
-        ImGui::Text("Time Elapsed: %.1f s", NeuralNetworkUtility::FormatTimeHMS(elapsed));
-        ImGui::Text("Time Remaining: %.1f s", NeuralNetworkUtility::FormatTimeHMS(estimateRemainingTime));
+        ImGui::Text("Time Elapsed: %s", NeuralNetworkUtility::FormatTimeHMS(elapsed).c_str());
+        ImGui::Text("Time Remaining: %s", NeuralNetworkUtility::FormatTimeHMS(estimateRemainingTime).c_str());
     }
     else
     {
@@ -659,7 +659,7 @@ void ShowAdvancedGraphWindow(bool* p_open)
 
         // label
         char lbl[64];
-        snprintf(lbl, sizeof(lbl), "%.1f", tickTime);
+        snprintf(lbl, sizeof(lbl), "%s", NeuralNetworkUtility::FormatTimeHMS(tickTime).c_str());
         ImVec2 textSize = ImGui::CalcTextSize(lbl);
         float tx = tickX - textSize.x * 0.5f;
         float ty = graphEnd.y + 6;
@@ -708,10 +708,10 @@ void ShowAdvancedGraphWindow(bool* p_open)
             float rVal = (showRollingAcc) ? rollingData[closestIndex] : NAN;
 
             ImGui::BeginTooltip();
-            ImGui::Text("Time: %.2f sec", tVal);
+            ImGui::Text("Time: %s", NeuralNetworkUtility::FormatTimeHMS(tVal).c_str());
             if (showLoss) ImGui::Text("Loss = %.3f", lVal);
             if (showAccuracy) ImGui::Text("Acc  = %.2f%%", aVal);
-            if (showRollingAcc) ImGui::Text("Roll=%.2f%%", rVal);
+            if (showRollingAcc) ImGui::Text("Roll = %.2f%%", rVal);
             ImGui::EndTooltip();
         }
     }
