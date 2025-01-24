@@ -40,7 +40,7 @@ public:
             velocity[neuronIdx].resize(numNeuronsOutOfPreviousLayer, 0.0);
         }
 
-        std::random_device rd;
+        std::random_device rd; // todo: add chrono::now() here
         std::mt19937 rng(rd());
 
         InitializeRandomBiases(rng);

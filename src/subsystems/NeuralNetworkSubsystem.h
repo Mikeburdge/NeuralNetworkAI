@@ -13,8 +13,10 @@
 #include "dataloader/MNISTDataSet.h"
 
 
-static const std::string DEFAULT_IMAGES_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-images.idx3-ubyte").string();
-static const std::string DEFAULT_LABELS_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-labels.idx1-ubyte").string();
+static const std::string DEFAULT_TRAIN_IMAGES_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-images.idx3-ubyte").string();
+static const std::string DEFAULT_TRAIN_LABELS_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "train-labels.idx1-ubyte").string();
+static const std::string DEFAULT_TEST_IMAGES_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "t10k-images.idx3-ubyte").string();
+static const std::string DEFAULT_TEST_LABELS_PATH = (std::filesystem::current_path() / "TrainingData" / "Archive" / "t10k-labels.idx1-ubyte").string();
 
 class NeuralNetworkSubsystem : public SingletonBase
 {
@@ -46,6 +48,9 @@ private:
     // The MNIST dataset loaded in memory
     MNISTDataSet trainingDataSet;
     bool bIsMnistTrainingDataLoaded = false;
+
+    MNISTDataSet testDataSet;
+    bool bIsMnistTestDataLoaded = false;
 
     int vizUpdateInterval = 10;
     int vizBatchCounter = 0;
@@ -114,12 +119,19 @@ public:
 
     NeuralNetwork& GetNeuralNetwork();
 
-    // A function to load MNIST training data from disk
     bool LoadMNISTTrainingData(const std::string& imagesPath,
                                const std::string& labelsPath);
 
     bool IsMNISTTrainingDataLoaded() const { return bIsMnistTrainingDataLoaded; }
     MNISTDataSet& GetTrainingDataSet() { return trainingDataSet; }
+    
+    bool LoadMNISTTestData(const std::string& imagesPath,
+                           const std::string& labelsPath);
+    
+    double EvaluateTestSet();
+
+    bool IsMNISTTestDataLoaded() const { return bIsMnistTestDataLoaded; }
+    MNISTDataSet& GetTestDataSet() { return testDataSet; }
 
     // --------------------------------------------------------------------
     // New batch training with the entire dataset

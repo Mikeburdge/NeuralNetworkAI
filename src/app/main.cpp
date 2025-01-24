@@ -248,9 +248,9 @@ void ShowTrainingMetrics(bool* p_open)
 
     double batchTime = subsystem.totalBatchTimeAtomic.load();
     double averageBatchTime = subsystem.averageBatchTimeAtomic.load();
-    double samplesPerSecond = subsystem.samplesPerSecAtomic.load(); 
+    double samplesPerSecond = subsystem.samplesPerSecAtomic.load();
 
-    
+
     float epochFraction = 0.0f;
     if (totalBatchesThisEpoch > 0)
     {
@@ -318,9 +318,8 @@ void ShowTrainingMetrics(bool* p_open)
     ImGui::Separator();
     ImGui::Text("Correct Predictions (This Batch): %d / %d", correctPredictionsThisBatch, currentBatchSize);
     ImGui::Text("Correct Predictions (Overall): %d / %d", totalCorrectPredictions, totalPredictions);
-    
-    ImGui::Text("Last Batch Time: %.2f seconds", batchTime);
-    ImGui::Text("Avg. Batch Time: %.2f seconds", averageBatchTime);
+
+    ImGui::Text("Batch Time | Last: %.2fs| Average: %.2fs", batchTime, averageBatchTime);
     ImGui::Text("Samples/sec: %.0f", samplesPerSecond);
 
     ImGui::End();
@@ -362,13 +361,13 @@ void ShowSimpleGraphWindow(bool* p_open)
 
     if (!accuracyData.empty())
     {
-        ImGui::PlotLines("Accuracy Over Iterations", 
-                         accuracyData.data(), 
-                         static_cast<int>(accuracyData.size()), 
-                         0,               // offset
-                         nullptr,         // optional overlay text
-                         FLT_MAX,         // min scale
-                         FLT_MAX,         // max scale
+        ImGui::PlotLines("Accuracy Over Iterations",
+                         accuracyData.data(),
+                         static_cast<int>(accuracyData.size()),
+                         0, // offset
+                         nullptr, // optional overlay text
+                         FLT_MAX, // min scale
+                         FLT_MAX, // max scale
                          ImVec2(0, 100)); // size of the plot in pixels (width=auto, height=100)
     }
     else
@@ -377,6 +376,21 @@ void ShowSimpleGraphWindow(bool* p_open)
     }
 
     ImGui::End();
+}
+
+enum class MetricDisplayType
+{
+    Percentage,
+    Decimal,
+    Unknown
+};
+
+MetricDisplayType GetMetricDisplayType(const char* metricName)
+{
+    if (strcmp(metricName, "Loss") == 0) return MetricDisplayType::Decimal;
+    if (strcmp(metricName, "Accuracy") == 0) return MetricDisplayType::Percentage;
+    if (strcmp(metricName, "Roll") == 0) return MetricDisplayType::Percentage;
+    return MetricDisplayType::Unknown;
 }
 
 void ShowAdvancedGraphWindow(bool* p_open)
@@ -388,30 +402,35 @@ void ShowAdvancedGraphWindow(bool* p_open)
         return;
     }
 
+    // Access the singleton subsystem
     NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
     // 2) Toggles
-    static bool showLoss       = true;
-    static bool showAccuracy   = true;
-    static bool showRollingAcc = false;
+    static bool showLoss = true;
+    static bool showAccuracy = true;
+    static bool showRollingAcc = true;
 
-    ImGui::Checkbox("Show Loss",       &showLoss);
+    // UI checkboxes
+    ImGui::Checkbox("Show Loss", &showLoss);
     ImGui::SameLine();
-    ImGui::Checkbox("Show Accuracy",   &showAccuracy);
+    ImGui::Checkbox("Show Accuracy", &showAccuracy);
     ImGui::SameLine();
     ImGui::Checkbox("Show RollingAcc", &showRollingAcc);
+    ImGui::Separator();
 
-    // 3) Copy out data from trainingHistory
-    static std::vector<float> timeData; 
+    // 3) Gather data from trainingHistory
+    static std::vector<float> timeData;
     static std::vector<float> lossData;
     static std::vector<float> accData;
     static std::vector<float> rollingData;
 
+    // Clear old data
     timeData.clear();
     lossData.clear();
     accData.clear();
     rollingData.clear();
 
+    // Lock because trainingHistory is shared
     {
         std::lock_guard<std::mutex> lock(subsystem.metricMutex);
 
@@ -421,6 +440,7 @@ void ShowAdvancedGraphWindow(bool* p_open)
         accData.reserve(count);
         rollingData.reserve(count);
 
+        // Copy out
         for (auto& pt : subsystem.trainingHistory)
         {
             timeData.push_back(pt.timeSeconds);
@@ -430,7 +450,7 @@ void ShowAdvancedGraphWindow(bool* p_open)
         }
     }
 
-    // If no data, just say so
+    // If no data, inform & return
     if (timeData.empty())
     {
         ImGui::Text("No training data to display yet.");
@@ -438,13 +458,12 @@ void ShowAdvancedGraphWindow(bool* p_open)
         return;
     }
 
-    // 4) Find min/max for Y domain, also find min/max for time
-    // We'll unify the Y domain across selected metrics
-
+    // 4) Determine min/max Y & min/max Time
     float globalMinY = FLT_MAX;
     float globalMaxY = -FLT_MAX;
 
-    auto UpdateMinMax = [&](const std::vector<float>& data){
+    auto UpdateMinMax = [&](const std::vector<float>& data)
+    {
         for (float v : data)
         {
             if (v < globalMinY) globalMinY = v;
@@ -452,10 +471,12 @@ void ShowAdvancedGraphWindow(bool* p_open)
         }
     };
 
-    if (showLoss && !lossData.empty())         UpdateMinMax(lossData);
-    if (showAccuracy && !accData.empty())      UpdateMinMax(accData);
-    if (showRollingAcc && !rollingData.empty())UpdateMinMax(rollingData);
+    // Update domain only if toggles are on
+    if (showLoss && !lossData.empty()) UpdateMinMax(lossData);
+    if (showAccuracy && !accData.empty()) UpdateMinMax(accData);
+    if (showRollingAcc && !rollingData.empty()) UpdateMinMax(rollingData);
 
+    // If still unchanged => no valid data
     if (globalMinY == FLT_MAX || globalMaxY == -FLT_MAX)
     {
         ImGui::Text("No selected metrics have data.");
@@ -466,24 +487,76 @@ void ShowAdvancedGraphWindow(bool* p_open)
     // Time domain
     float minTime = timeData.front();
     float maxTime = timeData.back();
-    // If data is out of order or you want a sure minTime, maxTime, do a loop. 
-    // We'll assume trainingHistory is in ascending order of time.
+    // If data is out of order, consider scanning to find the true minTime & maxTime.
 
-    // If all same value, pad
-    if (globalMinY == globalMaxY) { globalMaxY += 1.0f; globalMinY -= 1.0f; }
-    if (minTime == maxTime)       { maxTime += 1.0f;     minTime -= 1.0f;    }
+    // If everything identical, pad a bit
+    if (globalMinY == globalMaxY)
+    {
+        globalMaxY += 1.0f;
+        globalMinY -= 1.0f;
+    }
+    if (minTime == maxTime)
+    {
+        maxTime += 1.0f;
+        minTime -= 1.0f;
+    }
 
-    // 5) Show min/max lines at top
+    // 5) Show optional debug info (or remove if not needed)
+    ImGui::Text("Max Rolling Accuracy: %.3f", globalMaxY);
+    ImGui::Text("Y Range: [%.3f .. %.3f]", globalMinY, globalMaxY);
     ImGui::Separator();
-    ImGui::Text("Y-Axis Range: min=%.3f  max=%.3f", globalMinY, globalMaxY);
-    ImGui::Text("Time Range:   min=%.2f sec  max=%.2f sec", minTime, maxTime);
-    ImGui::Separator();
 
-    // 6) Child region for the chart
+    // 6) Identify metric display types -> Y-axis label
+    std::vector<MetricDisplayType> activeTypes;
+    if (showLoss) activeTypes.push_back(GetMetricDisplayType("Loss"));
+    if (showAccuracy) activeTypes.push_back(GetMetricDisplayType("Accuracy"));
+    if (showRollingAcc) activeTypes.push_back(GetMetricDisplayType("Roll"));
+
+    MetricDisplayType finalType = MetricDisplayType::Unknown;
+    bool allSameType = true;
+    for (size_t i = 0; i < activeTypes.size(); i++)
+    {
+        if (i == 0) finalType = activeTypes[i];
+        else
+        {
+            if (activeTypes[i] != finalType)
+            {
+                allSameType = false;
+                break;
+            }
+        }
+    }
+
+    std::string yAxisLabel;
+    if (!activeTypes.empty())
+    {
+        if (!allSameType)
+        {
+            yAxisLabel = "Y Axis (Mixed)";
+        }
+        else
+        {
+            switch (finalType)
+            {
+            case MetricDisplayType::Percentage: yAxisLabel = "Percentage (%)";
+                break;
+            case MetricDisplayType::Decimal: yAxisLabel = "Value";
+                break;
+            default: yAxisLabel = "Y Axis";
+                break;
+            }
+        }
+    }
+    else
+    {
+        yAxisLabel = "Y Axis";
+    }
+
+    // 7) Now the child region for the actual graph
     ImVec2 canvasSize(ImGui::GetContentRegionAvail().x, 300.0f);
     ImGui::BeginChild("TimeGraphCanvas", canvasSize, true /*border*/);
 
-    ImVec2 pos  = ImGui::GetCursorScreenPos();
+    ImVec2 pos = ImGui::GetCursorScreenPos();
     ImVec2 size = ImGui::GetContentRegionAvail();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -491,55 +564,94 @@ void ShowAdvancedGraphWindow(bool* p_open)
     ImU32 bgColor = IM_COL32(40, 40, 40, 255);
     drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bgColor);
 
-    float pad = 25.0f; // extra padding to allow axis labels
+    float pad = 55.0f; // bumped up a bit for left labels
     ImVec2 graphStart(pos.x + pad, pos.y + pad);
     ImVec2 graphEnd(pos.x + size.x - pad, pos.y + size.y - pad);
 
-    float width  = graphEnd.x - graphStart.x;
+    float width = graphEnd.x - graphStart.x;
     float height = graphEnd.y - graphStart.y;
 
-    // 7) A function to transform (time, val) -> ImVec2
-    auto transform = [&](float t, float val){
+    // 8) Y-axis label (vertical text)
+    if (!yAxisLabel.empty())
+    {
+        float midY = 0.5f * (graphStart.y + graphEnd.y) - 120.0f;
+        ImVec2 textPos(graphStart.x - 30.0f, midY);
+        drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize(),
+                          textPos,
+                          IM_COL32_WHITE,
+                          yAxisLabel.c_str(),
+                          NULL,
+                          0.0f
+        );
+    }
+
+    // 9) Function to transform (time, val) -> ImVec2
+    auto transform = [&](float t, float val)
+    {
         float xFrac = (t - minTime) / (maxTime - minTime);
         float yFrac = (val - globalMinY) / (globalMaxY - globalMinY);
-
         float xPos = graphStart.x + (xFrac * width);
         float yPos = graphEnd.y - (yFrac * height);
         return ImVec2(xPos, yPos);
     };
 
-    // helper to draw lines for a single metric
-    auto drawMetricLine = [&](const std::vector<float>& dataVec, ImU32 color){
-        // dataVec matches timeData in indexing
+    // 10) Y-axis ticks & numeric labels
+    // Example: 5 or 6 ticks
+    int numYTicks = 6;
+    for (int i = 0; i < numYTicks; i++)
+    {
+        float frac = (float)i / (float)(numYTicks - 1);
+        float yVal = globalMinY + frac * (globalMaxY - globalMinY);
+        float yPix = graphEnd.y - frac * height;
+
+        // A short horizontal line to mark the tick
+        drawList->AddLine(ImVec2(graphStart.x, yPix),
+                          ImVec2(graphStart.x - 5, yPix),
+                          IM_COL32_WHITE);
+
+        // Y label text
+        char buf[32];
+        // e.g. 2 decimals
+        snprintf(buf, sizeof(buf), "%.2f", yVal);
+
+        ImVec2 textSize = ImGui::CalcTextSize(buf);
+        // Put the text a bit left of the tick
+        float textX = graphStart.x - textSize.x - 8.0f;
+        float textY = yPix - textSize.y * 0.5f;
+        drawList->AddText(ImVec2(textX, textY), IM_COL32_WHITE, buf);
+    }
+
+    // 11) helper to draw a single metric line
+    auto drawMetricLine = [&](const std::vector<float>& dataVec, ImU32 color)
+    {
         int count = (int)dataVec.size();
         for (int i = 0; i < count - 1; i++)
         {
-            float t1 = timeData[i],     t2 = timeData[i + 1];
-            float v1 = dataVec[i],      v2 = dataVec[i + 1];
+            float t1 = timeData[i], t2 = timeData[i + 1];
+            float v1 = dataVec[i], v2 = dataVec[i + 1];
             ImVec2 p1 = transform(t1, v1);
             ImVec2 p2 = transform(t2, v2);
             drawList->AddLine(p1, p2, color, 2.0f);
         }
     };
 
-    // 8) Draw lines for toggled metrics
+    // 12) Draw lines for toggled metrics
     if (showLoss && !lossData.empty())
-        drawMetricLine(lossData, IM_COL32(255, 165,   0, 255)); // Orange
+        drawMetricLine(lossData, IM_COL32(255, 165, 0, 255)); // Orange
     if (showAccuracy && !accData.empty())
-        drawMetricLine(accData, IM_COL32(  0, 255,   0, 255)); // Green
+        drawMetricLine(accData, IM_COL32(0, 255, 0, 255)); // Green
     if (showRollingAcc && !rollingData.empty())
         drawMetricLine(rollingData, IM_COL32(255, 105, 180, 255)); // HotPink
 
-    // 9) Draw X-axis Ticks (Time Label)
-    // e.g. 5 or 6 ticks
+    // 13) X-axis Ticks
     int numXTicks = 6;
     for (int i = 0; i < numXTicks; i++)
     {
         float tickFrac = (float)i / (float)(numXTicks - 1);
         float tickTime = minTime + tickFrac * (maxTime - minTime);
 
-        // line
         float tickX = graphStart.x + tickFrac * width;
+        // small vertical line for the tick
         drawList->AddLine(ImVec2(tickX, graphEnd.y),
                           ImVec2(tickX, graphEnd.y + 5),
                           IM_COL32_WHITE);
@@ -553,28 +665,20 @@ void ShowAdvancedGraphWindow(bool* p_open)
         drawList->AddText(ImVec2(tx, ty), IM_COL32_WHITE, lbl);
     }
 
-    // 10) Hovering to show tooltip & vertical line
+    // 14) Mouse hover => vertical line & tooltip
     ImVec2 canvasMin = graphStart;
     ImVec2 canvasMax = graphEnd;
-    ImRect rect(canvasMin, canvasMax);
-
-    // Check if mouse is in the main plotting area
     bool hovered = ImGui::IsMouseHoveringRect(canvasMin, canvasMax);
-
     if (hovered)
     {
         ImVec2 mousePosInWindow = ImGui::GetMousePos();
-        
-        // constrain to the graph region
         if (mousePosInWindow.x < canvasMin.x) mousePosInWindow.x = canvasMin.x;
         if (mousePosInWindow.x > canvasMax.x) mousePosInWindow.x = canvasMax.x;
 
-        // Convert mouse X -> time
         float xFrac = (mousePosInWindow.x - canvasMin.x) / (canvasMax.x - canvasMin.x);
         float hoveredTime = minTime + xFrac * (maxTime - minTime);
 
-        // Find the closest index in timeData
-        // A simple linear search is okay for small data, or use std::lower_bound if large
+        // Find the closest data index
         int closestIndex = 0;
         float minDist = FLT_MAX;
         for (int i = 0; i < (int)timeData.size(); i++)
@@ -587,34 +691,35 @@ void ShowAdvancedGraphWindow(bool* p_open)
             }
         }
 
-        // draw vertical line
-        float lineX = transform(timeData[closestIndex], 0).x; // just need x
+        // Draw the vertical line
+        float lineX = transform(timeData[closestIndex], 0).x;
         drawList->AddLine(ImVec2(lineX, canvasMin.y),
                           ImVec2(lineX, canvasMax.y),
-                          IM_COL32(255,255,255,100),
+                          IM_COL32(255, 255, 255, 120),
                           1.0f);
 
-        // 11) Show tooltip with metrics
+        // Tooltip with the values
         if (ImGui::IsMouseHoveringRect(canvasMin, canvasMax))
         {
-            // build text
             float tVal = timeData[closestIndex];
-            float lVal = showLoss       ? lossData[closestIndex]       : NAN;
-            float aVal = showAccuracy   ? accData[closestIndex]        : NAN;
-            float rVal = showRollingAcc ? rollingData[closestIndex]    : NAN;
+            float lVal = (showLoss) ? lossData[closestIndex] : NAN;
+            float aVal = (showAccuracy) ? accData[closestIndex] : NAN;
+            float rVal = (showRollingAcc) ? rollingData[closestIndex] : NAN;
 
             ImGui::BeginTooltip();
             ImGui::Text("Time: %.2f sec", tVal);
-            if (showLoss)       ImGui::Text("Loss = %.3f", lVal);
-            if (showAccuracy)   ImGui::Text("Acc  = %.2f%%", aVal);
-            if (showRollingAcc) ImGui::Text("Roll = %.2f%%", rVal);
+            if (showLoss) ImGui::Text("Loss = %.3f", lVal);
+            if (showAccuracy) ImGui::Text("Acc  = %.2f%%", aVal);
+            if (showRollingAcc) ImGui::Text("Roll=%.2f%%", rVal);
             ImGui::EndTooltip();
         }
     }
 
-    ImGui::EndChild(); // end the child region
+    // End child region
+    ImGui::EndChild();
 
-    ImGui::End(); // end main window
+    // End main window
+    ImGui::End();
 }
 
 
@@ -987,7 +1092,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
     }
 
     ImGui::End();
-    
+
     if (showLegendWindow)
     {
         ShowLegendWindow(&showLegendWindow);
@@ -1007,6 +1112,8 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 }
 
 // 5.5: Dataset Management
+static bool useTextPreview = false;
+static char digitText[2] = "0";
 void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 {
     if (!ImGui::Begin("Dataset Management", p_open))
@@ -1034,10 +1141,9 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
         if (subsystem.GetNeuralNetwork().layers.empty())
         {
-            LOG(LogLevel::INFO, "No existing network. Auto-creating layers 784->128->10 with Sigmoid/CrossEntropy.");
+            LOG(LogLevel::INFO, "No existing network. Auto-creating network with selected values.");
 
-            // todo: After some testing I want to see if adding a second hidden layer produces better results
-            subsystem.InitNeuralNetwork(sigmoid, crossEntropy, /*input*/ 784, /*hiddenLayers*/ 2, /*HiddenLayerSize*/ 128, /*output*/ 10);
+            subsystem.InitNeuralNetwork(sigmoid, crossEntropy, HyperParameters::defaultInputLayerSize, HyperParameters::defaultNumHiddenLayers, HyperParameters::defaultHiddenLayerSize, HyperParameters::defaultOutputLayerSize);
         }
 
         subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
@@ -1062,7 +1168,35 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     }
 
     ImGui::Separator();
-    ImGui::TextWrapped("Will add ability to browse and load specific data sets here, for now it's all hooked up to one dataset");
+    static std::string testImagesPath = DEFAULT_TEST_IMAGES_PATH;
+    static std::string testLabelsPath = DEFAULT_TEST_LABELS_PATH;
+
+    ImGui::Separator();
+    ImGui::Text("Load Test Data Paths:");
+
+    // Input fields for test images/labels
+    ImGui::InputText("Test Images Path", testImagesPath.data(), testImagesPath.capacity());
+    ImGui::InputText("Test Labels Path", testLabelsPath.data(), testLabelsPath.capacity());
+
+    if (ImGui::Button("Load MNIST Test Data"))
+    {
+        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+        // e.g. "t10k-images.idx3-ubyte", "t10k-labels.idx1-ubyte"
+        bool ok = subsystem.LoadMNISTTestData(testImagesPath, testLabelsPath);
+        if (ok)
+        {
+            LOG(LogLevel::INFO, "Test Data loaded successfully!");
+        }
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Evaluate on Test Set"))
+    {
+        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+        double acc = subsystem.EvaluateTestSet(); // returns 0.0 if no data loaded
+        ImGui::Text("Test Accuracy: %.2f%%", acc * 100.0);
+    }
     ImGui::Separator();
 
 
@@ -1131,6 +1265,9 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         if (ImGui::Button("Infer from Preview"))
         {
             int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
+            useTextPreview = true;
+            digitText[0] = char('0' + digit);
+            digitText[1] = '\0';
             ImGui::Text("Predicted digit = %d", digit);
         }
     }
@@ -1141,14 +1278,12 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     ImGui::NextColumn();
 
-    static bool useTextPreview = false;
     ImGui::Checkbox("Use Text-based Preview", &useTextPreview);
 
     if (useTextPreview)
     {
         ImGui::Text("Enter digit 0-9:");
-        static char digitText[2] = "0";
-        ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
+        // ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
 
         float scale = 4.0f;
         ImVec2 startPos = ImGui::GetCursorScreenPos();
@@ -1167,7 +1302,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             startPos.x + (28.0f * scale * 0.3f),
             startPos.y + (28.0f * scale * 0.2f)
         );
-        ImGui::GetWindowDrawList()->AddText(NULL, 24.0f, textPos, IM_COL32_BLACK, digitText);
+        ImGui::GetWindowDrawList()->AddText(NULL, 100.0f, textPos, IM_COL32_BLACK, digitText);
 
         // Border
         ImGui::GetWindowDrawList()->AddRect(
@@ -1194,7 +1329,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
     if (ImGui::BeginTabBar("##NNControlsTabs"))
     {
         // Tab 1: Architecture
-         if (ImGui::BeginTabItem("Architecture"))
+        if (ImGui::BeginTabItem("Architecture"))
         {
             static int inputLayerSize = 784;
             static int numHiddenLayers = 2;
@@ -1206,7 +1341,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputInt("Hidden Layer Size", &hiddenLayerSize);
             ImGui::InputInt("Output Size", &outputLayerSize);
 
-            static int activationElem = (int)ActivationType::ReLU;
+            static int activationElem = (int)ActivationType::LeakyReLU;
             const char* activationNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
             const char* actName = (activationElem >= 0 && activationElem < 3) ? activationNames[activationElem] : "Unknown";
 
@@ -1219,7 +1354,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::SliderInt("Cost", &costElem, 0, 1, costName);
 
             // NEW: Final-layer activation control
-            static int finalActElem = 0; 
+            static int finalActElem = 0;
             const char* finalActNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
 
             if (costElem == (int)crossEntropy)
@@ -1254,14 +1389,28 @@ void NeuralNetworkControlsWindow(bool* p_open)
                 // If crossEntropy => final layer forced in Subsystem to softmax
                 // Otherwise => pick from finalActElem
                 ActivationType finalLayer = (ActivationType)finalActElem;
-                
+
                 // This call is your actual creation. We'll pass `actType` for hidden layers,
                 // cost, and final layer can be logic in your subsystem
                 NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(actType, cType,
-                                                                       inputLayerSize,
-                                                                       numHiddenLayers,
-                                                                       hiddenLayerSize,
-                                                                       outputLayerSize);
+                                                                        inputLayerSize,
+                                                                        numHiddenLayers,
+                                                                        hiddenLayerSize,
+                                                                        outputLayerSize);
+
+                auto& subsystem = NeuralNetworkSubsystem::GetInstance();
+                subsystem.InitNeuralNetwork(actType, cType,
+                                            inputLayerSize,
+                                            numHiddenLayers,
+                                            hiddenLayerSize,
+                                            outputLayerSize);
+                subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
+                {
+                    showVisualizationPanelWindow = true;
+                });
+
+                showDatasetManagementWindow = true;
+                showVisualizationPanelWindow = true;
             }
 
             ImGui::EndTabItem();

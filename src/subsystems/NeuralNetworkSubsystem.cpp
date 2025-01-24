@@ -90,6 +90,76 @@ bool NeuralNetworkSubsystem::LoadMNISTTrainingData(const std::string& imagesPath
     return loaded;
 }
 
+bool NeuralNetworkSubsystem::LoadMNISTTestData(const std::string& imagesPath, const std::string& labelsPath)
+{
+    bool loaded = testDataSet.LoadTrainingSet(imagesPath, labelsPath);
+    bIsMnistTestDataLoaded = loaded;
+
+    if (!loaded)
+    {
+        LOG(LogLevel::ERROR, "Failed to load MNIST test data. Check file paths!");
+    }
+    else
+    {
+        LOG(LogLevel::INFO, "MNIST test data loaded. Size = " + std::to_string(testDataSet.Size()));
+    }
+    return loaded;
+}
+
+double NeuralNetworkSubsystem::EvaluateTestSet()
+{
+    if (!bIsMnistTestDataLoaded || testDataSet.Size() == 0)
+    {
+        LOG(LogLevel::ERROR, "MNIST test data not loaded. Aborted Evaluation!");
+        return 0.0;
+    }
+
+    int correctCount = 0;
+    int total = static_cast<int>(testDataSet.Size());
+
+    // Can do smaller batches but 10k should be small enough...
+    const std::vector<std::vector<double>>& allTrainingImages = testDataSet.GetImages();
+    const std::vector<std::vector<double>>& allTrainingLabels = testDataSet.GetLabelsOneHot();
+    for (int i = 0; i < total; i++)
+    {
+        const std::vector<double>& img = allTrainingImages[i];
+        const std::vector<double>& labelOneHot = allTrainingLabels[i];
+
+        std::vector<double> out = CurrentNeuralNetwork.ForwardPropagation(img);
+
+        // get the best value
+        int bestIndex = -1;
+        double bestValue = std::numeric_limits<double>::lowest();
+        for (int j = 0; j < (int)out.size(); j++)
+        {
+            if (out[j] > bestValue)
+            {
+                bestValue = out[j];
+                bestIndex = j;
+            }
+        }
+
+        int actualIndex = -1;
+        for (int j = 0; j < (int)labelOneHot.size(); j++)
+        {
+            if (labelOneHot[j] == 1.0)
+            {
+                actualIndex = j;
+                break;
+            }
+        }
+        if (bestIndex == actualIndex)
+        {
+            correctCount++;
+        }
+    }
+    double accuracy = static_cast<double>(correctCount) / static_cast<double>(total);
+    LOG(LogLevel::INFO, "Test set accuracy: " + std::to_string(accuracy * 100) + "%");
+
+
+    return accuracy;
+}
+
 void NeuralNetworkSubsystem::TrainOnMNIST()
 {
     PROFILE_LOG;
@@ -383,7 +453,7 @@ void NeuralNetworkSubsystem::TrainOnMNISTFullProcess()
     {
         LOG(LogLevel::INFO, "No data loaded. Attempting auto-load from default paths...");
 
-        bool loadedOk = LoadMNISTTrainingData(DEFAULT_IMAGES_PATH, DEFAULT_LABELS_PATH);
+        bool loadedOk = LoadMNISTTrainingData(DEFAULT_TRAIN_IMAGES_PATH, DEFAULT_TRAIN_LABELS_PATH);
         if (!loadedOk)
         {
             LOG(LogLevel::ERROR, "Failed to auto-load MNIST training data from default path!");
@@ -587,6 +657,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
         }
     }
     LOG(LogLevel::INFO, "Inference Finished. Best Index (Predicted Digit): " + std::to_string(bestIndex) + " Best Value (Confidence in that digit): " + std::to_string(bestValue));
+    return bestIndex;
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
