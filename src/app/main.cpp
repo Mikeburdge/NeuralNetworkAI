@@ -22,6 +22,7 @@
 #include "implot/implot.h"
 #include "logging/Logger.h"
 #include "subsystems/NeuralNetworkSubsystem.h"
+#include "utility/NeuralNetworkUtility.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -296,12 +297,12 @@ void ShowTrainingMetrics(bool* p_open)
             }
         }
 
-        int epochsLeft = totalEpochs - (currentEpoch + 1);
-        double estimateRemainingTime = epochsLeft * epochTime;
+        const int epochsLeft = totalEpochs - (currentEpoch + 1);
+        const double estimateRemainingTime = epochsLeft * epochTime;
 
 
-        ImGui::Text("Time Elapsed: %.1f s", elapsed);
-        ImGui::Text("Time Remaining: %.1f s", estimateRemainingTime);
+        ImGui::Text("Time Elapsed: %.1f s", NeuralNetworkUtility::FormatTimeHMS(elapsed));
+        ImGui::Text("Time Remaining: %.1f s", NeuralNetworkUtility::FormatTimeHMS(estimateRemainingTime));
     }
     else
     {

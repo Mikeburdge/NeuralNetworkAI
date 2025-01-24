@@ -18,3 +18,16 @@ std::string NeuralNetworkUtility::GetInitTimestamp()
 
     return  formattedTime;
 }
+
+std::string NeuralNetworkUtility::FormatTimeHMS(double secondsTotal)
+{
+    int totalSec = (int)secondsTotal;
+    int hrs  = totalSec / 3600;
+    int rem  = totalSec % 3600;
+    int mins = rem / 60;
+    int secs = rem % 60;
+
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hrs, mins, secs);
+    return std::string(buf);
+}
