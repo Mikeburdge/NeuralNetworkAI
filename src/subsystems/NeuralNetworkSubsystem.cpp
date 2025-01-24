@@ -117,46 +117,68 @@ double NeuralNetworkSubsystem::EvaluateTestSet()
     int correctCount = 0;
     int total = static_cast<int>(testDataSet.Size());
 
-    // Can do smaller batches but 10k should be small enough...
+    const int numThreads = 4;
+    std::vector<std::thread> threads;
+    std::atomic<int> globalCorrectCountAtomic(0);
+
     const std::vector<std::vector<double>>& allTrainingImages = testDataSet.GetImages();
     const std::vector<std::vector<double>>& allTrainingLabels = testDataSet.GetLabelsOneHot();
-    for (int i = 0; i < total; i++)
+
+    auto worker = [&](int startIndex, int endIndex)
     {
-        const std::vector<double>& img = allTrainingImages[i];
-        const std::vector<double>& labelOneHot = allTrainingLabels[i];
-
-        std::vector<double> out = CurrentNeuralNetwork.ForwardPropagation(img);
-
-        // get the best value
-        int bestIndex = -1;
-        double bestValue = std::numeric_limits<double>::lowest();
-        for (int j = 0; j < (int)out.size(); j++)
+        int localCorrect = 0;
+        for (int i = startIndex; i < endIndex; i++)
         {
-            if (out[j] > bestValue)
+            const std::vector<double>& img = allTrainingImages[i];
+            const std::vector<double>& labelOneHot = allTrainingLabels[i];
+
+            std::vector<double> out = CurrentNeuralNetwork.ForwardPropagation(img);
+
+            // get the best value
+            int bestIndex = -1;
+            double bestValue = std::numeric_limits<double>::lowest();
+            for (int j = 0; j < (int)out.size(); j++)
             {
-                bestValue = out[j];
-                bestIndex = j;
+                if (out[j] > bestValue)
+                {
+                    bestValue = out[j];
+                    bestIndex = j;
+                }
+            }
+
+            int actualIndex = -1;
+            for (int j = 0; j < (int)labelOneHot.size(); j++)
+            {
+                if (labelOneHot[j] == 1.0)
+                {
+                    actualIndex = j;
+                    break;
+                }
+            }
+            if (bestIndex == actualIndex)
+            {
+                correctCount++;
             }
         }
+        globalCorrectCountAtomic.fetch_add(localCorrect);
+    };
 
-        int actualIndex = -1;
-        for (int j = 0; j < (int)labelOneHot.size(); j++)
-        {
-            if (labelOneHot[j] == 1.0)
-            {
-                actualIndex = j;
-                break;
-            }
-        }
-        if (bestIndex == actualIndex)
-        {
-            correctCount++;
-        }
+    int chunkSize = total / numThreads;
+
+    for (int i = 0; i < numThreads; i++)
+    {
+        int startIndex = i * chunkSize;
+        int endIndex = (i == numThreads - 1) ? total : startIndex + chunkSize;
+        threads.emplace_back(worker, startIndex, endIndex);
     }
-    double accuracy = static_cast<double>(correctCount) / static_cast<double>(total);
-    LOG(LogLevel::INFO, "Test set accuracy: " + std::to_string(accuracy * 100) + "%");
+    
+    for (std::thread& thread : threads)
+    {
+        thread.join();
+    }
 
-
+    const double accuracy = (double)globalCorrectCountAtomic.load() / (double)total;
+    LOG(LogLevel::INFO, "Test set accuracy (multithread) = " + std::to_string(accuracy * 100.0) + "%");
     return accuracy;
 }
 
