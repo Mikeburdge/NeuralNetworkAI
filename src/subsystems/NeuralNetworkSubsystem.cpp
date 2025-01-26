@@ -16,6 +16,7 @@
 // Include stb_image for image loading
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "NeuralNetworkSerializer/NeuralNetworkSerializer.h"
 #include "utility/NeuralNetworkUtility.h"
 
 NeuralNetworkSubsystem::TrainingTimer NeuralNetworkSubsystem::trainingTimer;
@@ -161,7 +162,7 @@ double NeuralNetworkSubsystem::EvaluateTestSet()
     for (int threadIndex = 0; threadIndex < numThreads; threadIndex++)
     {
         int startIdx = threadIndex * chunkSize;
-        int endIdx   = (threadIndex == numThreads - 1) ? total : startIdx + chunkSize;
+        int endIdx = (threadIndex == numThreads - 1) ? total : startIdx + chunkSize;
         threads.emplace_back(worker, startIdx, endIdx);
     }
 
@@ -525,7 +526,11 @@ void NeuralNetworkSubsystem::StopTraining()
             LOG(LogLevel::ERROR, "Failed to stop training thread.");
         }
 
+
+        double finalElapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - trainingTimer.startTime).count();
+        trainingTimer.epochDuration = finalElapsedTime;
         trainingTimer.isInitialized = false; // stop the timer when we stop the training
+
         trainingInProgressAtomic.store(false);
         LOG(LogLevel::INFO, "Stop complete. Training thread joined.");
     }
@@ -537,112 +542,61 @@ void NeuralNetworkSubsystem::StopTraining()
 
 bool NeuralNetworkSubsystem::SaveNetwork(const std::string& filePath)
 {
-    // todo: could and probably should make a new subsystem/ file for this but i need this quickly so fuck it
-    try
-    {
-        std::filesystem::path path = filePath;
-        std::filesystem::path parentDir = path.parent_path();
-        if (parentDir.empty() && !std::filesystem::exists(parentDir))
-        {
-            std::filesystem::create_directories(parentDir);
-        }
-    }
-    catch (std::exception& e)
-    {
-        LOG(LogLevel::ERROR, "Failed to create directories for saving the network: " + std::string(e.what()));
-        return false;
-    }
+    HyperParameters HyperParameters = HyperParameters::GetHyperParameters();
 
-    std::ofstream ofs(filePath);
-    if (!ofs.is_open())
-    {
-        LOG(LogLevel::ERROR, "Could not open file to save: " + filePath);
-        // LOG(LogLevel::ERROR, "Could not open file to save: " + filePath);
-        return false;
-    }
+    bool bIsSuccessful = NeuralNetworkSerializer::SaveToJSON(
+        filePath,
+        CurrentNeuralNetwork,
+        HyperParameters,
+        trainingTimer,
+        currentEpochAtomic.load(),
+        totalEpochsAtomic.load(),
+        trainingHistory
+    );
 
-    int layerCount = (int)CurrentNeuralNetwork.layers.size();
-    ofs << layerCount << "\n";
-    for (Layer layer : CurrentNeuralNetwork.layers)
-    {
-        // neurons
-        ofs << layer.numNeurons << " " << layer.numNeuronsOutOfPreviousLayer << "\n";
-
-        // biases
-        for (double bias : layer.biases)
-        {
-            ofs << bias << " ";
-        }
-        // next line after biases
-        ofs << "\n";
-
-        // weights
-
-        for (std::vector<double> weightVector : layer.weights)
-        {
-            for (double weight : weightVector)
-            {
-                ofs << weight << " ";
-            }
-            ofs << "\n";
-        }
-    }
-    LOG(LogLevel::INFO, "Saved network to: " + filePath);
-    return true;
+    return bIsSuccessful;
 }
 
 bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
 {
-    std::ifstream ifs(filePath);
-    if (!ifs.is_open())
+    NeuralNetwork loadedNetwork;
+    HyperParameters loadedHyperParameters;
+    NeuralNetworkSubsystem::TrainingTimer loadedTimer;
+    int loadedCurrentEpoch = 0;
+    int loadedTotalEpochs = 0;
+    std::vector<TrainingMetricPoint> loadedHistory;
+
+    const bool bIsSuccessful = NeuralNetworkSerializer::LoadFromJSON(
+        filePath,
+        loadedNetwork,
+        loadedHyperParameters,
+        loadedTimer,
+        loadedCurrentEpoch,
+        loadedTotalEpochs,
+        trainingHistory
+    );
+
+    if (!bIsSuccessful)
     {
-        LOG(LogLevel::ERROR, "Could not open file to load: " + filePath);
         return false;
     }
 
-    int layerCount = 0;
-    if (!(ifs >> layerCount))
+    CurrentNeuralNetwork = loadedNetwork;
+
+    HyperParameters::SetHyperParameters(loadedHyperParameters);
+
+    trainingTimer = loadedTimer;
+    currentEpochAtomic.store(loadedCurrentEpoch);
+    totalEpochsAtomic.store(loadedTotalEpochs);
     {
-        LOG(LogLevel::ERROR, "Invalid network file format (layerCount).");
-        return false;
+        std::lock_guard<std::mutex> lock(metricMutex);
+        trainingHistory = loadedHistory;
     }
 
-    NeuralNetwork newNeuralNetwork;
+    NeuralNetworkSubsystem::InitNeuralNetwork(loadedHyperParameters.activationType, loadedHyperParameters.cost, loadedHyperParameters.defaultInputLayerSize,
+                                              loadedHyperParameters.defaultNumHiddenLayers, loadedHyperParameters.defaultHiddenLayerSize,
+                                              loadedHyperParameters.defaultOutputLayerSize);
 
-    for (int i = 0; i < layerCount; ++i)
-    {
-        int numNeurons, outOfPreviousLayer;
-
-        if (!(ifs >> numNeurons >> outOfPreviousLayer))
-        {
-            LOG(LogLevel::ERROR, "Malformed network file (layer header).");
-            return false;
-        }
-
-        Layer layer(HyperParameters::activationType, HyperParameters::cost, numNeurons, outOfPreviousLayer);
-
-        // biases
-        for (int biasesIndex = 0; biasesIndex < numNeurons; ++biasesIndex)
-        {
-            ifs >> layer.biases[biasesIndex];
-        }
-
-        // weights
-        for (int weightsMatrixIndex = 0; weightsMatrixIndex < numNeurons; ++weightsMatrixIndex)
-        {
-            for (int weightsIndex = 0; weightsIndex < layer.numNeuronsOutOfPreviousLayer; ++weightsIndex)
-            {
-                if (!(ifs >> layer.weights[weightsMatrixIndex][weightsIndex]))
-                {
-                    LOG(LogLevel::ERROR, "Malformed network file (weight read).");
-                    return false;
-                }
-            }
-        }
-        newNeuralNetwork.layers.push_back(layer);
-    }
-    CurrentNeuralNetwork = newNeuralNetwork;
-    LOG(LogLevel::INFO, "Loaded network from: " + filePath);
     return true;
 }
 

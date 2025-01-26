@@ -24,6 +24,8 @@
 #include "subsystems/NeuralNetworkSubsystem.h"
 #include "utility/NeuralNetworkUtility.h"
 
+#include "json.hpp"
+
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -1115,6 +1117,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 // 5.5: Dataset Management
 static bool useTextPreview = false;
 static char digitText[2] = "0";
+
 void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 {
     if (!ImGui::Begin("Dataset Management", p_open))
@@ -1318,6 +1321,77 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     ImGui::End();
 }
 
+// Function to display checkpoint details in the UI
+void ShowCheckpointDetails(const std::string& filePath)
+{
+    // Check if the file path is empty
+    if (filePath.empty())
+    {
+        ImGui::Text("No checkpoint selected.");
+        return;
+    }
+
+    // Attempt to open the file
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        ImGui::Text("Error: Unable to open file: %s", filePath.c_str());
+        return;
+    }
+
+    try
+    {
+        // Parse JSON data from the file
+        nlohmann::json checkpointData;
+        file >> checkpointData;
+        file.close();
+
+        // Display general information about the checkpoint
+        if (checkpointData.contains("Epoch") && checkpointData["Epoch"].is_number_integer())
+        {
+            ImGui::Text("Epoch: %d", checkpointData["Epoch"].get<int>());
+        }
+        else
+        {
+            ImGui::Text("Epoch: Not found in checkpoint data.");
+        }
+
+        if (checkpointData.contains("Accuracy") && checkpointData["Accuracy"].is_number())
+        {
+            ImGui::Text("Accuracy: %.2f%%", checkpointData["Accuracy"].get<double>() * 100.0);
+        }
+        else
+        {
+            ImGui::Text("Accuracy: Not found in checkpoint data.");
+        }
+
+        // Optionally display more detailed metadata if available
+        if (checkpointData.contains("Metadata") && checkpointData["Metadata"].is_object())
+        {
+            ImGui::Text("Metadata:");
+            for (auto& [key, value] : checkpointData["Metadata"].items())
+            {
+                ImGui::BulletText("%s: %s", key.c_str(), value.dump().c_str());
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        // Handle JSON parsing errors
+        ImGui::Text("Error: Failed to parse checkpoint file: %s", e.what());
+    }
+}
+
+struct FileMetadata
+{
+    int epoch;
+    double accuracy;
+    std::filesystem::file_time_type lastWriteTime;
+    bool valid;
+};
+
+static std::unordered_map<std::string, FileMetadata> s_checkpointMetadataCache;
+
 // 5.6: Neural Network Controls
 void NeuralNetworkControlsWindow(bool* p_open)
 {
@@ -1443,53 +1517,172 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             ImGui::EndTabItem();
         }
+
         // Tab 3: Save/Load
         if (ImGui::BeginTabItem("Save/Load"))
         {
-            static std::string saveFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
+            // -------------------------------
+            // 1. Declarations & Refresh Logic
+            // -------------------------------
+            // Static variables so they persist across frames.
+            static bool filesRefreshed = false;
+            static int selectedSaveFileIndex = -1;
+            static std::string selectedSaveFilePath;
+            static std::vector<std::string> saveFiles;
 
-            if (ImGui::Button("Browse Save Path..."))
+            // Automatically refresh the list whenever this tab is focused again.
+            if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows) && !filesRefreshed)
             {
-                ImGuiFileDialog::Instance()->OpenDialog("ChooseSaveFileDlgKey", "Choose Save Path", ".txt\0*.txt\0\0");
-            }
+                // Clear and repopulate
+                saveFiles.clear();
+                selectedSaveFileIndex = -1;
+                selectedSaveFilePath.clear();
 
-            if (ImGuiFileDialog::Instance()->Display("ChooseSaveFileDlgKey"))
-            {
-                if (ImGuiFileDialog::Instance()->IsOk())
+                // Only .json is assumed as your new checkpoint extension
+                const std::filesystem::path saveDir = std::filesystem::current_path() / "Saved";
+
+                if (std::filesystem::exists(saveDir))
                 {
-                    saveFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                    for (const auto& entry : std::filesystem::directory_iterator(saveDir))
+                    {
+                        if (entry.is_regular_file() && entry.path().extension() == ".json")
+                        {
+                            // Keep just the filename, e.g. "Network_Epoch10_Acc85_2025-01-20.json"
+                            saveFiles.push_back(entry.path().filename().string());
+                        }
+                    }
                 }
-                ImGuiFileDialog::Instance()->Close();
+
+                filesRefreshed = true;
+            }
+            // If the user leaves the tab, we want to re-trigger a refresh next time.
+            if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+            {
+                filesRefreshed = false;
             }
 
-            ImGui::InputText("Save Path##Network", saveFilePath.data(), sizeof(saveFilePath));
-            if (ImGui::Button("Save Network"))
+            // -------------------------------
+            // 2. List of Existing Checkpoints
+            // -------------------------------
+            ImGui::Text("Existing Checkpoints in 'Saved/' directory:");
+            ImGui::Separator();
+
+            // Show the checkpoint files in a list box.
+            const float listBoxHeight = 8.0f * ImGui::GetTextLineHeightWithSpacing();
+            if (ImGui::BeginListBox("##CheckpointListBox", ImVec2(-FLT_MIN, listBoxHeight)))
             {
-                NeuralNetworkSubsystem::GetInstance().SaveNetwork(saveFilePath);
-            }
-
-            ImGui::SameLine();
-
-            static std::string loadFilePath = (std::filesystem::current_path() / "Saved" / "NeuralNetwork.txt").string();
-
-            if (ImGui::Button("Browse Load Path..."))
-            {
-                ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Load Path", ".txt\0*.txt\0\0");
-            }
-
-            if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
-            {
-                if (ImGuiFileDialog::Instance()->IsOk())
+                for (int i = 0; i < static_cast<int>(saveFiles.size()); i++)
                 {
-                    loadFilePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                    bool isSelected = (i == selectedSaveFileIndex);
+                    if (ImGui::Selectable(saveFiles[i].c_str(), isSelected))
+                    {
+                        selectedSaveFileIndex = i;
+                        selectedSaveFilePath = (std::filesystem::current_path() / "Saved" / saveFiles[i]).string();
+                    }
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
                 }
-                ImGuiFileDialog::Instance()->Close();
+                ImGui::EndListBox();
             }
 
-            ImGui::InputText("Load Path##Network", loadFilePath.data(), sizeof(loadFilePath));
-            if (ImGui::Button("Load Network"))
+
+            // If a file is selected, show the "Load" button
+            if (selectedSaveFileIndex >= 0 && selectedSaveFileIndex < (int)saveFiles.size())
             {
-                NeuralNetworkSubsystem::GetInstance().LoadNetwork(loadFilePath);
+                std::string selectedFilePath = (std::filesystem::current_path() / "Saved" / saveFiles[selectedSaveFileIndex]).string();
+                // Check last_write_time
+                const auto lastWrite = std::filesystem::last_write_time(selectedFilePath);
+
+                auto it = s_checkpointMetadataCache.find(selectedFilePath);
+                bool needParse = true;
+                if (it != s_checkpointMetadataCache.end())
+                {
+                    if (it->second.lastWriteTime == lastWrite)
+                    {
+                        needParse = false;
+                    }
+                }
+
+                if (needParse)
+                {
+                    FileMetadata meta{};
+                    meta.valid = false;
+                    meta.lastWriteTime = lastWrite;
+                    try
+                    {
+                        std::ifstream inFile(selectedFilePath);
+                        nlohmann::json j;
+                        inFile >> j;
+                        inFile.close();
+
+                        meta.epoch = j["TrainingState"]["currentEpoch"].get<int>();
+                        meta.accuracy = j["HyperParameters"]["activationType"].get<double>();
+                        meta.valid = true;
+                    }
+                    catch (std::exception e)
+                    {
+                        LOG(LogLevel::ERROR, e.what());
+                    }
+                    s_checkpointMetadataCache[selectedFilePath] = meta;
+                }
+
+                auto& info = s_checkpointMetadataCache[selectedFilePath];
+                if (info.valid)
+                {
+                    ImGui::Text("Epoch: %d", info.epoch);
+                    ImGui::Text("Accuracy: %.2f%%", info.accuracy);
+                }
+                else
+                {
+                    ImGui::Text("Error reading metadata or no data cached.");
+                }
+
+                if (ImGui::Button("Load Selected Checkpoint"))
+                {
+                    bool success = NeuralNetworkSubsystem::GetInstance().LoadNetwork(selectedFilePath);
+                    if (success)
+                    {
+                        LOG(LogLevel::INFO, "Successfully loaded checkpoint: " + selectedFilePath);
+                    }
+                    else
+                    {
+                        LOG(LogLevel::ERROR, "Failed to load checkpoint: " + selectedFilePath);
+                    }
+                }
+            }
+
+            ImGui::Separator();
+
+            // -------------------------------
+            // 3. Export (Save) the Network
+            // -------------------------------
+            ImGui::Text("Export Current Network to a new JSON file:");
+            if (ImGui::Button("Export Network"))
+            {
+                // Create an auto-named filename, e.g. "Network_Epoch5_Acc85_2025-01-25_20-40-55.json"
+                int currentEpoch = NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.load();
+                double currentAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
+                std::string timestamp = NeuralNetworkUtility::GetTimeStampWithAnnotations();
+
+                std::string autoFilename =
+                    "Network_Epoch" + std::to_string(currentEpoch) +
+                    "_Acc" + std::to_string((int)currentAccuracy) + "_" +
+                    timestamp + ".json";
+
+                std::string savePath =
+                    (std::filesystem::current_path() / "Saved" / autoFilename).string();
+
+                bool savedOk = NeuralNetworkSubsystem::GetInstance().SaveNetwork(savePath);
+                if (savedOk)
+                {
+                    LOG(LogLevel::INFO, "Exported to: " + autoFilename);
+                    // Force a refresh next frame so the new file appears in the list
+                    filesRefreshed = false;
+                }
+                else
+                {
+                    LOG(LogLevel::ERROR, "Failed to export network: " + autoFilename);
+                }
             }
 
             ImGui::EndTabItem();

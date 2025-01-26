@@ -34,5 +34,8 @@ public:
 
 	static void ResetHyperParameters();
 
+	static void SetHyperParameters(HyperParameters hyperParameters);
+	static HyperParameters GetHyperParameters();
+
 
 };

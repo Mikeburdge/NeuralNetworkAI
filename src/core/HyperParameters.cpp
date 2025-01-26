@@ -44,3 +44,31 @@ void HyperParameters::ResetHyperParameters()
 	useDropoutRate = defaultUseDropoutRate;
 	dropoutRate = defaultDropoutRate;
 }
+
+void HyperParameters::SetHyperParameters(HyperParameters hyperParameters)
+{
+	learningRate = hyperParameters.learningRate;
+	batchSize = hyperParameters.batchSize;
+	epochs = hyperParameters.epochs;
+	momentum = hyperParameters.momentum;
+	weightDecay = hyperParameters.weightDecay;
+	useDropoutRate = hyperParameters.useDropoutRate;
+	dropoutRate = hyperParameters.dropoutRate;
+
+	return;
+}
+
+HyperParameters HyperParameters::GetHyperParameters()
+{
+	HyperParameters hyperParameters;
+
+	hyperParameters.learningRate = learningRate;
+	hyperParameters.batchSize = batchSize;
+	hyperParameters.epochs = epochs;
+	hyperParameters.momentum = momentum;
+	hyperParameters.weightDecay = weightDecay;
+	hyperParameters.useDropoutRate = useDropoutRate;
+	hyperParameters.dropoutRate = dropoutRate;
+	
+	return hyperParameters;
+}
