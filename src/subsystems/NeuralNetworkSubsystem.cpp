@@ -116,8 +116,9 @@ double NeuralNetworkSubsystem::EvaluateTestSet()
     }
     int total = (int)testDataSet.Size();
 
-    // We'll do 4 threads, for instance. You can pick #threads based on hardware
-    const int numThreads = 4;
+    unsigned int concurrency = std::thread::hardware_concurrency();
+    int numThreads = (concurrency == 0) ? 4 : (int)concurrency;
+
     std::vector<std::thread> threads;
     std::atomic<int> globalCorrectCountAtomic(0);
 
@@ -201,14 +202,14 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         LOG(LogLevel::ERROR, "No epochs to train. Exiting.");
         return;
     }
-    
+
     size_t startEpoch = (size_t)currentEpochAtomic.load();
     if (startEpoch >= (size_t)epochs)
     {
         LOG(LogLevel::ERROR, "All epochs completed already.");
         return;
     }
-    
+
     NeuralNetwork& network = GetNeuralNetwork();
     MNISTDataSet& dataset = GetTrainingDataSet();
     size_t datasetSize = dataset.Size();
@@ -244,7 +245,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
     int totalCorrectPredictions = 0;
     totalPredictionsAtomic.store(0);
-   
+
     for (size_t epoch = startEpoch; epoch < epochs; ++epoch)
     {
         currentEpochAtomic.store(epoch);
@@ -271,7 +272,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         static double accumulatedEpochTime = 0.0;
         static int epochCountForAverage = 0;
-        
+
         for (size_t startIndex = 0; startIndex < datasetSize; startIndex += batchsize)
         {
             if (stopRequestedAtomic.load())
@@ -481,7 +482,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
         double averageSoFar = accumulatedEpochTime / (double)epochCountForAverage;
         trainingTimer.epochDuration = averageSoFar; // store the rolling average
-        
+
         if (stopRequestedAtomic.load())
         {
             break;
@@ -612,13 +613,25 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
 
     CurrentNeuralNetwork = std::move(loadedNetwork);
 
+    if (CurrentNeuralNetwork.layers.empty())
+    {
+        LOG(LogLevel::WARNING, "Loaded checkpoint had 0 layers. Creating a default architecture...");
+        InitNeuralNetwork(HyperParameters::activationType, HyperParameters::cost,
+                          HyperParameters::defaultInputLayerSize,
+                          HyperParameters::defaultNumHiddenLayers,
+                          HyperParameters::defaultHiddenLayerSize,
+                          HyperParameters::defaultOutputLayerSize);
+    }
+    
+    bIsNeuralNetworkInitialized = true;
+
     HyperParameters::SetHyperParameters(loadedHyperParameters);
 
     trainingTimer = loadedTimer;
-    
+
     currentEpochAtomic.store(loadedCurrentEpoch);
     totalEpochsAtomic.store(loadedTotalEpochs);
-    
+
     {
         std::lock_guard<std::mutex> lock(metricMutex);
         trainingHistory = loadedHistory;
@@ -630,17 +643,17 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
 
         size_t networkInputs = CurrentNeuralNetwork.layers.empty() ? 0 : CurrentNeuralNetwork.layers[0].numNeuronsOutOfPreviousLayer;
 
-        
+
         if (datasetInputs != networkInputs)
         {
-            LOG(LogLevel::WARNING, "Potential mismatch: dataset input size = " 
-                + std::to_string(datasetInputs) + ", network input size = " 
+            LOG(LogLevel::WARNING, "Potential mismatch: dataset input size = "
+                + std::to_string(datasetInputs) + ", network input size = "
                 + std::to_string(networkInputs));
-        }    
+        }
     }
-    
+
     LOG(LogLevel::INFO, "Successfully loaded network from: " + filePath);
-    
+
     return true;
 }
 

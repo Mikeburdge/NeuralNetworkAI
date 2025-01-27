@@ -44,6 +44,7 @@ public:
 
 private:
     NeuralNetwork CurrentNeuralNetwork;
+    bool bIsNeuralNetworkInitialized = false;
 
     // The MNIST dataset loaded in memory
     MNISTDataSet trainingDataSet;

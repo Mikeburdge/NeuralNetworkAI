@@ -743,6 +743,17 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
         return;
     }
 
+    NeuralNetworkSubsystem& nnSubsystem = NeuralNetworkSubsystem::GetInstance();
+    // for now im just gonna check the layers but I really should add a bool in the subsystem
+    bool bIsNetworkInitialized = !nnSubsystem.GetNeuralNetwork().layers.empty();
+
+    if (!bIsNetworkInitialized)
+    {
+        ImGui::Text("No Neural Network Initialized");
+        ImGui::End();
+        return;
+    }
+
     const int layerCount = (int)network.layers.size();
     if (layerCount == 0)
     {
@@ -1142,9 +1153,24 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
     {
-        if (ImGui::Button("Stop Training"))
+        if (ImGui::Button("Pause Training"))
         {
             NeuralNetworkSubsystem::GetInstance().StopTraining();
+        }
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Restart Training"))
+        {
+            // This would reset the entire state
+            // e.g. set epoch=0, clear trainingHistory, re-init the timer
+            NeuralNetworkSubsystem::GetInstance().StopTraining();
+            NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.store(0);
+            {
+                std::lock_guard<std::mutex> lock(NeuralNetworkSubsystem::GetInstance().metricMutex);
+                NeuralNetworkSubsystem::GetInstance().trainingHistory.clear();
+            }
+            // Then start fresh
+            NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
         }
     }
     else
@@ -1487,10 +1513,10 @@ void NeuralNetworkControlsWindow(bool* p_open)
             if (ImGui::Button("Create Neural Network (Manual)"))
             {
                 CreateNetworkWithUIParams(
-                        inputLayerSize, numHiddenLayers,
-                        hiddenLayerSize, outputLayerSize,
-                        activationElem, costElem, finalActElem
-                    );
+                    inputLayerSize, numHiddenLayers,
+                    hiddenLayerSize, outputLayerSize,
+                    activationElem, costElem, finalActElem
+                );
 
                 showDatasetManagementWindow = true;
                 showVisualizationPanelWindow = true;
@@ -1551,13 +1577,23 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
                 if (std::filesystem::exists(saveDir))
                 {
+                    std::vector<std::pair<std::filesystem::file_time_type, std::string>> filesWithTimes;
                     for (const auto& entry : std::filesystem::directory_iterator(saveDir))
                     {
                         if (entry.is_regular_file() && entry.path().extension() == ".json")
                         {
                             // Keep just the filename, e.g. "Network_Epoch10_Acc85_2025-01-20.json"
-                            saveFiles.push_back(entry.path().filename().string());
+                            filesWithTimes.push_back({std::filesystem::last_write_time(entry), entry.path().filename().string()});
                         }
+                    }
+
+                    std::sort(filesWithTimes.begin(), filesWithTimes.end(),
+                              [](auto& a, auto& b) { return a.first > b.first; });
+
+                    saveFiles.clear();
+                    for (auto& [timeVal, fileName] : filesWithTimes)
+                    {
+                        saveFiles.push_back(fileName);
                     }
                 }
 
@@ -1576,8 +1612,8 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::Separator();
 
             // Show the checkpoint files in a list box.
-            const float listBoxHeight = 8.0f * ImGui::GetTextLineHeightWithSpacing();
-            if (ImGui::BeginListBox("##CheckpointListBox", ImVec2(-FLT_MIN, listBoxHeight)))
+            ImVec2 listBoxSize(-1.0f, ImGui::GetTextLineHeightWithSpacing() * 6.0f); // 12 lines
+            if (ImGui::BeginListBox("##CheckpointListBox", listBoxSize))
             {
                 for (int i = 0; i < static_cast<int>(saveFiles.size()); i++)
                 {
