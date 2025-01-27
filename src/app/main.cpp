@@ -303,13 +303,13 @@ void ShowTrainingMetrics(bool* p_open)
         const double estimateRemainingTime = epochsLeft * epochTime;
 
 
-        ImGui::Text("Time Elapsed: %s", NeuralNetworkUtility::FormatTimeHMS(elapsed).c_str());
-        ImGui::Text("Time Remaining: %s", NeuralNetworkUtility::FormatTimeHMS(estimateRemainingTime).c_str());
+        ImGui::Text("Training Time Elapsed: %s", NeuralNetworkUtility::FormatTimeHMS(elapsed).c_str());
+        ImGui::Text("Training Time Remaining: %s", NeuralNetworkUtility::FormatTimeHMS(estimateRemainingTime).c_str());
     }
     else
     {
-        ImGui::Text("Time Elapsed: N/A");
-        ImGui::Text("Time Remaining: N/A");
+        ImGui::Text("Training Time Elapsed: N/A");
+        ImGui::Text("Training Time Remaining: N/A");
     }
 
 

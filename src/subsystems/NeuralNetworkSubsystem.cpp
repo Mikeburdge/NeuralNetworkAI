@@ -269,6 +269,9 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         double epochCostSum = 0.0;
         int numBatches = 0;
 
+        static double accumulatedEpochTime = 0.0;
+        static int epochCountForAverage = 0;
+        
         for (size_t startIndex = 0; startIndex < datasetSize; startIndex += batchsize)
         {
             if (stopRequestedAtomic.load())
@@ -461,11 +464,6 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             trainingHistory.push_back(dataPoint);
         }
 
-        // Calculate epoch duration
-        std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
-        trainingTimer.epochDuration = std::chrono::duration<double>(now - trainingTimer.lastEpochTime).count();
-        trainingTimer.lastEpochTime = now;
-
         // end of epoch
         double avgCost = epochCostSum / numBatches;
         LOG(LogLevel::INFO,
@@ -473,6 +471,17 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             " of " + std::to_string(epochs) +
             " cost: " + std::to_string(avgCost));
 
+        auto now = std::chrono::steady_clock::now();
+        double thisEpochTime = std::chrono::duration<double>(now - trainingTimer.lastEpochTime).count();
+        trainingTimer.lastEpochTime = now;
+
+        // Accumulate for better average
+        accumulatedEpochTime += thisEpochTime;
+        epochCountForAverage++;
+
+        double averageSoFar = accumulatedEpochTime / (double)epochCountForAverage;
+        trainingTimer.epochDuration = averageSoFar; // store the rolling average
+        
         if (stopRequestedAtomic.load())
         {
             break;
