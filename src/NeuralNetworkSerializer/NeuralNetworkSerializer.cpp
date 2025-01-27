@@ -13,6 +13,10 @@ bool NeuralNetworkSerializer::SaveToJSON(const std::string& filePath,
                                          int totalEpochs,
                                          const std::vector<NeuralNetworkSubsystem::TrainingMetricPoint>& trainingHistory)
 {
+    if (std::filesystem::exists(filePath))
+    {
+        LOG(LogLevel::WARNING, "File already exists, overwriting: " + filePath);
+    }
     json root;
 
     // 1) Store all HyperParameters

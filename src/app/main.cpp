@@ -1139,29 +1139,6 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         ImGui::Text("MNIST data is not loaded yet.");
     }
 
-    if (ImGui::Button("Train MNIST (Full Process)"))
-    {
-        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
-
-        if (subsystem.GetNeuralNetwork().layers.empty())
-        {
-            LOG(LogLevel::INFO, "No existing network. Auto-creating network with selected values.");
-
-            subsystem.InitNeuralNetwork(sigmoid, crossEntropy, HyperParameters::defaultInputLayerSize, HyperParameters::defaultNumHiddenLayers, HyperParameters::defaultHiddenLayerSize, HyperParameters::defaultOutputLayerSize);
-        }
-
-        subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
-        {
-            showVisualizationPanelWindow = true;
-        });
-
-        showDatasetManagementWindow = true;
-        showVisualizationPanelWindow = true;
-
-        NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
-    }
-
-    ImGui::SameLine();
 
     if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
     {
@@ -1170,7 +1147,44 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             NeuralNetworkSubsystem::GetInstance().StopTraining();
         }
     }
+    else
+    {
+        if (ImGui::Button("Train MNIST (Full Process)"))
+        {
+            NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
 
+            if (subsystem.GetNeuralNetwork().layers.empty())
+            {
+                LOG(LogLevel::INFO, "No existing network. Auto-creating network with selected values.");
+
+                subsystem.InitNeuralNetwork(sigmoid, crossEntropy, HyperParameters::defaultInputLayerSize, HyperParameters::defaultNumHiddenLayers, HyperParameters::defaultHiddenLayerSize, HyperParameters::defaultOutputLayerSize);
+            }
+
+            subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
+            {
+                showVisualizationPanelWindow = true;
+            });
+
+            showDatasetManagementWindow = true;
+            showVisualizationPanelWindow = true;
+
+            NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
+        }
+        
+        ImGui::SameLine();
+
+        if (ImGui::Button("Continue Training"))
+        {
+            // should just be able to jump back in with train on async
+            NeuralNetworkSubsystem::GetInstance().TrainOnMNISTAsync();
+        }
+    }
+
+    if (NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.load() >= HyperParameters::epochs)
+    {
+        ImGui::Text("All Epochs Completed.");
+    }
+    
     ImGui::Separator();
     static std::string testImagesPath = DEFAULT_TEST_IMAGES_PATH;
     static std::string testLabelsPath = DEFAULT_TEST_LABELS_PATH;

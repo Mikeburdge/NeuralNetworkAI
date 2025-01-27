@@ -188,6 +188,27 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         return;
     }
 
+    if (CurrentNeuralNetwork.layers.empty())
+    {
+        LOG(LogLevel::ERROR, "Cannot train neural network, no architecture loaded");
+        return;
+    }
+
+    // being careful now that we are loading epochs
+    int epochs = HyperParameters::epochs;
+    if (epochs <= 0)
+    {
+        LOG(LogLevel::ERROR, "No epochs to train. Exiting.");
+        return;
+    }
+    
+    size_t startEpoch = (size_t)currentEpochAtomic.load();
+    if (startEpoch >= (size_t)epochs)
+    {
+        LOG(LogLevel::ERROR, "All epochs completed already.");
+        return;
+    }
+    
     NeuralNetwork& network = GetNeuralNetwork();
     MNISTDataSet& dataset = GetTrainingDataSet();
     size_t datasetSize = dataset.Size();
@@ -197,7 +218,6 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
         return;
     }
 
-    int epochs = HyperParameters::epochs;
     int batchsize = HyperParameters::batchSize;
     CostType currentCost = HyperParameters::cost;
 
@@ -224,14 +244,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
 
     int totalCorrectPredictions = 0;
     totalPredictionsAtomic.store(0);
-
-    size_t startEpoch = (size_t)currentEpochAtomic.load();
-    if (startEpoch >= (size_t)epochs)
-    {
-        LOG(LogLevel::ERROR, "All epochs completed already.");
-        return;
-    }
-    
+   
     for (size_t epoch = startEpoch; epoch < epochs; ++epoch)
     {
         currentEpochAtomic.store(epoch);
@@ -588,22 +601,37 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         return false;
     }
 
-    CurrentNeuralNetwork = loadedNetwork;
+    CurrentNeuralNetwork = std::move(loadedNetwork);
 
     HyperParameters::SetHyperParameters(loadedHyperParameters);
 
     trainingTimer = loadedTimer;
+    
     currentEpochAtomic.store(loadedCurrentEpoch);
     totalEpochsAtomic.store(loadedTotalEpochs);
+    
     {
         std::lock_guard<std::mutex> lock(metricMutex);
         trainingHistory = loadedHistory;
     }
 
-    // NeuralNetworkSubsystem::InitNeuralNetwork(loadedHyperParameters.activationType, loadedHyperParameters.cost, loadedHyperParameters.defaultInputLayerSize,
-    //                                           loadedHyperParameters.defaultNumHiddenLayers, loadedHyperParameters.defaultHiddenLayerSize,
-    //                                           loadedHyperParameters.defaultOutputLayerSize);
+    if (bIsMnistTrainingDataLoaded)
+    {
+        size_t datasetInputs = trainingDataSet.GetImages().empty() ? 0 : trainingDataSet.GetImages()[0].size();
 
+        size_t networkInputs = CurrentNeuralNetwork.layers.empty() ? 0 : CurrentNeuralNetwork.layers[0].numNeuronsOutOfPreviousLayer;
+
+        
+        if (datasetInputs != networkInputs)
+        {
+            LOG(LogLevel::WARNING, "Potential mismatch: dataset input size = " 
+                + std::to_string(datasetInputs) + ", network input size = " 
+                + std::to_string(networkInputs));
+        }    
+    }
+    
+    LOG(LogLevel::INFO, "Successfully loaded network from: " + filePath);
+    
     return true;
 }
 
