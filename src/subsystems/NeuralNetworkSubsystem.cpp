@@ -225,7 +225,14 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     int totalCorrectPredictions = 0;
     totalPredictionsAtomic.store(0);
 
-    for (size_t epoch = 0; epoch < epochs; ++epoch)
+    size_t startEpoch = (size_t)currentEpochAtomic.load();
+    if (startEpoch >= (size_t)epochs)
+    {
+        LOG(LogLevel::ERROR, "All epochs completed already.");
+        return;
+    }
+    
+    for (size_t epoch = startEpoch; epoch < epochs; ++epoch)
     {
         currentEpochAtomic.store(epoch);
 
