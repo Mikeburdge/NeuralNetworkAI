@@ -1170,7 +1170,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
             NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
         }
-        
+
         ImGui::SameLine();
 
         if (ImGui::Button("Continue Training"))
@@ -1184,7 +1184,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     {
         ImGui::Text("All Epochs Completed.");
     }
-    
+
     ImGui::Separator();
     static std::string testImagesPath = DEFAULT_TEST_IMAGES_PATH;
     static std::string testLabelsPath = DEFAULT_TEST_LABELS_PATH;
@@ -1406,6 +1406,20 @@ struct FileMetadata
 
 static std::unordered_map<std::string, FileMetadata> s_checkpointMetadataCache;
 
+static void CreateNetworkWithUIParams(int inputSize, int hiddenLayers, int hiddenSize, int outputSize, int activationElem, int costElem, int finalActElem)
+{
+    const ActivationType actType = (ActivationType)activationElem;
+    const CostType cType = (CostType)costElem;
+    const ActivationType finalLayer = (cType == crossEntropy) ? softmax : (ActivationType)finalActElem;
+
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+    subsystem.InitNeuralNetwork(actType, cType, inputSize, hiddenLayers, hiddenSize, outputSize);
+    subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
+    {
+        showVisualizationPanelWindow = true;
+    });
+}
+
 // 5.6: Neural Network Controls
 void NeuralNetworkControlsWindow(bool* p_open)
 {
@@ -1472,31 +1486,11 @@ void NeuralNetworkControlsWindow(bool* p_open)
 
             if (ImGui::Button("Create Neural Network (Manual)"))
             {
-                ActivationType actType = (ActivationType)activationElem;
-                CostType cType = (CostType)costElem;
-
-                // If crossEntropy => final layer forced in Subsystem to softmax
-                // Otherwise => pick from finalActElem
-                ActivationType finalLayer = (ActivationType)finalActElem;
-
-                // This call is your actual creation. We'll pass `actType` for hidden layers,
-                // cost, and final layer can be logic in your subsystem
-                NeuralNetworkSubsystem::GetInstance().InitNeuralNetwork(actType, cType,
-                                                                        inputLayerSize,
-                                                                        numHiddenLayers,
-                                                                        hiddenLayerSize,
-                                                                        outputLayerSize);
-
-                auto& subsystem = NeuralNetworkSubsystem::GetInstance();
-                subsystem.InitNeuralNetwork(actType, cType,
-                                            inputLayerSize,
-                                            numHiddenLayers,
-                                            hiddenLayerSize,
-                                            outputLayerSize);
-                subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
-                {
-                    showVisualizationPanelWindow = true;
-                });
+                CreateNetworkWithUIParams(
+                        inputLayerSize, numHiddenLayers,
+                        hiddenLayerSize, outputLayerSize,
+                        activationElem, costElem, finalActElem
+                    );
 
                 showDatasetManagementWindow = true;
                 showVisualizationPanelWindow = true;
