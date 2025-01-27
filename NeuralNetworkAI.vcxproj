@@ -31,6 +31,7 @@
     <ClInclude Include="libs\glfw\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\glfw\include\GLFW\glfw3native.h" />
     <ClInclude Include="libs\usynergy\uSynergy.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\core\Activation.h" />
     <ClInclude Include="src\core\Cost.h" />
     <ClInclude Include="src\core\HyperParameters.h" />
@@ -88,6 +89,12 @@
     <Content Include="libs\glfw\lib-vc2022\glfw3dll.lib" />
     <Content Include="libs\glfw\lib-vc2022\glfw3_mt.lib" />
     <Content Include="libs\usynergy\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="NeuralNetworkAI.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

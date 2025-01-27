@@ -593,9 +593,9 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
         trainingHistory = loadedHistory;
     }
 
-    NeuralNetworkSubsystem::InitNeuralNetwork(loadedHyperParameters.activationType, loadedHyperParameters.cost, loadedHyperParameters.defaultInputLayerSize,
-                                              loadedHyperParameters.defaultNumHiddenLayers, loadedHyperParameters.defaultHiddenLayerSize,
-                                              loadedHyperParameters.defaultOutputLayerSize);
+    // NeuralNetworkSubsystem::InitNeuralNetwork(loadedHyperParameters.activationType, loadedHyperParameters.cost, loadedHyperParameters.defaultInputLayerSize,
+    //                                           loadedHyperParameters.defaultNumHiddenLayers, loadedHyperParameters.defaultHiddenLayerSize,
+    //                                           loadedHyperParameters.defaultOutputLayerSize);
 
     return true;
 }

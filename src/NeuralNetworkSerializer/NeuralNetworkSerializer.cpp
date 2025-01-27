@@ -182,8 +182,8 @@ bool NeuralNetworkSerializer::LoadFromJSON(const std::string& filePath,
         std::chrono::steady_clock::duration steadyElapsed = std::chrono::duration_cast<std::chrono::steady_clock::duration>(elapsedDuration);
         outTimer.startTime = std::chrono::steady_clock::now() - steadyElapsed;
 
-        // todo: Training history,
-        // probably gonna store periodically, maybe proportionally to the number of epochs trained. Otherwise it will be far too chonky for higher epoch network.
+        // Training history
+        // todo: probably gonna store periodically, maybe proportionally to the number of epochs trained. Otherwise it will be far too chonky for higher epoch network.
         // This will modify the location/ frequency of where its being stored for these training data packs as opposed to only saving a proportionally smaller number.
         // I will make it start at a decently high number of epochs to maintain the visual aspect of the training when the learning should be at its highest.
         outTrainingHistory.clear();
@@ -214,7 +214,7 @@ bool NeuralNetworkSerializer::LoadFromJSON(const std::string& filePath,
 
             auto weightMatrix = layer["weights"];
             newLayer.weights.resize(weightMatrix.size());
-            for (size_t t = 0; t < weightMatrix; t++)
+            for (size_t t = 0; t < weightMatrix.size(); t++)
             {
                 newLayer.weights.push_back(weightMatrix[t]);
             }
@@ -232,7 +232,7 @@ bool NeuralNetworkSerializer::LoadFromJSON(const std::string& filePath,
                 auto velocityMatrix = layer["velocity"];
                 newLayer.velocity.resize(velocityMatrix.size());
 
-                for (size_t t = 0; t < velocityMatrix; t++)
+                for (size_t t = 0; t < velocityMatrix.size(); t++)
                 {
                     newLayer.velocity[t] = velocityMatrix[t].get<std::vector<double>>();
                 }
