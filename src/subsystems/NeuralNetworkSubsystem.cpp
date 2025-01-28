@@ -462,7 +462,15 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             dataPoint.accuracy = static_cast<float>(partialAccuracy * 100.f);
             dataPoint.rollingAcc = static_cast<float>(rollingAccuracyAtomic.load() * 100.f);
 
-            trainingHistory.push_back(dataPoint);
+            static int dataPointCounter = 0;
+            ++dataPointCounter;
+
+            constexpr int saveInterval = 10;
+
+            if (dataPointCounter <= 50 || dataPointCounter % saveInterval == 0)
+            {
+                trainingHistory.push_back(dataPoint);
+            }
         }
 
         // end of epoch
@@ -622,7 +630,7 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
                           HyperParameters::defaultHiddenLayerSize,
                           HyperParameters::defaultOutputLayerSize);
     }
-    
+
     bIsNeuralNetworkInitialized = true;
 
     HyperParameters::SetHyperParameters(loadedHyperParameters);
