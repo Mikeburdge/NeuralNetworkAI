@@ -1013,7 +1013,7 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
                     }
 
                     float thickness = std::max(minLineThicknessValue,
-                                               1.0f + std::min(4.0f, (float)fabs(weightVal) / 5.0f));
+                                               1.0f + std::min(4.0f, (float)fabs(weightVal) / 2.0f));
                     ImColor lineColor = hoveredLine ? ImColor(255, 255, 0, 255) : ImColor(VisualisationUtility::GetWeightColor(weightVal));
 
                     ImGui::GetWindowDrawList()->AddLine(

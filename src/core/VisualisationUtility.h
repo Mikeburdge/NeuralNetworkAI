@@ -23,7 +23,8 @@ public:
     static ImVec4 GetWeightColor(float weight)
     {
         float maxIntensity = 1.0f;
-        float normalizedWeight = std::min(maxIntensity, fabs(weight) / 5.0f); // Normalizing factor
+        float scaled = fabs(weight) / 2.0f;
+        float normalizedWeight = std::min(maxIntensity, scaled);
 
         if (weight > 0)
         {
