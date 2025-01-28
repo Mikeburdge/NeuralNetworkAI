@@ -1314,9 +1314,6 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     if (useTextPreview)
     {
-        ImGui::Text("Enter digit 0-9:");
-        // ImGui::InputText("Digit", digitText, IM_ARRAYSIZE(digitText));
-
         float scale = 4.0f;
         ImVec2 startPos = ImGui::GetCursorScreenPos();
 
@@ -1326,7 +1323,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             {
                 ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
                 ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
-                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, IM_COL32_WHITE);
+                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, IM_COL32_BLACK);
             }
         }
 
@@ -1334,7 +1331,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             startPos.x + (28.0f * scale * 0.3f),
             startPos.y + (28.0f * scale * 0.2f)
         );
-        ImGui::GetWindowDrawList()->AddText(NULL, 100.0f, textPos, IM_COL32_BLACK, digitText);
+        ImGui::GetWindowDrawList()->AddText(NULL, 100.0f, textPos, IM_COL32_WHITE, digitText);
 
         // Border
         ImGui::GetWindowDrawList()->AddRect(

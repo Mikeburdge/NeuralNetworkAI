@@ -103,11 +103,14 @@ void Layer::InitializeRandomWeights(mt19937& rng)
     PROFILE_LOG;
     normal_distribution<double> distribution(0.0, 1.0);
 
-    for (int i = 0; i < numNeurons; ++i)
+    // He Initialization: stddev = sqrt(2 / fan_in)
+    double stddev = sqrt(2.0 / static_cast<double>(numNeuronsOutOfPreviousLayer));
+
+    for (int i = 0; i < numNeurons; i++)
     {
-        for (int j = 0; j < numNeuronsOutOfPreviousLayer; ++j)
+        for (int j = 0; j < numNeuronsOutOfPreviousLayer; j++)
         {
-            const double randValue = distribution(rng) / sqrt(numNeuronsOutOfPreviousLayer);
+            const double randValue = distribution(rng) * stddev;
             weights[i][j] = randValue;
         }
     }
