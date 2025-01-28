@@ -465,9 +465,10 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             static int dataPointCounter = 0;
             ++dataPointCounter;
 
+            constexpr int initialSaveNum = 500;
             constexpr int saveInterval = 10;
 
-            if (dataPointCounter <= 50 || dataPointCounter % saveInterval == 0)
+            if (dataPointCounter <= initialSaveNum || dataPointCounter % saveInterval == 0)
             {
                 trainingHistory.push_back(dataPoint);
             }

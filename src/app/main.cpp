@@ -1158,7 +1158,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             NeuralNetworkSubsystem::GetInstance().StopTraining();
         }
         ImGui::SameLine();
-        
+
         if (ImGui::Button("Restart Training"))
         {
             // This would reset the entire state
@@ -1215,29 +1215,22 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     static std::string testImagesPath = DEFAULT_TEST_IMAGES_PATH;
     static std::string testLabelsPath = DEFAULT_TEST_LABELS_PATH;
 
-    ImGui::Separator();
-    ImGui::Text("Load Test Data Paths:");
-
-    // Input fields for test images/labels
-    ImGui::InputText("Test Images Path", testImagesPath.data(), testImagesPath.capacity());
-    ImGui::InputText("Test Labels Path", testLabelsPath.data(), testLabelsPath.capacity());
-
-    if (ImGui::Button("Load MNIST Test Data"))
-    {
-        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
-        // e.g. "t10k-images.idx3-ubyte", "t10k-labels.idx1-ubyte"
-        bool ok = subsystem.LoadMNISTTestData(testImagesPath, testLabelsPath);
-        if (ok)
-        {
-            LOG(LogLevel::INFO, "Test Data loaded successfully!");
-        }
-    }
-
-    ImGui::SameLine();
+    static bool bHasLoadedMNISTTestData = false;
 
     if (ImGui::Button("Evaluate on Test Set"))
     {
         NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+        if (!bHasLoadedMNISTTestData)
+        {
+            bHasLoadedMNISTTestData = subsystem.LoadMNISTTestData(testImagesPath, testLabelsPath);
+        }
+
+        if (!bHasLoadedMNISTTestData)
+        {
+            LOG(LogLevel::ERROR, "MNIST test data failed to load.");
+        }
+        
         double acc = subsystem.EvaluateTestSet(); // returns 0.0 if no data loaded
         ImGui::Text("Test Accuracy: %.2f%%", acc * 100.0);
     }
@@ -1246,7 +1239,10 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
     static std::string inferenceImgPath;
 
-    if (ImGui::Button("Browse Image..."))
+    static std::vector<float> lastInferencePixels;
+    static bool havePreview = false;
+
+    if (ImGui::Button("Load & Preview"))
     {
         ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Image", ".png\0*.png\0\0");
     }
@@ -1258,15 +1254,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             inferenceImgPath = ImGuiFileDialog::Instance()->GetFilePathName();
         }
         ImGuiFileDialog::Instance()->Close();
-    }
 
-    ImGui::InputText("28x28 PNG Path##Inference", inferenceImgPath.data(), sizeof(inferenceImgPath));
-
-    static std::vector<float> lastInferencePixels;
-    static bool havePreview = false;
-
-    if (ImGui::Button("Load & Preview"))
-    {
         try
         {
             auto pixelDoubles = NeuralNetworkSubsystem::GetInstance().LoadAndProcessPNG(inferenceImgPath);
@@ -1284,7 +1272,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             havePreview = false;
         }
     }
-
+    
     ImGui::Columns(2, "PreviewColumns", false);
 
     if (havePreview)
