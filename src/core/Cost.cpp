@@ -52,7 +52,7 @@ double Cost::crossEntropy(const std::vector<double>& predicted, const std::vecto
         error -= actual[i] * std::log(p);
         // error += actual[i] * std::log(p) + (1.0 - actual[i]) * std::log(1.0 - p);
     }
-    return -error / predicted.size(); // Return negative of the calculated cross-entropy
+    return error / predicted.size(); // Return negative of the calculated cross-entropy
 }
 
 std::vector<double> Cost::CalculateCostDerivative(const CostType inCostType, const std::vector<double>& predicted, const std::vector<double>& actual)

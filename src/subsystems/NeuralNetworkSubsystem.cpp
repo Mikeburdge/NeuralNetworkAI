@@ -236,8 +236,11 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
     // Configure dropout for each layer if enabled
     for (Layer& layer : network.layers)
     {
-        // todo: Need to re-add and get this function working properly 
-        // layer.SetDropout(HyperParameters::useDropoutRate, HyperParameters::dropoutRate);
+        if (&layer != &network.layers.back()) // Assuming last layer is output
+        {
+            // Apply dropout only to hidden layers
+            layer.SetDropout(HyperParameters::useDropoutRate, HyperParameters::dropoutRate);
+        }
     }
 
     // Main Training Loop

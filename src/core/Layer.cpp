@@ -54,6 +54,13 @@ vector<double> Layer::computeOutput(const vector<double>& input)
         }
     }
 
+    if (useDropout)
+    {
+        random_device rd;
+        mt19937 rng(rd());
+        ApplyDropout(rng);
+    }
+    
     return output;
 }
 
@@ -144,7 +151,36 @@ vector<double> Layer::CalculatePreviousLayerError(const vector<double>& currentL
     return previousLayerErrorGradient;
 }
 
+
 void Layer::SetDropout(bool useDropoutRate, float dropoutRate)
 {
-    // todo: To Be Implemented
+    this->useDropout = useDropoutRate;
+    this->dropoutRate = dropoutRate;
+    if (useDropoutRate)
+    {
+        InitializeDropoutMask();
+    }
+}
+
+void Layer::InitializeDropoutMask()
+{
+    dropoutMask.resize(numNeurons, false);
+}
+
+void Layer::ApplyDropout(mt19937& rng)
+{
+    if (!useDropout)
+        return;
+
+    // Create a Bernoulli distribution for dropout
+    bernoulli_distribution dropoutDist(dropoutRate);
+
+    for (int i = 0; i < numNeurons; ++i)
+    {
+        dropoutMask[i] = dropoutDist(rng);
+        if (dropoutMask[i])
+        {
+            neurons[i].ActivationValue = 0.0; // Drop the neuron by setting its activation to zero
+        }
+    }
 }

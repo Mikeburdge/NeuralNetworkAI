@@ -23,6 +23,10 @@ public:
 
     std::vector<std::vector<double>> velocity;
 
+    bool useDropout = false;
+    float dropoutRate = 0.0f; // Probability of dropping a neuron
+    std::vector<bool> dropoutMask; // Mask to track dropped neurons
+
     Layer(const ActivationType& inActivation, const CostType& inCost, const int inNumNeurons, const int inNumNeuronsOut)
         : activation(inActivation), cost(inCost),
           numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut)
@@ -70,5 +74,8 @@ public:
     void InitializeRandomWeights(std::mt19937& rng);
     std::vector<double> CalculatePreviousLayerError(const std::vector<double>& currentLayersErrorGradient,
                                                     const std::vector<Neuron>& previousLayerNeurons) const;
+
     void SetDropout(bool useDropoutRate, float dropoutRate);
+    void InitializeDropoutMask();
+    void ApplyDropout(std::mt19937& rng);
 };
