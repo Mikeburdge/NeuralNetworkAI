@@ -49,7 +49,8 @@ double Cost::crossEntropy(const std::vector<double>& predicted, const std::vecto
     {
         // clamp predicted[i] to avoid log(0)
         double p = std::max(1e-15, std::min(1.0 - 1e-15, predicted[i]));
-        error += actual[i] * std::log(p) + (1.0 - actual[i]) * std::log(1.0 - p);
+        error -= actual[i] * std::log(p);
+        // error += actual[i] * std::log(p) + (1.0 - actual[i]) * std::log(1.0 - p);
     }
     return -error / predicted.size(); // Return negative of the calculated cross-entropy
 }
