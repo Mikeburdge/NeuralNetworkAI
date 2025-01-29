@@ -11,6 +11,12 @@
 
 using namespace std;
 
+void Layer::InitAdam()
+{
+    m.resize(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer, 0.0));
+    v.resize(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer, 0.0));
+}
+
 vector<double> Layer::computeOutput(const vector<double>& input)
 {
     PROFILE_LOG;
@@ -60,35 +66,42 @@ vector<double> Layer::computeOutput(const vector<double>& input)
         mt19937 rng(rd());
         ApplyDropout(rng);
     }
-    
+
     return output;
 }
 
-void Layer::adjustWeights(const vector<double>& errorGradient, const std::vector<double>& prevLayerActivations)
+void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::vector<double>& prevLayerActivations)
 {
     PROFILE_LOG;
 
-    const double learningRate = HyperParameters::learningRate;
+    t++; // increment time step.
+
+    // set the adam hyperparametyers.
+    // for the sake of copying from an equation I'm using their notation terms
+    const double alpha = HyperParameters::learningRate;
+    const double beta1 = this->beta1;
+    const double beta2 = this->beta2;
+    const double epsilon = this->epsilon;
 
     // Update weights based on the error gradient
     for (int i = 0; i < numNeurons; ++i)
     {
         for (int j = 0; j < weights[i].size(); ++j)
         {
-            // weights[i][j] -= learningRate * errorGradient[i] * prevLayerActivations[j];
+            const double gradient = errorGradient[i] * prevLayerActivations[j];
 
-            const double gradientTerm = errorGradient[i] * prevLayerActivations[j];
-            velocity[i][j] = (HyperParameters::momentum * velocity[i][j]) + (HyperParameters::learningRate * gradientTerm);
+            m[i][j] = beta1 * m[i][j] + (1 - beta1) * gradient;
+            v[i][j] = beta2 * v[i][j] + (1 - beta2) * (gradient * gradient);
 
-            const double decay = HyperParameters::weightDecay * weights[i][j];
+            const double mHat = m[i][j] / (1 - pow(beta1, t));
+            const double vHat = v[i][j] / (1 - pow(beta2, t));
 
-            weights[i][j] -= (velocity[i][j] + decay);
+            const double weightDecay = HyperParameters::weightDecay;
+            weights[i][j] -= alpha * (mHat / (sqrt(vHat) + epsilon) + weightDecay * weights[i][j]);
+
         }
 
-        // string logMessage = "Iteration " + to_string(i) + " of " + to_string(numNeurons) + " through neurons";
-        // LOG(LogLevel::DEBUG, logMessage);
-
-        biases[i] -= learningRate * errorGradient[i]; // Update biases
+        biases[i] -= alpha * errorGradient[i]; // Update biases
     }
 }
 

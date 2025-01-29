@@ -65,6 +65,12 @@ void NeuralNetworkSubsystem::InitNeuralNetwork(const ActivationType& inActivatio
     // build output layer
     Layer outputLayer(finalLayerActivation, inCost, outputLayerSize, prevLayerSize);
     CurrentNeuralNetwork.AddLayer(outputLayer);
+
+    for (Layer& layer : CurrentNeuralNetwork.layers)
+    {
+        // make sure we initialize adam so that he can perform at his best :nod:
+        layer.InitAdam();
+    }
 }
 
 NeuralNetwork& NeuralNetworkSubsystem::GetNeuralNetwork()
@@ -461,7 +467,7 @@ void NeuralNetworkSubsystem::TrainOnMNIST()
             // create a data point
             TrainingMetricPoint dataPoint;
             dataPoint.timeSeconds = static_cast<float>(elapsedSeconds);
-            dataPoint.loss = static_cast<float>(batchCost / realBatch);
+            dataPoint.loss = static_cast<float>(batchCost);
             dataPoint.accuracy = static_cast<float>(partialAccuracy * 100.f);
             dataPoint.rollingAcc = static_cast<float>(rollingAccuracyAtomic.load() * 100.f);
 

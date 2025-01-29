@@ -1128,6 +1128,24 @@ void VisualizationPanelWindow(bool* p_open, const NeuralNetwork& network)
 // 5.5: Dataset Management
 static bool useTextPreview = false;
 static char digitText[2] = "0";
+static bool bHasLoadedMNISTTestData = false;
+
+void EvaluateOnTestSet(double& acc)
+{
+    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
+
+    if (!bHasLoadedMNISTTestData)
+    {
+        bHasLoadedMNISTTestData = subsystem.LoadMNISTTestData(DEFAULT_TEST_IMAGES_PATH, DEFAULT_TEST_LABELS_PATH);
+    }
+
+    if (!bHasLoadedMNISTTestData)
+    {
+        LOG(LogLevel::ERROR, "MNIST test data failed to load.");
+    }
+
+    acc = subsystem.EvaluateTestSet();
+}
 
 void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 {
@@ -1212,26 +1230,11 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     }
 
     ImGui::Separator();
-    static std::string testImagesPath = DEFAULT_TEST_IMAGES_PATH;
-    static std::string testLabelsPath = DEFAULT_TEST_LABELS_PATH;
-
-    static bool bHasLoadedMNISTTestData = false;
 
     if (ImGui::Button("Evaluate on Test Set"))
     {
-        NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
-
-        if (!bHasLoadedMNISTTestData)
-        {
-            bHasLoadedMNISTTestData = subsystem.LoadMNISTTestData(testImagesPath, testLabelsPath);
-        }
-
-        if (!bHasLoadedMNISTTestData)
-        {
-            LOG(LogLevel::ERROR, "MNIST test data failed to load.");
-        }
-        
-        double acc = subsystem.EvaluateTestSet(); // returns 0.0 if no data loaded
+        double acc;
+        EvaluateOnTestSet(acc);
         ImGui::Text("Test Accuracy: %.2f%%", acc * 100.0);
     }
     ImGui::Separator();
@@ -1272,7 +1275,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             havePreview = false;
         }
     }
-    
+
     ImGui::Columns(2, "PreviewColumns", false);
 
     if (havePreview)
@@ -1690,12 +1693,14 @@ void NeuralNetworkControlsWindow(bool* p_open)
             {
                 // Create an auto-named filename, e.g. "Network_Epoch5_Acc85_2025-01-25_20-40-55.json"
                 int currentEpoch = NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.load();
-                double currentAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
                 std::string timestamp = NeuralNetworkUtility::GetTimeStampWithAnnotations();
+                
+                double testAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
+                EvaluateOnTestSet(testAccuracy); // need to make this use std::future or wait some other way.
 
                 std::string autoFilename =
                     "Network_Epoch" + std::to_string(currentEpoch) +
-                    "_Acc" + std::to_string((int)currentAccuracy) + "_" +
+                    "_Acc" + std::to_string((int)testAccuracy * 100.0) + "_" +
                     timestamp + ".json";
 
                 std::string savePath =

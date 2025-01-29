@@ -27,6 +27,18 @@ public:
     float dropoutRate = 0.0f; // Probability of dropping a neuron
     std::vector<bool> dropoutMask; // Mask to track dropped neurons
 
+    // ADAM: Adaptive Moment Estimation
+    // Variables
+    std::vector<std::vector<double>> m; // first moment estimates
+    std::vector<std::vector<double>> v; // second moment estimates
+    double beta1 = 0.9;
+    double beta2 = 0.999;
+    double epsilon = 1e-8;
+    int t = 0; // time sstep
+
+    void InitAdam();
+
+
     Layer(const ActivationType& inActivation, const CostType& inCost, const int inNumNeurons, const int inNumNeuronsOut)
         : activation(inActivation), cost(inCost),
           numNeurons(inNumNeurons), numNeuronsOutOfPreviousLayer(inNumNeuronsOut)

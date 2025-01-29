@@ -16,7 +16,7 @@ int HyperParameters::defaultEpochs = 10000;
 
 double HyperParameters::defaultMomentum = 0.9;
 double HyperParameters::defaultWeightDecay = 0.0000;
-bool HyperParameters::defaultUseDropoutRate = false;
+bool HyperParameters::defaultUseDropoutRate = true;
 float HyperParameters::defaultDropoutRate = 0.3f;
 
 float HyperParameters::learningRate = defaultLearningRate;
