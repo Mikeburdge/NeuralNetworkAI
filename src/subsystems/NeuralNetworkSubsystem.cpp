@@ -675,18 +675,18 @@ bool NeuralNetworkSubsystem::LoadNetwork(const std::string& filePath)
     return true;
 }
 
-int NeuralNetworkSubsystem::InferSingleImageFromPath(const std::string& path)
+std::pair<int, double> NeuralNetworkSubsystem::InferSingleImageFromPath(const std::string& path)
 {
     std::vector<double> ProcessedImage = LoadAndProcessPNG(path);
     return InferSingleImage(ProcessedImage);
 }
 
-int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
+std::pair<int, double> NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
 {
     if (CurrentNeuralNetwork.layers.empty())
     {
         LOG(LogLevel::ERROR, "No layers in the network.. Inference impossible.");
-        return false;
+        return {-1, 0};
     }
 
     std::vector<double> outputs = CurrentNeuralNetwork.ForwardPropagation(image);
@@ -702,7 +702,7 @@ int NeuralNetworkSubsystem::InferSingleImage(const std::vector<double>& image)
         }
     }
     LOG(LogLevel::INFO, "Inference Finished. Best Index (Predicted Digit): " + std::to_string(bestIndex) + " Best Value (Confidence in that digit): " + std::to_string(bestValue));
-    return bestIndex;
+    return {bestIndex, bestValue};
 }
 
 std::vector<double> NeuralNetworkSubsystem::LoadAndProcessPNG(const std::string& path)
@@ -761,4 +761,67 @@ void NeuralNetworkSubsystem::TrainOnMNISTThreadEntry()
 double NeuralNetworkSubsystem::SumDoubles(const std::vector<double>& values)
 {
     return std::accumulate(values.begin(), values.end(), 0.0);
+}
+
+void NeuralNetworkSubsystem::TestCustomSet()
+{
+    const std::filesystem::path testSetPath = std::filesystem::current_path() / "TrainingData" / "TestSet";
+    if (!std::filesystem::exists(testSetPath) || !std::filesystem::is_directory(testSetPath))
+    {
+        LOG(LogLevel::ERROR, "Test set directory does not exist: " + testSetPath.string());
+        return;
+    }
+
+    std::vector<std::string> imagePaths;
+    for (const auto& entry : std::filesystem::directory_iterator(testSetPath))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string ext = entry.path().extension().string();
+            // Accept common image formats
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
+            {
+                imagePaths.push_back(entry.path().string());
+            }
+        }
+    }
+
+    if (imagePaths.empty())
+    {
+        LOG(LogLevel::ERROR, "No images found in test set directory: " + testSetPath.string());
+        return;
+    }
+
+    // Prepare storage for images and their predictions
+    testSetImages.clear();
+    testSetPredictions.clear();
+
+    int totalImages = static_cast<int>(imagePaths.size());
+    LOG(LogLevel::INFO, "Found " + std::to_string(totalImages) + " images in the test set.");
+
+    for (const auto& imgPath : imagePaths)
+    {
+        try
+        {
+            // Load and process image
+            std::vector<double> processedImage = LoadAndProcessPNG(imgPath);
+
+            // Perform inference
+            std::pair<int, double> predictedDigit = InferSingleImage(processedImage);
+
+            // Store image pixel data and prediction
+            // Convert processedImage (std::vector<double>) to std::vector<float> for ImGui
+            std::vector<float> imagePixels(processedImage.begin(), processedImage.end());
+
+            testSetImages.push_back(imagePixels);
+            testSetPredictions.push_back(predictedDigit.first);
+            testSetConfidence.push_back(predictedDigit.second);
+        }
+        catch (const std::exception& e)
+        {
+            LOG(LogLevel::ERROR, "Failed to process image: " + imgPath + ". Error: " + e.what());
+        }
+    }
+
+    LOG(LogLevel::INFO, "Completed inference on custom test set.");
 }

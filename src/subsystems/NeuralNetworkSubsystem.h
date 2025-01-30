@@ -87,6 +87,10 @@ public:
     std::atomic<double> averageBatchTimeAtomic{0.0};
     std::atomic<double> samplesPerSecAtomic{0.0};
 
+    // Getter functions for UI to access test set results
+    const std::vector<std::vector<float>>& GetTestSetImages() const { return testSetImages; }
+    const std::vector<int>& GetTestSetPredictions() const { return testSetPredictions; }
+    const std::vector<double>& GetTestSetConfidence() const { return testSetConfidence; }
 
     // Graph Stuff
     struct TrainingMetricPoint
@@ -125,10 +129,10 @@ public:
 
     bool IsMNISTTrainingDataLoaded() const { return bIsMnistTrainingDataLoaded; }
     MNISTDataSet& GetTrainingDataSet() { return trainingDataSet; }
-    
+
     bool LoadMNISTTestData(const std::string& imagesPath,
                            const std::string& labelsPath);
-    
+
     double EvaluateTestSet();
 
     bool IsMNISTTestDataLoaded() const { return bIsMnistTestDataLoaded; }
@@ -149,11 +153,11 @@ public:
     // Saving and Loading
     bool SaveNetwork(const std::string& filePath);
     bool LoadNetwork(const std::string& filePath);
-    int InferSingleImageFromPath(const std::string& path);
+    std::pair<int, double> InferSingleImageFromPath(const std::string& path);
 
 
     // To call whe ninferring an image
-    int InferSingleImage(const std::vector<double>& image);
+    std::pair<int, double> InferSingleImage(const std::vector<double>& image);
     std::vector<double> LoadAndProcessPNG(const std::string& path);
 
 
@@ -164,6 +168,7 @@ public:
 
     // Visualization callback for real-time network updates, if desired
     void SetVisualizationCallback(std::function<void(const NeuralNetwork&)> callback);
+    void TestCustomSet();
 
 private:
     std::function<void(const NeuralNetwork&)> visualizationCallback;
@@ -172,4 +177,10 @@ private:
     void TrainOnMNISTThreadEntry();
 
     static double SumDoubles(const std::vector<double>& values);
+
+private:
+    // Storage for custom test set results
+    std::vector<std::vector<float>> testSetImages;
+    std::vector<int> testSetPredictions;
+    std::vector<double> testSetConfidence;
 };

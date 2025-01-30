@@ -1147,6 +1147,10 @@ void EvaluateOnTestSet(double& acc)
     acc = subsystem.EvaluateTestSet();
 }
 
+
+static float imageZoomLevel = 2.0f;
+static int selectedImageIndex = -1; // To track selected image
+
 void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 {
     if (!ImGui::Begin("Dataset Management", p_open))
@@ -1168,7 +1172,6 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
         ImGui::Text("MNIST data is not loaded yet.");
     }
 
-
     if (NeuralNetworkSubsystem::GetInstance().IsTrainingInProgress())
     {
         if (ImGui::Button("Pause Training"))
@@ -1179,15 +1182,14 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
         if (ImGui::Button("Restart Training"))
         {
-            // This would reset the entire state
-            // e.g. set epoch=0, clear trainingHistory, re-init the timer
+            // Reset training state
             NeuralNetworkSubsystem::GetInstance().StopTraining();
             NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.store(0);
             {
                 std::lock_guard<std::mutex> lock(NeuralNetworkSubsystem::GetInstance().metricMutex);
                 NeuralNetworkSubsystem::GetInstance().trainingHistory.clear();
             }
-            // Then start fresh
+            // Start fresh training
             NeuralNetworkSubsystem::GetInstance().TrainOnMNISTFullProcess();
         }
     }
@@ -1201,12 +1203,20 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
             {
                 LOG(LogLevel::INFO, "No existing network. Auto-creating network with selected values.");
 
-                subsystem.InitNeuralNetwork(sigmoid, crossEntropy, HyperParameters::defaultInputLayerSize, HyperParameters::defaultNumHiddenLayers, HyperParameters::defaultHiddenLayerSize, HyperParameters::defaultOutputLayerSize);
+                subsystem.InitNeuralNetwork(
+                    ActivationType::sigmoid, // Assuming ActivationType::sigmoid exists
+                    CostType::crossEntropy, // Assuming CostType::crossEntropy exists
+                    HyperParameters::defaultInputLayerSize,
+                    HyperParameters::defaultNumHiddenLayers,
+                    HyperParameters::defaultHiddenLayerSize,
+                    HyperParameters::defaultOutputLayerSize
+                );
             }
 
             subsystem.SetVisualizationCallback([](const NeuralNetwork& net)
             {
-                showVisualizationPanelWindow = true;
+                // Callback function to handle visualization updates if needed
+                // For simplicity, left empty
             });
 
             showDatasetManagementWindow = true;
@@ -1219,7 +1229,7 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
 
         if (ImGui::Button("Continue Training"))
         {
-            // should just be able to jump back in with train on async
+            // Continue training asynchronously
             NeuralNetworkSubsystem::GetInstance().TrainOnMNISTAsync();
         }
     }
@@ -1234,118 +1244,189 @@ void DatasetManagementWindow(bool* p_open, NeuralNetwork& network)
     if (ImGui::Button("Evaluate on Test Set"))
     {
         double acc;
-        EvaluateOnTestSet(acc);
-        ImGui::Text("Test Accuracy: %.2f%%", acc * 100.0);
+        NeuralNetworkSubsystem::GetInstance().EvaluateTestSet(); // Assuming EvaluateTestSet logs the accuracy
+        // Optionally, retrieve and display the accuracy if the function returns it
     }
     ImGui::Separator();
 
-
-    static std::string inferenceImgPath;
-
-    static std::vector<float> lastInferencePixels;
-    static bool havePreview = false;
-
-    if (ImGui::Button("Load & Preview"))
+    if (ImGui::Button("Test Custom Set"))
     {
-        ImGuiFileDialog::Instance()->OpenDialog("ChooseLoadFileDlgKey", "Choose Image", ".png\0*.png\0\0");
+        NeuralNetworkSubsystem::GetInstance().TestCustomSet();
     }
 
-    if (ImGuiFileDialog::Instance()->Display("ChooseLoadFileDlgKey"))
+    // Retrieve test set data  
+    const auto& testSetImages = NeuralNetworkSubsystem::GetInstance().GetTestSetImages();
+    const auto& testSetPredictions = NeuralNetworkSubsystem::GetInstance().GetTestSetPredictions();
+    const auto& testSetConfidences = NeuralNetworkSubsystem::GetInstance().GetTestSetConfidence();
+
+    if (!testSetImages.empty() && !testSetPredictions.empty())
     {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            inferenceImgPath = ImGuiFileDialog::Instance()->GetFilePathName();
-        }
-        ImGuiFileDialog::Instance()->Close();
+        ImGui::Separator();
+        ImGui::Text("Custom Test Set Inference Results:");
+        ImGui::Separator();
 
-        try
-        {
-            auto pixelDoubles = NeuralNetworkSubsystem::GetInstance().LoadAndProcessPNG(inferenceImgPath);
+        // Begin a child region for the dual panes  
+        ImGui::BeginChild("DualPane", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-            lastInferencePixels.resize(pixelDoubles.size());
-            for (size_t i = 0; i < pixelDoubles.size(); i++)
+        // Determine the size of each pane  
+        float paneWidth = ImGui::GetContentRegionAvail().x / 2.0f;
+
+        // Define fixed number of columns  
+        const int fixedColumns = 3;
+
+        // Left Pane: Image Display  
+        ImGui::BeginChild("LeftPane", ImVec2(paneWidth, 0), false, ImGuiWindowFlags_AlwaysUseWindowPadding);
+        {
+            // Zoom Controls  
+            // ImGui::SliderFloat("Image Zoom", &imageZoomLevel, 0.5f, 3.0f, "%.1fx");
+
+            // Begin Table for Grid Layout  
+            if (ImGui::BeginTable("ImageTable", fixedColumns, ImGuiTableFlags_SizingFixedFit))
             {
-                lastInferencePixels[i] = float(pixelDoubles[i]);
+                ImGui::TableSetupColumn("Image", ImGuiTableColumnFlags_WidthFixed, 28.0f * imageZoomLevel + 10.0f); // Adjust width as needed  
+                // ImGui::TableHeadersRow(); // remove if headers are not needed  
+
+                for (size_t i = 0; i < testSetImages.size(); ++i)
+                {
+                    if (!ImGui::TableNextColumn())
+                        break;
+
+                    const std::vector<float>& pixels = testSetImages[i];
+
+
+                    // Draw the 28x28 image manually  
+                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                    ImVec2 cursor_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 image_size = ImVec2(28.0f * imageZoomLevel, 28.0f * imageZoomLevel);
+                    ImVec2 image_end = ImVec2(cursor_pos.x + image_size.x, cursor_pos.y + image_size.y);
+
+                    // Draw each pixel as a filled rectangle  
+                    for (int row = 0; row < 28; row++)
+                    {
+                        for (int col = 0; col < 28; col++)
+                        {
+                            const float val = pixels[row * 28 + col]; // 0..1  
+                            const ImColor colour = ImColor(val, val, val, 1.0f);
+                            ImVec2 ul = ImVec2(cursor_pos.x + col * imageZoomLevel, cursor_pos.y + row * imageZoomLevel);
+                            ImVec2 br = ImVec2(ul.x + imageZoomLevel, ul.y + imageZoomLevel);
+                            draw_list->AddRectFilled(ul, br, colour);
+                        }
+                    }
+
+                    // Add Invisible Button for Interaction  
+                    ImGui::SetCursorScreenPos(cursor_pos);
+                    ImGui::InvisibleButton(("image_" + std::to_string(i)).c_str(), image_size);
+
+                    // Handle image selection  
+                    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    {
+                        selectedImageIndex = static_cast<int>(i);
+                    }
+
+                    // Highlight selected image  
+                    if (static_cast<int>(i) == selectedImageIndex)
+                    {
+                        draw_list->AddRect(cursor_pos, image_end, IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f); // Yellow border with 2.0f thickness  
+                    }
+
+                    // Tooltip with image index or filename  
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip("Image %zu", i + 1);
+                    }
+                }
+                ImGui::EndTable();
             }
-            havePreview = true;
         }
-        catch (const std::exception& e)
-        {
-            LOG(LogLevel::ERROR, e.what());
-            havePreview = false;
-        }
-    }
+        ImGui::EndChild();
 
-    ImGui::Columns(2, "PreviewColumns", false);
+        // Right Pane: Inference Results    
+        ImGui::SameLine();
 
-    if (havePreview)
-    {
-        ImGui::Text("28x28 Preview:");
-        float scale = 4.0f; // each pixel 4x4 on screen
-        ImVec2 startPos = ImGui::GetCursorScreenPos();
-        for (int row = 0; row < 28; row++)
+        ImGui::BeginChild("RightPane", ImVec2(paneWidth, 0), false, ImGuiWindowFlags_AlwaysUseWindowPadding);
         {
-            for (int col = 0; col < 28; col++)
+            // Begin Table for Grid Layout    
+            if (ImGui::BeginTable("PredictionTable", fixedColumns, ImGuiTableFlags_SizingFixedFit))
             {
-                float val = lastInferencePixels[row * 28 + col]; // 0..1
-                // We'll map it to a grayscale
-                ImColor color = ImColor(val, val, val, 1.0f);
-                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
-                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
-                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, color);
+                // Define columns without headers
+                ImGui::TableSetupColumn("Prediction", ImGuiTableColumnFlags_WidthFixed, 28.0f * imageZoomLevel + 10.0f); // Adjust width as needed    
+                // ImGui::TableHeadersRow(); // Headers removed as per requirement    
+
+                for (size_t i = 0; i < testSetPredictions.size(); ++i)
+                {
+                    // Move to the next column. If no more columns, move to the next row automatically.
+                    if (!ImGui::TableNextColumn())
+                        break;
+
+                    int prediction = testSetPredictions[i];
+
+                    // Define box size based on zoom level    
+                    ImVec2 box_size = ImVec2(28.0f * imageZoomLevel, 28.0f * imageZoomLevel);
+
+                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                    ImVec2 cursor_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 box_end = ImVec2(cursor_pos.x + box_size.x, cursor_pos.y + box_size.y);
+
+                    // Draw black background    
+                    draw_list->AddRectFilled(cursor_pos, box_end, IM_COL32(0, 0, 0, 255));
+
+                    // Prepare prediction text    
+                    char predText[4];
+                    std::snprintf(predText, sizeof(predText), "%d", prediction);
+
+                    // Calculate text size    
+                    ImVec2 text_size = ImGui::CalcTextSize(predText);
+
+                    // Draw white text centered within the box    
+                    draw_list->AddText(
+                        ImVec2(
+                            cursor_pos.x + (box_size.x - text_size.x) / 2.0f,
+                            cursor_pos.y + (box_size.y - text_size.y) / 2.0f
+                        ),
+                        IM_COL32(255, 255, 255, 255),
+                        predText
+                    );
+
+                    // Add Invisible Button for Interaction    
+                    ImGui::SetCursorScreenPos(cursor_pos);
+                    ImGui::InvisibleButton(("prediction_" + std::to_string(i)).c_str(), box_size);
+
+                    // Handle prediction selection    
+                    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    {
+                        selectedImageIndex = static_cast<int>(i);
+                    }
+
+                    // Highlight selected prediction    
+                    if (static_cast<int>(i) == selectedImageIndex)
+                    {
+                        draw_list->AddRect(
+                            cursor_pos,
+                            box_end,
+                            IM_COL32(255, 255, 0, 255),
+                            0.0f,
+                            0,
+                            2.0f
+                        ); // Yellow border with 2.0f thickness    
+                    }
+
+                    // Tooltip with prediction value    
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip("Confidence: %.3f", (float)testSetConfidences[i]);
+                    }
+                }
+                ImGui::EndTable();
             }
         }
+        ImGui::EndChild();
 
-        ImGui::SetCursorScreenPos(ImVec2(startPos.x, startPos.y + 28 * scale + 10));
-        if (ImGui::Button("Infer from Preview"))
-        {
-            int digit = NeuralNetworkSubsystem::GetInstance().InferSingleImageFromPath(inferenceImgPath);
-            useTextPreview = true;
-            digitText[0] = char('0' + digit);
-            digitText[1] = '\0';
-            ImGui::Text("Predicted digit = %d", digit);
-        }
+        ImGui::EndChild();
     }
     else
     {
-        ImGui::Text("No image preview loaded yet.");
+        ImGui::Text("No custom test set loaded.");
     }
-
-    ImGui::NextColumn();
-
-    ImGui::Checkbox("Use Text-based Preview", &useTextPreview);
-
-    if (useTextPreview)
-    {
-        float scale = 4.0f;
-        ImVec2 startPos = ImGui::GetCursorScreenPos();
-
-        for (int row = 0; row < 28; row++)
-        {
-            for (int col = 0; col < 28; col++)
-            {
-                ImVec2 ul = ImVec2(startPos.x + col * scale, startPos.y + row * scale);
-                ImVec2 br = ImVec2(ul.x + scale, ul.y + scale);
-                ImGui::GetWindowDrawList()->AddRectFilled(ul, br, IM_COL32_BLACK);
-            }
-        }
-
-        ImVec2 textPos(
-            startPos.x + (28.0f * scale * 0.3f),
-            startPos.y + (28.0f * scale * 0.2f)
-        );
-        ImGui::GetWindowDrawList()->AddText(NULL, 100.0f, textPos, IM_COL32_WHITE, digitText);
-
-        // Border
-        ImGui::GetWindowDrawList()->AddRect(
-            startPos,
-            ImVec2(startPos.x + 28 * scale, startPos.y + 28 * scale),
-            IM_COL32(0, 0, 0, 255), 0.0f, 0, 2.0f
-        );
-    }
-
-    ImGui::Columns(1);
-
     ImGui::End();
 }
 
@@ -1694,7 +1775,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
                 // Create an auto-named filename, e.g. "Network_Epoch5_Acc85_2025-01-25_20-40-55.json"
                 int currentEpoch = NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.load();
                 std::string timestamp = NeuralNetworkUtility::GetTimeStampWithAnnotations();
-                
+
                 double testAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
                 EvaluateOnTestSet(testAccuracy); // need to make this use std::future or wait some other way.
 
