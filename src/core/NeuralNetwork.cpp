@@ -48,7 +48,11 @@ void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
         layerThreads.emplace_back([this, layerIndex, &errorGradient]()
             {
                 Layer& currentLayer = layers[layerIndex];
-                if (layerIndex > 0)
+                if (layerIndex == 0)
+                {
+                    currentLayer.adjustWeights(errorGradient, inputData);
+                }
+                else
                 {
                     const Layer& prevLayer = layers[layerIndex - 1];
                     std::vector<double> prevActivations(prevLayer.numNeurons);

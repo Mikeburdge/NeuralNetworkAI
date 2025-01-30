@@ -69,43 +69,6 @@ bool NeuralNetworkSerializer::SaveToJSON(const std::string& filePath,
         // biases
         layerObj["biases"] = layer.biases;
 
-        // velocity
-        // velocity is a 2D array similar to weights
-        {
-            bool bAreAllZero = true;
-            json velMatrix = json::array();
-            for (auto& velRow : layer.velocity)
-            {
-                for (auto& velocity : velRow)
-                {
-                    if (fabs(velocity) > 1e-12)
-                    {
-                        bAreAllZero = false;
-                        break;
-                    }
-                }
-                if (!bAreAllZero)
-                {
-                    break;
-                }
-            }
-            if (!bAreAllZero)
-            {
-                // Write the full velocity
-                json velMatrix = json::array();
-                for (auto& velRow : layer.velocity)
-                    velMatrix.push_back(velRow);
-
-                layerObj["velocity"] = velMatrix;
-                layerObj["velocitySkipped"] = false;
-            }
-            else
-            {
-                // Indicate we intentionally skip zero velocity
-                layerObj["velocitySkipped"] = true;
-            }
-        }
-
         // weights
         json weightMatrix = json::array();
         for (auto& row : layer.weights)
@@ -221,25 +184,6 @@ bool NeuralNetworkSerializer::LoadFromJSON(const std::string& filePath,
             for (size_t t = 0; t < weightMatrix.size(); t++)
             {
                 newLayer.weights.push_back(weightMatrix[t]);
-            }
-
-            if (layer.contains("velocitySkipped") && layer["velocitySkipped"].get<bool>() == true)
-            {
-                newLayer.velocity.resize(numNeurons);
-                for (size_t i = 0; i < numNeurons; ++i)
-                {
-                    newLayer.velocity[i].resize(numNeuronsOutOfPreviousLayer, 0.0);
-                }
-            }
-            else
-            {
-                auto velocityMatrix = layer["velocity"];
-                newLayer.velocity.resize(velocityMatrix.size());
-
-                for (size_t t = 0; t < velocityMatrix.size(); t++)
-                {
-                    newLayer.velocity[t] = velocityMatrix[t].get<std::vector<double>>();
-                }
             }
 
             newLayer.neurons.resize(numNeurons);

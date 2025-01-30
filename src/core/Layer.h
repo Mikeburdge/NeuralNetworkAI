@@ -21,8 +21,6 @@ public:
     std::vector<std::vector<double>> weights; // Weights matrix.
     std::vector<double> biases; // Biases vector.
 
-    std::vector<std::vector<double>> velocity;
-
     bool useDropout = false;
     float dropoutRate = 0.0f; // Probability of dropping a neuron
     std::vector<bool> dropoutMask; // Mask to track dropped neurons
@@ -50,12 +48,6 @@ public:
         for (int i = 0; i < numNeurons; i++)
         {
             weights[i].resize(numNeuronsOutOfPreviousLayer);
-        }
-
-        velocity.resize(numNeurons);
-        for (int neuronIdx = 0; neuronIdx < numNeurons; ++neuronIdx)
-        {
-            velocity[neuronIdx].resize(numNeuronsOutOfPreviousLayer, 0.0);
         }
 
         std::random_device rd; // todo: add chrono::now() here

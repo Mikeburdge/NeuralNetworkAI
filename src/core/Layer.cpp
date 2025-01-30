@@ -118,7 +118,7 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
         // ADAM - weights
         for (int j = 0; j < weights[i].size(); ++j)
         {
-            const double gradient = localGradWeights[i];
+            const double gradient = localGradWeights[j];
 
             m[i][j] = beta1 * m[i][j] + (1 - beta1) * gradient;
             v[i][j] = beta2 * v[i][j] + (1 - beta2) * (gradient * gradient);
