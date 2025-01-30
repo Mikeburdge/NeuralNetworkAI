@@ -14,7 +14,6 @@ float HyperParameters::defaultLearningRate = 0.004f;
 int HyperParameters::defaultBatchSize = 64;
 int HyperParameters::defaultEpochs = 10000;
 
-double HyperParameters::defaultMomentum = 0.9;
 double HyperParameters::defaultWeightDecay = 0.0000;
 bool HyperParameters::defaultUseDropoutRate = true;
 float HyperParameters::defaultDropoutRate = 0.3f;
@@ -25,7 +24,6 @@ float HyperParameters::learningRate = defaultLearningRate;
 int HyperParameters::batchSize = defaultBatchSize;
 int HyperParameters::epochs = defaultEpochs;
 
-double HyperParameters::momentum = defaultMomentum;
 double HyperParameters::weightDecay = defaultWeightDecay;
 bool HyperParameters::useDropoutRate = defaultUseDropoutRate;
 float HyperParameters::dropoutRate = defaultDropoutRate;
@@ -44,7 +42,6 @@ void HyperParameters::ResetHyperParameters()
 	batchSize = defaultBatchSize; 
 	epochs = defaultEpochs; 
     
-	momentum = defaultMomentum; 
 	weightDecay = defaultWeightDecay;
 	useDropoutRate = defaultUseDropoutRate;
 	dropoutRate = defaultDropoutRate;
@@ -55,7 +52,6 @@ void HyperParameters::SetHyperParameters(HyperParameters hyperParameters)
 	learningRate = hyperParameters.learningRate;
 	batchSize = hyperParameters.batchSize;
 	epochs = hyperParameters.epochs;
-	momentum = hyperParameters.momentum;
 	weightDecay = hyperParameters.weightDecay;
 	useDropoutRate = hyperParameters.useDropoutRate;
 	dropoutRate = hyperParameters.dropoutRate;
@@ -70,7 +66,6 @@ HyperParameters HyperParameters::GetHyperParameters()
 	hyperParameters.learningRate = learningRate;
 	hyperParameters.batchSize = batchSize;
 	hyperParameters.epochs = epochs;
-	hyperParameters.momentum = momentum;
 	hyperParameters.weightDecay = weightDecay;
 	hyperParameters.useDropoutRate = useDropoutRate;
 	hyperParameters.dropoutRate = dropoutRate;

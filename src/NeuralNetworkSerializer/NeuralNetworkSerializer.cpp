@@ -24,7 +24,6 @@ bool NeuralNetworkSerializer::SaveToJSON(const std::string& filePath,
         {"learningRate", hyperParams.learningRate},
         {"batchSize", hyperParams.batchSize},
         {"epochs", hyperParams.epochs},
-        {"momentum", hyperParams.momentum},
         {"weightDecay", hyperParams.weightDecay},
         {"useDropoutRate", hyperParams.useDropoutRate},
         {"dropoutRate", hyperParams.dropoutRate},
@@ -129,7 +128,6 @@ bool NeuralNetworkSerializer::LoadFromJSON(const std::string& filePath,
         outHyperParams.learningRate = hyperParams["learningRate"];
         outHyperParams.batchSize = hyperParams["batchSize"];
         outHyperParams.epochs = hyperParams["epochs"];
-        outHyperParams.momentum = hyperParams["momentum"];
         outHyperParams.weightDecay = hyperParams["weightDecay"];
         outHyperParams.useDropoutRate = hyperParams["useDropoutRate"];
         outHyperParams.dropoutRate = hyperParams["dropoutRate"];

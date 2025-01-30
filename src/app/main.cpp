@@ -1604,7 +1604,6 @@ void NeuralNetworkControlsWindow(bool* p_open)
             {
                 HyperParameters::epochs = 1;
             }
-            ImGui::InputDouble("Momentum", &HyperParameters::momentum, 0.1, 0.2, "%.2f");
             ImGui::InputDouble("Weight Decay", &HyperParameters::weightDecay, 0.001, 0.002, "%.5f");
 
             ImGui::Checkbox("Use Dropout", &HyperParameters::useDropoutRate);
