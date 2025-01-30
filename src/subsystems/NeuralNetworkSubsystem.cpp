@@ -135,7 +135,7 @@ double NeuralNetworkSubsystem::EvaluateTestSet()
         {
             const auto& img = testDataSet.GetImages()[i];
             const auto& labelOneHot = testDataSet.GetLabelsOneHot()[i];
-            auto out = CurrentNeuralNetwork.ForwardPropagation(img);
+            auto out = CurrentNeuralNetwork.ForwardPropagation(img, false);
 
             int bestIdx = -1;
             double bestVal = -999999.0;
@@ -689,7 +689,7 @@ std::pair<int, double> NeuralNetworkSubsystem::InferSingleImage(const std::vecto
         return {-1, 0};
     }
 
-    std::vector<double> outputs = CurrentNeuralNetwork.ForwardPropagation(image);
+    std::vector<double> outputs = CurrentNeuralNetwork.ForwardPropagation(image, false);
     int bestIndex = -1;
     double bestValue = std::numeric_limits<double>::lowest();
     for (int i = 0; i < (int)outputs.size(); ++i)

@@ -14,7 +14,7 @@ void NeuralNetwork::AddLayer(const Layer& layer)
     layers.push_back(layer); // Add the provided layer to the vector of layers.
 }
 
-std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputData)
+std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputData, const bool bIsTraining)
 {
     PROFILE_LOG;
     std::vector<double> currentInput = std::move(inputData);
@@ -22,7 +22,7 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
     for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++)
     {
         // Iterate through layers
-        currentInput = layers[layerIndex].computeOutput(currentInput); // Compute output of the current layer
+        currentInput = layers[layerIndex].computeOutput(currentInput, bIsTraining); // Compute output of the current layer
     }
 
     return currentInput; // Return the final output of the neural network

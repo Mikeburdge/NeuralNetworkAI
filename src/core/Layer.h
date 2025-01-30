@@ -75,8 +75,9 @@ public:
     /// Function to calculate the output of the layer given input.
     /// </summary>
     /// <param name="input">Input data to the layer.</param>
+    /// <param name="bIsTraining"> is this function being called during training?</param>
     /// <returns>Output data from the layer.</returns>
-    std::vector<double> computeOutput(const std::vector<double>& input);
+    std::vector<double> computeOutput(const std::vector<double>& input, const bool bIsTraining);
 
     /// <summary>
     /// Function to update weights during backpropagation.

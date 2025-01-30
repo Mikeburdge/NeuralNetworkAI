@@ -20,7 +20,7 @@ void Layer::InitAdam()
     vBias.resize(numNeurons, 0.0);
 }
 
-vector<double> Layer::computeOutput(const vector<double>& input)
+vector<double> Layer::computeOutput(const vector<double>& input, const bool bIsTraining)
 {
     PROFILE_LOG;
     vector<double> output(numNeurons, 0.0);
@@ -63,7 +63,7 @@ vector<double> Layer::computeOutput(const vector<double>& input)
         }
     }
 
-    if (useDropout)
+    if (useDropout && bIsTraining)
     {
         random_device rd;
         mt19937 rng(rd());

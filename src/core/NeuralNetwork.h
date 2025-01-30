@@ -24,7 +24,7 @@ public:
 	/// </summary>
 	/// <param name="inputData">Input data to be propagated through the network.</param>
 	/// <returns>Output data after forward propagation.</returns>
-	std::vector<double> ForwardPropagation(std::vector<double> inputData);
+	std::vector<double> ForwardPropagation(std::vector<double> inputData, bool bIsTraining = true);
 
 	/// <summary>
 	/// Function to adjust weights based on errors during training.
