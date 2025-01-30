@@ -112,9 +112,13 @@ bool NeuralNetworkSubsystem::LoadMNISTTestData(const std::string& imagesPath, co
     }
     return loaded;
 }
-
 double NeuralNetworkSubsystem::EvaluateTestSet()
 {
+    if (!bIsMnistTestDataLoaded)
+    {
+        bIsMnistTestDataLoaded = LoadMNISTTestData(DEFAULT_TEST_IMAGES_PATH, DEFAULT_TEST_LABELS_PATH);
+    }
+    
     if (!bIsMnistTestDataLoaded || testDataSet.Size() == 0)
     {
         LOG(LogLevel::ERROR, "No test data loaded. EvaluateTestSet aborted.");

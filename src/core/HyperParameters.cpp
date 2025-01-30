@@ -6,19 +6,18 @@
 
 int HyperParameters::defaultInputLayerSize = 784;
 int HyperParameters::defaultNumHiddenLayers = 2;
-
 int HyperParameters::defaultHiddenLayerSize = 256; // 128 / 256
 int HyperParameters::defaultOutputLayerSize = 10;
 
-float HyperParameters::defaultLearningRate = 0.004f;
+float HyperParameters::defaultLearningRate = 0.001f;
 int HyperParameters::defaultBatchSize = 64;
-int HyperParameters::defaultEpochs = 10000;
+int HyperParameters::defaultEpochs = 20;
 
-double HyperParameters::defaultWeightDecay = 0.0000;
+double HyperParameters::defaultWeightDecay = 0.0005;
 bool HyperParameters::defaultUseDropoutRate = true;
-float HyperParameters::defaultDropoutRate = 0.3f;
-double HyperParameters::defaultGradientClipThreshold = 1.0;
+float HyperParameters::defaultDropoutRate = 0.2f;
 bool HyperParameters::defaultUseGradientClipping = true;
+double HyperParameters::defaultGradientClipThreshold = 1.0;
 
 float HyperParameters::learningRate = defaultLearningRate;
 int HyperParameters::batchSize = defaultBatchSize;
@@ -31,8 +30,8 @@ float HyperParameters::dropoutRate = defaultDropoutRate;
 bool HyperParameters::useGradientClipping = defaultUseGradientClipping;
 double HyperParameters::gradientClipThreshold = defaultGradientClipThreshold;
 
-CostType HyperParameters::cost = cost_Count;
-ActivationType HyperParameters::activationType = Activation_Count;
+CostType HyperParameters::cost = crossEntropy;
+ActivationType HyperParameters::activationType = ReLU;
 
 int HyperParameters::visualizationUpdateInterval = 5;
 

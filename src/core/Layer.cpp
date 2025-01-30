@@ -1,5 +1,6 @@
 #include "Layer.h"
 
+#include <future>
 #include <random>
 
 #include "Activation.h"
@@ -87,25 +88,30 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
     const double epsilon = this->epsilon;
     const double weightDecay = HyperParameters::weightDecay;
 
-    // Update weights based on the error gradient
-    for (int i = 0; i < numNeurons; ++i)
-    {
-        // Gradient Clipping
-        std::vector<double> localGradWeights(weights[i].size());
+    std::vector<std::future<void>> futures;
+    futures.reserve(numNeurons);
 
-        for (int j = 0; j < (int)weights[i].size(); ++j)
+
+    // Lambda function to update a single neuron's weights and bias
+    auto updateNeuron = [&](int neuronIdx)
+    {
+        // Gradient Clipping for the current neuron
+        std::vector<double> localGradWeights(numNeuronsOutOfPreviousLayer, 0.0);
+        for (int j = 0; j < numNeuronsOutOfPreviousLayer; ++j)
         {
-            double gradient = errorGradient[i] * prevLayerActivations[j];
+            double gradient = errorGradient[neuronIdx] * prevLayerActivations[j];
             localGradWeights[j] = gradient;
         }
 
+        // Calculate gradient norm
         double gradNorm = 0.0;
         for (double gradient : localGradWeights)
         {
             gradNorm += gradient * gradient;
         }
-        gradNorm = sqrt(gradNorm);
+        gradNorm = std::sqrt(gradNorm);
 
+        // Apply gradient clipping
         if (gradNorm > HyperParameters::gradientClipThreshold)
         {
             double scale = HyperParameters::gradientClipThreshold / gradNorm;
@@ -115,30 +121,42 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
             }
         }
 
-        // ADAM - weights
-        for (int j = 0; j < weights[i].size(); ++j)
+        // ADAM update for weights
+        for (int j = 0; j < numNeuronsOutOfPreviousLayer; ++j)
         {
-            const double gradient = localGradWeights[j];
+            double gradient = localGradWeights[j];
 
-            m[i][j] = beta1 * m[i][j] + (1 - beta1) * gradient;
-            v[i][j] = beta2 * v[i][j] + (1 - beta2) * (gradient * gradient);
+            // Update first and second moments
+            m[neuronIdx][j] = beta1 * m[neuronIdx][j] + (1 - beta1) * gradient;
+            v[neuronIdx][j] = beta2 * v[neuronIdx][j] + (1 - beta2) * (gradient * gradient);
 
-            const double mHat = m[i][j] / (1 - pow(beta1, t));
-            const double vHat = v[i][j] / (1 - pow(beta2, t));
+            // Compute bias-corrected moments
+            double mHat = m[neuronIdx][j] / (1 - std::pow(beta1, t));
+            double vHat = v[neuronIdx][j] / (1 - std::pow(beta2, t));
 
-            weights[i][j] -= alpha * (mHat / (sqrt(vHat) + epsilon) + weightDecay * weights[i][j]);
+            // Update weights with ADAM formula
+            weights[neuronIdx][j] -= alpha * (mHat / (std::sqrt(vHat) + epsilon) + weightDecay * weights[neuronIdx][j]);
         }
 
-        
-        // ADAM - biases
-        const double biasGradient = localGradWeights[i];
-        mBias[i] = beta1 * mBias[i] + (1 - beta1) * biasGradient;
-        vBias[i] = beta2 * vBias[i] + (1 - beta2) * (biasGradient * biasGradient);
+        // ADAM update for biases
+        double biasGradient = errorGradient[neuronIdx];
+        mBias[neuronIdx] = beta1 * mBias[neuronIdx] + (1 - beta1) * biasGradient;
+        vBias[neuronIdx] = beta2 * vBias[neuronIdx] + (1 - beta2) * (biasGradient * biasGradient);
 
-        const double mBiasHat = mBias[i] / (1 - pow(beta1, t));
-        const double vBiasHat = vBias[i] / (1 - pow(beta2, t));
+        double mBiasHat = mBias[neuronIdx] / (1 - std::pow(beta1, t));
+        double vBiasHat = vBias[neuronIdx] / (1 - std::pow(beta2, t));
 
-        biases[i] -= alpha * (mBiasHat / (sqrt(vBiasHat) + epsilon) + weightDecay * biases[i]);
+        biases[neuronIdx] -= alpha * (mBiasHat / (std::sqrt(vBiasHat) + epsilon) + weightDecay * biases[neuronIdx]);
+    };
+
+    for (int i = 0; i < numNeurons; ++i)
+    {
+        futures.emplace_back(std::async(std::launch::async, updateNeuron, i));
+    }
+
+    for (auto& future : futures)
+    {
+        future.get();
     }
 }
 

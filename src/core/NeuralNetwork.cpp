@@ -17,6 +17,8 @@ void NeuralNetwork::AddLayer(const Layer& layer)
 std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputData, const bool bIsTraining)
 {
     PROFILE_LOG;
+    storedInput = inputData;
+
     std::vector<double> currentInput = std::move(inputData);
 
     for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++)
@@ -31,42 +33,33 @@ std::vector<double> NeuralNetwork::ForwardPropagation(std::vector<double> inputD
 
 void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
 {
-    // Could do this in a more advanced way I think? if we run multiple layers' backpropagation
-    // simultaneously it would speed it up more but I'd have to figure out how to deal
-    // with the fact each layer needs the result from the previous layer. 
     PROFILE_LOG;
-    std::vector<std::thread> layerThreads;
-    layerThreads.reserve(layers.size());
-
     std::vector<double> errorGradient = costGradient;
 
-    for (int layerIndex = layers.size() - 1; layerIndex >= 0; --layerIndex)
+    for (int layerIndex = static_cast<int>(layers.size()) - 1; layerIndex >= 0; --layerIndex)
     {
-        // here i will put the error gradient in a temp layer,
-        // and combine them after in the main thread ready for the next iteration
+        std::vector<double> prevActivations;
 
-        layerThreads.emplace_back([this, layerIndex, &errorGradient]()
+        if (layerIndex == 0)
+        {
+            // Use stored raw input for the first layer
+            prevActivations = storedInput;
+        }
+        else
+        {
+            // Get activations from the previous layer
+            const Layer& prevLayer = layers[layerIndex - 1];
+            prevActivations.resize(prevLayer.numNeurons);
+            for (int i = 0; i < prevLayer.numNeurons; ++i)
             {
-                Layer& currentLayer = layers[layerIndex];
-                if (layerIndex == 0)
-                {
-                    currentLayer.adjustWeights(errorGradient, inputData);
-                }
-                else
-                {
-                    const Layer& prevLayer = layers[layerIndex - 1];
-                    std::vector<double> prevActivations(prevLayer.numNeurons);
-                    for (int prevLayerIndex = 0; prevLayerIndex < prevLayer.numNeurons; prevLayerIndex++)
-                    {
-                        prevActivations[prevLayerIndex] = prevLayer.neurons[prevLayerIndex].ActivationValue;
-                    }
-                    currentLayer.adjustWeights(errorGradient, prevActivations);
-                }
+                prevActivations[i] = prevLayer.neurons[i].ActivationValue;
             }
-        );
+        }
 
-        // join/ wait to join the first layer added to the vector
-        layerThreads.back().join();
+        // Update weights of the current layer
+        layers[layerIndex].adjustWeights(errorGradient, prevActivations);
+
+        // Calculate error gradient for the previous layer
         if (layerIndex > 0)
         {
             const Layer& currentLayer = layers[layerIndex];
@@ -74,7 +67,4 @@ void NeuralNetwork::BackwardPropagation(const std::vector<double>& costGradient)
             errorGradient = currentLayer.CalculatePreviousLayerError(errorGradient, prevLayer.neurons);
         }
     }
-
-    // run through all threads
-    layerThreads.clear();
 }

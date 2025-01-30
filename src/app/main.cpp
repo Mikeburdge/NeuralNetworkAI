@@ -1130,23 +1130,6 @@ static bool useTextPreview = false;
 static char digitText[2] = "0";
 static bool bHasLoadedMNISTTestData = false;
 
-void EvaluateOnTestSet(double& acc)
-{
-    NeuralNetworkSubsystem& subsystem = NeuralNetworkSubsystem::GetInstance();
-
-    if (!bHasLoadedMNISTTestData)
-    {
-        bHasLoadedMNISTTestData = subsystem.LoadMNISTTestData(DEFAULT_TEST_IMAGES_PATH, DEFAULT_TEST_LABELS_PATH);
-    }
-
-    if (!bHasLoadedMNISTTestData)
-    {
-        LOG(LogLevel::ERROR, "MNIST test data failed to load.");
-    }
-
-    acc = subsystem.EvaluateTestSet();
-}
-
 
 static float imageZoomLevel = 2.0f;
 static int selectedImageIndex = -1; // To track selected image
@@ -1539,7 +1522,7 @@ void NeuralNetworkControlsWindow(bool* p_open)
             ImGui::InputInt("Hidden Layer Size", &hiddenLayerSize);
             ImGui::InputInt("Output Size", &outputLayerSize);
 
-            static int activationElem = (int)ActivationType::LeakyReLU;
+            static int activationElem = (int)ActivationType::ReLU;
             const char* activationNames[] = {"Sigmoid", "ReLU", "LeakyReLU"};
             const char* actName = (activationElem >= 0 && activationElem < 3) ? activationNames[activationElem] : "Unknown";
 
@@ -1783,9 +1766,11 @@ void NeuralNetworkControlsWindow(bool* p_open)
                 int currentEpoch = NeuralNetworkSubsystem::GetInstance().currentEpochAtomic.load();
                 std::string timestamp = NeuralNetworkUtility::GetTimeStampWithAnnotations();
 
-                double testAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
-                EvaluateOnTestSet(testAccuracy); // need to make this use std::future or wait some other way.
-
+                double testAccuracy = NeuralNetworkSubsystem::GetInstance().EvaluateTestSet(); // need to make this use std::future or wait some other way.
+                if (testAccuracy == 0.0)
+                {
+                    testAccuracy = NeuralNetworkSubsystem::GetInstance().currentAccuracyAtomic.load() * 100.0;
+                }
                 std::string autoFilename =
                     "Network_Epoch" + std::to_string(currentEpoch) +
                     "_Acc" + std::to_string((int)testAccuracy * 100.0) + "_" +

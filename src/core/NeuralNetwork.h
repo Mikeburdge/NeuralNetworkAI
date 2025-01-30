@@ -10,6 +10,8 @@ public:
 	
 	// Vector to store layers in the neural network.
 	std::vector<Layer> layers;
+	
+    std::vector<double> storedInput;
 
 	NeuralNetwork();
 
