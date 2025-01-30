@@ -129,10 +129,9 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
             weights[i][j] -= alpha * (mHat / (sqrt(vHat) + epsilon) + weightDecay * weights[i][j]);
         }
 
-        // POTENTIALLY IMPLEMENT GRADIENT CLIPPING FOR BIAS TOO IF ITS RECOMMENDED
-
+        
         // ADAM - biases
-        const double biasGradient = errorGradient[i];
+        const double biasGradient = localGradWeights[i];
         mBias[i] = beta1 * mBias[i] + (1 - beta1) * biasGradient;
         vBias[i] = beta2 * vBias[i] + (1 - beta2) * (biasGradient * biasGradient);
 
