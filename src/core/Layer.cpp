@@ -15,6 +15,9 @@ void Layer::InitAdam()
 {
     m.resize(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer, 0.0));
     v.resize(numNeurons, std::vector<double>(numNeuronsOutOfPreviousLayer, 0.0));
+
+    mBias.resize(numNeurons, 0.0);
+    vBias.resize(numNeurons, 0.0);
 }
 
 vector<double> Layer::computeOutput(const vector<double>& input)
@@ -82,6 +85,7 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
     const double beta1 = this->beta1;
     const double beta2 = this->beta2;
     const double epsilon = this->epsilon;
+    const double weightDecay = HyperParameters::weightDecay;
 
     // Update weights based on the error gradient
     for (int i = 0; i < numNeurons; ++i)
@@ -96,12 +100,20 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
             const double mHat = m[i][j] / (1 - pow(beta1, t));
             const double vHat = v[i][j] / (1 - pow(beta2, t));
 
-            const double weightDecay = HyperParameters::weightDecay;
             weights[i][j] -= alpha * (mHat / (sqrt(vHat) + epsilon) + weightDecay * weights[i][j]);
 
         }
 
         biases[i] -= alpha * errorGradient[i]; // Update biases
+
+        const double biasGradient = errorGradient[i];
+        mBias[i] = beta1 * mBias[i] + (1 - beta1) * biasGradient;
+        vBias[i] = beta2 * vBias[i] + (1 - beta2) * (biasGradient * biasGradient);
+
+        const double mBiasHat = mBias[i] / (1 - pow(beta1, t));
+        const double vBiasHat = vBias[i] / (1 - pow(beta2, t));
+
+        biases[i] -= alpha * (mBiasHat / (sqrt(vBiasHat) + epsilon) + weightDecay * biases[i]);
     }
 }
 

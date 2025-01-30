@@ -31,6 +31,8 @@ public:
     // Variables
     std::vector<std::vector<double>> m; // first moment estimates
     std::vector<std::vector<double>> v; // second moment estimates
+    std::vector<double> mBias; // first moment estimates for Bias
+    std::vector<double> vBias; // second moment estimates for Bias
     double beta1 = 0.9;
     double beta2 = 0.999;
     double epsilon = 1e-8;
