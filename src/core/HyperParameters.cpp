@@ -18,6 +18,8 @@ double HyperParameters::defaultMomentum = 0.9;
 double HyperParameters::defaultWeightDecay = 0.0000;
 bool HyperParameters::defaultUseDropoutRate = true;
 float HyperParameters::defaultDropoutRate = 0.3f;
+double HyperParameters::defaultGradientClipThreshold = 1.0;
+bool HyperParameters::defaultUseGradientClipping = true;
 
 float HyperParameters::learningRate = defaultLearningRate;
 int HyperParameters::batchSize = defaultBatchSize;
@@ -27,6 +29,9 @@ double HyperParameters::momentum = defaultMomentum;
 double HyperParameters::weightDecay = defaultWeightDecay;
 bool HyperParameters::useDropoutRate = defaultUseDropoutRate;
 float HyperParameters::dropoutRate = defaultDropoutRate;
+
+bool HyperParameters::useGradientClipping = defaultUseGradientClipping;
+double HyperParameters::gradientClipThreshold = defaultGradientClipThreshold;
 
 CostType HyperParameters::cost = cost_Count;
 ActivationType HyperParameters::activationType = Activation_Count;

@@ -18,6 +18,9 @@ public:
 	static double defaultWeightDecay;
 	static bool defaultUseDropoutRate;
 	static float defaultDropoutRate;
+	
+	static bool defaultUseGradientClipping;
+	static double defaultGradientClipThreshold;
 
 	static float learningRate; // Learning rate for training.
 	static int batchSize; // Size of batches during training.
@@ -27,6 +30,9 @@ public:
 	static double weightDecay; // Strength of weight decay (if using L2 regularization).
 	static bool useDropoutRate;
 	static float dropoutRate; // Dropout rate (if implementing dropout regularization).
+
+	static bool useGradientClipping;
+	static double gradientClipThreshold;
 
 	static CostType cost;
 	static ActivationType activationType;

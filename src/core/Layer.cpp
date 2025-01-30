@@ -90,9 +90,35 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
     // Update weights based on the error gradient
     for (int i = 0; i < numNeurons; ++i)
     {
+        // Gradient Clipping
+        std::vector<double> localGradWeights(weights[i].size());
+
+        for (int j = 0; j < (int)weights[i].size(); ++j)
+        {
+            double gradient = errorGradient[i] * prevLayerActivations[j];
+            localGradWeights[j] = gradient;
+        }
+
+        double gradNorm = 0.0;
+        for (double gradient : localGradWeights)
+        {
+            gradNorm += gradient * gradient;
+        }
+        gradNorm = sqrt(gradNorm);
+
+        if (gradNorm > HyperParameters::gradientClipThreshold)
+        {
+            double scale = HyperParameters::gradientClipThreshold / gradNorm;
+            for (double& gradient : localGradWeights)
+            {
+                gradient *= scale;
+            }
+        }
+
+        // ADAM - weights
         for (int j = 0; j < weights[i].size(); ++j)
         {
-            const double gradient = errorGradient[i] * prevLayerActivations[j];
+            const double gradient = localGradWeights[i];
 
             m[i][j] = beta1 * m[i][j] + (1 - beta1) * gradient;
             v[i][j] = beta2 * v[i][j] + (1 - beta2) * (gradient * gradient);
@@ -101,11 +127,11 @@ void Layer::adjustWeights(const std::vector<double>& errorGradient, const std::v
             const double vHat = v[i][j] / (1 - pow(beta2, t));
 
             weights[i][j] -= alpha * (mHat / (sqrt(vHat) + epsilon) + weightDecay * weights[i][j]);
-
         }
 
-        biases[i] -= alpha * errorGradient[i]; // Update biases
+        // POTENTIALLY IMPLEMENT GRADIENT CLIPPING FOR BIAS TOO IF ITS RECOMMENDED
 
+        // ADAM - biases
         const double biasGradient = errorGradient[i];
         mBias[i] = beta1 * mBias[i] + (1 - beta1) * biasGradient;
         vBias[i] = beta2 * vBias[i] + (1 - beta2) * (biasGradient * biasGradient);

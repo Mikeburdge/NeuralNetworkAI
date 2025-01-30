@@ -1613,6 +1613,14 @@ void NeuralNetworkControlsWindow(bool* p_open)
                 ImGui::SliderFloat("Dropout Rate", &HyperParameters::dropoutRate, 0.0f, 1.0f);
             }
 
+            ImGui::Checkbox("Use Gradient Clipping", &HyperParameters::useGradientClipping);
+            if (HyperParameters::useGradientClipping)
+            {
+                float floatGradientThreshold = (float)HyperParameters::gradientClipThreshold;
+                ImGui::SliderFloat("Gradient Clipping Threshold", &floatGradientThreshold, 0.0f, 1.0f);
+                HyperParameters::gradientClipThreshold = (double)floatGradientThreshold;
+            }
+
             if (ImGui::Button("Reset HyperParameters"))
             {
                 HyperParameters::ResetHyperParameters();
